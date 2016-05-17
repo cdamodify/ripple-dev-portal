@@ -1,129 +1,315 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
-<meta content="width=device-width" name="viewport">
-<title>RippleAPI - Ripple Developer Portal</title>
-<!-- favicon -->
-<link href="favicon.ico" rel="icon" type="image/x-icon">
-<link href="favicon.ico" rel="shortcut icon" type="image/x-icon">
-<!-- jQuery -->
-<script src="assets/vendor/jquery-1.11.1.min.js"></script>
-<!-- Custom Stylesheets. ripple.css includes bootstrap, font stuff -->
-<link href="assets/css/ripple.css" rel="stylesheet"/>
-<link href="assets/css/devportal.css" rel="stylesheet"/>
-<!-- Bootstrap JS -->
-<script src="assets/vendor/bootstrap.min.js"></script>
-<!-- syntax highlighting -->
-<link href="assets/vendor/docco.min.css" rel="stylesheet">
-<script src="assets/vendor/highlight.min.js"></script>
-<!-- syntax selection js -->
-<script src="assets/js/multicodetab.js"></script>
-<script>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width">
+
+    <title>RippleAPI - Ripple Developer Portal</title>
+
+    <!-- favicon -->
+    <link rel="icon" href="favicon.ico" type="image/x-icon"> 
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+
+    <!-- jQuery -->
+    <script src="assets/vendor/jquery-1.11.1.min.js"></script>
+    
+    <!-- Custom Stylesheets. ripple.css includes bootstrap, font stuff -->
+    <link href="assets/css/ripple.css" rel="stylesheet" />
+    <link href="assets/css/devportal.css" rel="stylesheet" />
+
+    <!-- Bootstrap JS -->
+    <script src="assets/vendor/bootstrap.min.js"></script>
+
+
+    <!-- syntax highlighting -->
+    <link rel="stylesheet" href="assets/vendor/docco.min.css">
+    <script src="assets/vendor/highlight.min.js"></script>
+
+    <!-- syntax selection js -->
+    <script src="assets/js/multicodetab.js"></script>
+    <script>
         $(document).ready(function() {
-            $().multicode_tabs();
+            $(".multicode").minitabs();
             hljs.initHighlighting();
             make_code_expandable();
         });
     </script>
-<script src="assets/js/expandcode.js"></script>
-<script src="assets/js/fixsidebarscroll.js"></script>
-</link></link></link></meta></meta></meta></head>
+
+    <script src="assets/js/expandcode.js"></script>
+    <script src="assets/js/fixsidebarscroll.js"></script>
+
+</head>
+
 <body class="page page-template page-template-template-dev-portal page-template-template-dev-portal-php sidebar-primary wpb-js-composer js-comp-ver-3.6.2 vc_responsive">
-<header class="banner navbar navbar-default navbar-fixed-top initial_header" role="banner">
-<div class="container">
-<div class="navbar-header">
-<a class="navbar-brand" href="index.html"><img class="logo" src="assets/img/ripple-logo-color.png"/></a>
-</div><!-- /.navbar-header -->
-<div class="nav">
-<div class="draft-warning">DRAFT PAGE</div>
-</div><!-- /.nav -->
-</div><!-- /.container -->
-<div class="subnav dev_nav">
-<div class="container">
-<ul class="menu" id="menu-dev-menu">
-<li class="dropdown">
-<a class="dropdown-toggle" data-toggle="dropdown" href="#">References <span class="caret"></span></a>
-<ul class="dropdown-menu" role="menu">
-<li><a href="reference-rippled.html">rippled</a></li>
-<li><a href="reference-transaction-format.html">Transaction Format</a></li>
-<li><a href="reference-ledger-format.html">Ledger Format</a></li>
-<li><a href="reference-rippleapi.html">RippleAPI</a></li>
-<li><a href="reference-data-api.html">Ripple Data API v2</a></li>
-</ul>
-</li>
-<li class="dropdown">
-<a class="dropdown-toggle" data-toggle="dropdown" href="#">Tutorials <span class="caret"></span></a>
-<ul class="dropdown-menu" role="menu">
-<li><a href="tutorial-rippleapi-beginners-guide.html">RippleAPI Beginners Guide</a></li>
-<li><a href="tutorial-rippled-setup.html">rippled Setup</a></li>
-<li><a href="tutorial-reliable-transaction-submission.html">Reliable Transaction Submission</a></li>
-</ul>
-</li>
-<li class="dropdown">
-<a class="dropdown-toggle" data-toggle="dropdown" href="#">Concepts <span class="caret"></span></a>
-<ul class="dropdown-menu" role="menu">
-<li><a href="concept-paths.html">Paths</a></li>
-<li><a href="concept-fees.html">Fees (Disambiguation)</a></li>
-<li><a href="concept-transfer-fees.html">Transfer Fees</a></li>
-<li><a href="concept-transaction-cost.html">Transaction Cost</a></li>
-<li><a href="concept-fee-voting.html">Fee Voting</a></li>
-<li><a href="concept-reserves.html">Reserves</a></li>
-<li><a href="concept-freeze.html">Freeze</a></li>
-</ul>
-</li>
-<li class="dropdown">
-<a class="dropdown-toggle" data-toggle="dropdown" href="#">Best Practices <span class="caret"></span></a>
-<ul class="dropdown-menu" role="menu">
-<li><a href="concept-issuing-and-operational-addresses.html">Issuing and Operational Addresses</a></li>
-<li><a href="tutorial-gateway-guide.html">Gateway Guide</a></li>
-</ul>
-</li>
-<li class="dropdown">
-<a class="dropdown-toggle" data-toggle="dropdown" href="#">API Tools <span class="caret"></span></a>
-<ul class="dropdown-menu" role="menu">
-<li><a href="ripple-api-tool.html">WebSocket API Tool</a></li>
-<li><a href="data-api-v2-tool.html">Data API v2 Tool</a></li>
-<li><a href="tool-jsonrpc.html">rippled JSON-RPC Tool</a></li>
-</ul>
-</li>
-<li class="dropdown">
-<a class="dropdown-toggle" data-toggle="dropdown" href="#">Resources <span class="caret"></span></a>
-<ul class="dropdown-menu" role="menu">
-<li><a href="https://forum.ripple.com/viewforum.php?f=2">Forums</a></li>
-<li><a href="https://www.bountysource.com/teams/ripple/bounties">Bounties</a></li>
-<li><a href="https://ripplelabs.atlassian.net/">Bug Tracking</a></li>
-<li><a href="https://ripple.com/category/dev-blog/">Dev Blog</a></li>
-<li><a href="https://ripple.com/press-releases/">Press Center</a></li>
-<li><a href="https://ripple.com/brand-guidelines/">Brand Guidelines</a></li>
-</ul>
-<li><a href="https://github.com/ripple/ripple-dev-portal" title="GitHub">Site Source</a></li>
-</li></ul><!-- /#dev-menu -->
-</div><!-- /.subnav .container -->
-</div><!-- /.subnav -->
-</header>
-<div class="wrap container" role="document">
-<aside class="sidebar" role="complementary">
-<div class="dev_nav_wrapper">
-<div id="cont">
-<ul class="dev_nav_sidebar">
-<li class="level-1"><a href="index.html">Category: References</a></li>
-<li class="level-2"><a href="reference-rippled.html">rippled</a></li>
-<li class="level-2"><a href="reference-transaction-format.html">Transaction Format</a></li>
-<li class="level-2"><a href="reference-ledger-format.html">Ledger Format</a></li>
-<li class="level-2"><a href="reference-rippleapi.html">RippleAPI</a></li>
-<li class="level-2"><a href="reference-data-api.html">Ripple Data API v2</a></li>
-</ul>
-<hr/>
-<h5>In this page:</h5>
-</div>
-<script src="assets/js/jquery.gensidebar.js" type="text/javascript"></script>
-</div>
-</aside>
-<main class="main" role="main">
-<div class="content">
+  <header role="banner" class="banner navbar navbar-default navbar-fixed-top initial_header">
+    <div class="container">
+      <div class="navbar-header">
+          <a href="index.html" class="navbar-brand"><img src="assets/img/ripple-logo-color.png" class="logo"></a>
+      </div><!-- /.navbar-header -->
+      <div class="nav">
+        <div class="draft-warning">DRAFT PAGE</div>
+      </div><!-- /.nav -->
+
+    </div><!-- /.container -->
+
+    <div class="subnav dev_nav">
+      <div class="container">
+        <ul id="menu-dev-menu" class="menu">
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">References <span class="caret"></span></a>
+            <ul class="dropdown-menu" role="menu">
+                  <li><a href="reference-rippleapi.html">RippleAPI</a></li>
+                  <li><a href="reference-rippled.html">rippled</a></li>
+                  <li><a href="reference-transaction-format.html">Transaction Format</a></li>
+                  <li><a href="reference-ledger-format.html">Ledger Format</a></li>
+                  <li><a href="reference-data-api.html">Ripple Data API v2</a></li>
+            </ul>
+          </li>
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorials <span class="caret"></span></a>
+            <ul class="dropdown-menu" role="menu">
+                  <li><a href="tutorial-multisign.html">How to Multi-Sign</a></li>
+                  <li><a href="concept-issuing-and-operational-addresses.html">Issuing and Operational Addresses</a></li>
+                  <li><a href="tutorial-reliable-transaction-submission.html">Reliable Transaction Submission</a></li>
+                  <li><a href="tutorial-rippleapi-beginners-guide.html">RippleAPI Beginners Guide</a></li>
+                  <li><a href="tutorial-rippled-setup.html">rippled Setup</a></li>
+                  <li><a href="tutorial-gateway-guide.html">Gateway Guide</a></li>
+            </ul>
+          </li>
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">RCL Features <span class="caret"></span></a>
+            <ul class="dropdown-menu" role="menu">
+                  <li><a href="concept-amendments.html">Amendments</a></li>
+                  <li><a href="concept-fee-voting.html">Fee Voting</a></li>
+                  <li><a href="concept-fees.html">Fees (Disambiguation)</a></li>
+                  <li><a href="concept-freeze.html">Freeze</a></li>
+                  <li><a href="concept-paths.html">Paths</a></li>
+                  <li><a href="concept-reserves.html">Reserves</a></li>
+                  <li><a href="concept-stand-alone-mode.html">Stand-Alone Mode</a></li>
+                  <li><a href="concept-transaction-cost.html">Transaction Cost</a></li>
+                  <li><a href="concept-transfer-fees.html">Transfer Fees</a></li>
+                  <li><a href="concept-noripple.html">Understanding the NoRipple flag</a></li>
+            </ul>
+          </li>
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">API Tools <span class="caret"></span></a>
+            <ul class="dropdown-menu" role="menu">
+                  <li><a href="ripple-api-tool.html">WebSocket API Tool</a></li>
+                  <li><a href="data-api-v2-tool.html">Data API v2 Tool</a></li>
+                  <li><a href="tool-jsonrpc.html">rippled JSON-RPC Tool</a></li>
+            </ul>
+          </li>
+          
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Resources <span class="caret"></span></a>
+            <ul class="dropdown-menu" role="menu">
+			  <li><a href="https://forum.ripple.com/viewforum.php?f=2">Forums</a></li>
+              <li><a href="https://www.bountysource.com/teams/ripple/bounties">Bounties</a></li>
+              <li><a href="https://ripplelabs.atlassian.net/">Bug Tracking</a></li>
+              <li><a href="https://ripple.com/category/dev-blog/">Dev Blog</a></li>
+              <li><a href="https://ripple.com/press-releases/">Press Center</a></li>
+              <li><a href="https://ripple.com/brand-guidelines/">Brand Guidelines</a></li>
+            </ul>
+            <li><a href="https://github.com/ripple/ripple-dev-portal" title="GitHub">Site Source</a></li>
+        </ul><!-- /#dev-menu -->
+      </div><!-- /.subnav .container -->
+    </div><!-- /.subnav -->
+  </header>
+
+
+  <div class="wrap container" role="document">
+      <aside class="sidebar" role="complementary">
+    <div class="dev_nav_wrapper">
+        <div id="cont">
+            <h5>In this category:</h5>
+            <ul class="dev_nav_sidebar">
+                <li class="level-1"><a href="index.html">Category: References</a></li>
+                <li class="level-2"><a href="reference-rippleapi.html">RippleAPI</a></li>
+                <li class="level-2"><a href="reference-rippled.html">rippled</a></li>
+                <li class="level-2"><a href="reference-transaction-format.html">Transaction Format</a></li>
+                <li class="level-2"><a href="reference-ledger-format.html">Ledger Format</a></li>
+                <li class="level-2"><a href="reference-data-api.html">Ripple Data API v2</a></li>
+            </ul>
+            <hr />
+            <h5>In this page:</h5>
+            <ul class="dev_nav_sidebar" id="dactyl_toc_sidebar">
+                <li class="level-1"><a href="#introduction">Introduction</a></li>
+<li class="level-2"><a href="#boilerplate">Boilerplate</a></li>
+<li class="level-3"><a href="#parameters">Parameters</a></li>
+<li class="level-3"><a href="#installation">Installation</a></li>
+<li class="level-2"><a href="#offline-functionality">Offline functionality</a></li>
+<li class="level-1"><a href="#basic-types">Basic Types</a></li>
+<li class="level-2"><a href="#ripple-address">Ripple Address</a></li>
+<li class="level-2"><a href="#account-sequence-number">Account Sequence Number</a></li>
+<li class="level-2"><a href="#currency">Currency</a></li>
+<li class="level-2"><a href="#value">Value</a></li>
+<li class="level-2"><a href="#amount">Amount</a></li>
+<li class="level-1"><a href="#transaction-overview">Transaction Overview</a></li>
+<li class="level-2"><a href="#transaction-types">Transaction Types</a></li>
+<li class="level-2"><a href="#transaction-flow">Transaction Flow</a></li>
+<li class="level-2"><a href="#transaction-fees">Transaction Fees</a></li>
+<li class="level-2"><a href="#transaction-instructions">Transaction Instructions</a></li>
+<li class="level-2"><a href="#transaction-id">Transaction ID</a></li>
+<li class="level-2"><a href="#transaction-memos">Transaction Memos</a></li>
+<li class="level-1"><a href="#transaction-specifications">Transaction Specifications</a></li>
+<li class="level-2"><a href="#payment">Payment</a></li>
+<li class="level-3"><a href="#example">Example</a></li>
+<li class="level-2"><a href="#trustline">Trustline</a></li>
+<li class="level-3"><a href="#example-1">Example</a></li>
+<li class="level-2"><a href="#order">Order</a></li>
+<li class="level-3"><a href="#example-2">Example</a></li>
+<li class="level-2"><a href="#order-cancellation">Order Cancellation</a></li>
+<li class="level-3"><a href="#example-3">Example</a></li>
+<li class="level-2"><a href="#settings">Settings</a></li>
+<li class="level-3"><a href="#example-4">Example</a></li>
+<li class="level-2"><a href="#suspended-payment-creation">Suspended Payment Creation</a></li>
+<li class="level-3"><a href="#example-5">Example</a></li>
+<li class="level-2"><a href="#suspended-payment-cancellation">Suspended Payment Cancellation</a></li>
+<li class="level-3"><a href="#example-6">Example</a></li>
+<li class="level-2"><a href="#suspended-payment-execution">Suspended Payment Execution</a></li>
+<li class="level-3"><a href="#example-7">Example</a></li>
+<li class="level-1"><a href="#api-methods">API Methods</a></li>
+<li class="level-2"><a href="#connect">connect</a></li>
+<li class="level-3"><a href="#parameters-1">Parameters</a></li>
+<li class="level-3"><a href="#return-value">Return Value</a></li>
+<li class="level-3"><a href="#example-8">Example</a></li>
+<li class="level-2"><a href="#disconnect">disconnect</a></li>
+<li class="level-3"><a href="#parameters-2">Parameters</a></li>
+<li class="level-3"><a href="#return-value-1">Return Value</a></li>
+<li class="level-3"><a href="#example-9">Example</a></li>
+<li class="level-2"><a href="#isconnected">isConnected</a></li>
+<li class="level-3"><a href="#parameters-3">Parameters</a></li>
+<li class="level-3"><a href="#return-value-2">Return Value</a></li>
+<li class="level-3"><a href="#example-10">Example</a></li>
+<li class="level-2"><a href="#getserverinfo">getServerInfo</a></li>
+<li class="level-3"><a href="#parameters-4">Parameters</a></li>
+<li class="level-3"><a href="#return-value-3">Return Value</a></li>
+<li class="level-3"><a href="#example-11">Example</a></li>
+<li class="level-2"><a href="#getfee">getFee</a></li>
+<li class="level-3"><a href="#parameters-5">Parameters</a></li>
+<li class="level-3"><a href="#return-value-4">Return Value</a></li>
+<li class="level-3"><a href="#example-12">Example</a></li>
+<li class="level-2"><a href="#getledgerversion">getLedgerVersion</a></li>
+<li class="level-3"><a href="#parameters-6">Parameters</a></li>
+<li class="level-3"><a href="#return-value-5">Return Value</a></li>
+<li class="level-3"><a href="#example-13">Example</a></li>
+<li class="level-2"><a href="#gettransaction">getTransaction</a></li>
+<li class="level-3"><a href="#parameters-7">Parameters</a></li>
+<li class="level-3"><a href="#return-value-6">Return Value</a></li>
+<li class="level-3"><a href="#example-14">Example</a></li>
+<li class="level-2"><a href="#gettransactions">getTransactions</a></li>
+<li class="level-3"><a href="#parameters-8">Parameters</a></li>
+<li class="level-3"><a href="#return-value-7">Return Value</a></li>
+<li class="level-3"><a href="#example-15">Example</a></li>
+<li class="level-2"><a href="#gettrustlines">getTrustlines</a></li>
+<li class="level-3"><a href="#parameters-9">Parameters</a></li>
+<li class="level-3"><a href="#return-value-8">Return Value</a></li>
+<li class="level-3"><a href="#example-16">Example</a></li>
+<li class="level-2"><a href="#getbalances">getBalances</a></li>
+<li class="level-3"><a href="#parameters-10">Parameters</a></li>
+<li class="level-3"><a href="#return-value-9">Return Value</a></li>
+<li class="level-3"><a href="#example-17">Example</a></li>
+<li class="level-2"><a href="#getbalancesheet">getBalanceSheet</a></li>
+<li class="level-3"><a href="#parameters-11">Parameters</a></li>
+<li class="level-3"><a href="#return-value-10">Return Value</a></li>
+<li class="level-3"><a href="#example-18">Example</a></li>
+<li class="level-2"><a href="#getpaths">getPaths</a></li>
+<li class="level-3"><a href="#parameters-12">Parameters</a></li>
+<li class="level-3"><a href="#return-value-11">Return Value</a></li>
+<li class="level-3"><a href="#example-19">Example</a></li>
+<li class="level-2"><a href="#getorders">getOrders</a></li>
+<li class="level-3"><a href="#parameters-13">Parameters</a></li>
+<li class="level-3"><a href="#return-value-12">Return Value</a></li>
+<li class="level-3"><a href="#example-20">Example</a></li>
+<li class="level-2"><a href="#getorderbook">getOrderbook</a></li>
+<li class="level-3"><a href="#parameters-14">Parameters</a></li>
+<li class="level-3"><a href="#return-value-13">Return Value</a></li>
+<li class="level-3"><a href="#example-21">Example</a></li>
+<li class="level-2"><a href="#getsettings">getSettings</a></li>
+<li class="level-3"><a href="#parameters-15">Parameters</a></li>
+<li class="level-3"><a href="#return-value-14">Return Value</a></li>
+<li class="level-3"><a href="#example-22">Example</a></li>
+<li class="level-2"><a href="#getaccountinfo">getAccountInfo</a></li>
+<li class="level-3"><a href="#parameters-16">Parameters</a></li>
+<li class="level-3"><a href="#return-value-15">Return Value</a></li>
+<li class="level-3"><a href="#example-23">Example</a></li>
+<li class="level-2"><a href="#getledger">getLedger</a></li>
+<li class="level-3"><a href="#parameters-17">Parameters</a></li>
+<li class="level-3"><a href="#return-value-16">Return Value</a></li>
+<li class="level-3"><a href="#example-24">Example</a></li>
+<li class="level-2"><a href="#preparepayment">preparePayment</a></li>
+<li class="level-3"><a href="#parameters-18">Parameters</a></li>
+<li class="level-3"><a href="#return-value-17">Return Value</a></li>
+<li class="level-3"><a href="#example-25">Example</a></li>
+<li class="level-2"><a href="#preparetrustline">prepareTrustline</a></li>
+<li class="level-3"><a href="#parameters-19">Parameters</a></li>
+<li class="level-3"><a href="#return-value-18">Return Value</a></li>
+<li class="level-3"><a href="#example-26">Example</a></li>
+<li class="level-2"><a href="#prepareorder">prepareOrder</a></li>
+<li class="level-3"><a href="#parameters-20">Parameters</a></li>
+<li class="level-3"><a href="#return-value-19">Return Value</a></li>
+<li class="level-3"><a href="#example-27">Example</a></li>
+<li class="level-2"><a href="#prepareordercancellation">prepareOrderCancellation</a></li>
+<li class="level-3"><a href="#parameters-21">Parameters</a></li>
+<li class="level-3"><a href="#return-value-20">Return Value</a></li>
+<li class="level-3"><a href="#example-28">Example</a></li>
+<li class="level-2"><a href="#preparesettings">prepareSettings</a></li>
+<li class="level-3"><a href="#parameters-22">Parameters</a></li>
+<li class="level-3"><a href="#return-value-21">Return Value</a></li>
+<li class="level-3"><a href="#example-29">Example</a></li>
+<li class="level-2"><a href="#preparesuspendedpaymentcreation">prepareSuspendedPaymentCreation</a></li>
+<li class="level-3"><a href="#parameters-23">Parameters</a></li>
+<li class="level-3"><a href="#return-value-22">Return Value</a></li>
+<li class="level-3"><a href="#example-30">Example</a></li>
+<li class="level-2"><a href="#preparesuspendedpaymentcancellation">prepareSuspendedPaymentCancellation</a></li>
+<li class="level-3"><a href="#parameters-24">Parameters</a></li>
+<li class="level-3"><a href="#return-value-23">Return Value</a></li>
+<li class="level-3"><a href="#example-31">Example</a></li>
+<li class="level-2"><a href="#preparesuspendedpaymentexecution">prepareSuspendedPaymentExecution</a></li>
+<li class="level-3"><a href="#parameters-25">Parameters</a></li>
+<li class="level-3"><a href="#return-value-24">Return Value</a></li>
+<li class="level-3"><a href="#example-32">Example</a></li>
+<li class="level-2"><a href="#sign">sign</a></li>
+<li class="level-3"><a href="#parameters-26">Parameters</a></li>
+<li class="level-3"><a href="#return-value-25">Return Value</a></li>
+<li class="level-3"><a href="#example-33">Example</a></li>
+<li class="level-2"><a href="#combine">combine</a></li>
+<li class="level-3"><a href="#parameters-27">Parameters</a></li>
+<li class="level-3"><a href="#return-value-26">Return Value</a></li>
+<li class="level-3"><a href="#example-34">Example</a></li>
+<li class="level-2"><a href="#submit">submit</a></li>
+<li class="level-3"><a href="#parameters-28">Parameters</a></li>
+<li class="level-3"><a href="#return-value-27">Return Value</a></li>
+<li class="level-3"><a href="#example-35">Example</a></li>
+<li class="level-2"><a href="#generateaddress">generateAddress</a></li>
+<li class="level-3"><a href="#parameters-29">Parameters</a></li>
+<li class="level-3"><a href="#return-value-28">Return Value</a></li>
+<li class="level-3"><a href="#example-36">Example</a></li>
+<li class="level-2"><a href="#computeledgerhash">computeLedgerHash</a></li>
+<li class="level-3"><a href="#parameters-30">Parameters</a></li>
+<li class="level-3"><a href="#return-value-29">Return Value</a></li>
+<li class="level-3"><a href="#example-37">Example</a></li>
+<li class="level-1"><a href="#api-events">API Events</a></li>
+<li class="level-2"><a href="#ledger">ledger</a></li>
+<li class="level-3"><a href="#return-value-30">Return Value</a></li>
+<li class="level-3"><a href="#example-38">Example</a></li>
+<li class="level-2"><a href="#error">error</a></li>
+<li class="level-3"><a href="#return-value-31">Return Value</a></li>
+<li class="level-3"><a href="#example-39">Example</a></li>
+<li class="level-2"><a href="#connected">connected</a></li>
+<li class="level-3"><a href="#example-40">Example</a></li>
+<li class="level-2"><a href="#disconnected">disconnected</a></li>
+<li class="level-3"><a href="#return-value-32">Return Value</a></li>
+<li class="level-3"><a href="#example-41">Example</a></li>
+
+            </ul>
+        </div>
+    </div>
+      </aside>
+      <main class="main" role="main">
+    <div class='content'>
+        <p style="margin-top: 1em; font-style: italic">Updated for <a href="https://github.com/ripple/ripple-lib/releases/0.17.0" title="view on GitHub">version 0.17.0</a></p>
 <h1 id="introduction">Introduction</h1>
 <p>RippleAPI is the official client library to the Ripple Consensus Ledger. Currently, RippleAPI is only available in JavaScript. 
 Using RippleAPI, you can:</p>
@@ -144,6 +330,14 @@ const api = new RippleAPI({
 });
 api.on('error', (errorCode, errorMessage) =&gt; {
   console.log(errorCode + ': ' + errorMessage);
+});
+api.on('connected', () =&gt; {
+  console.log('connected');
+});
+api.on('disconnected', (code) =&gt; {
+  // code - [close code](https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent) sent by the server
+  // will be 1000 if this was normal closure
+  console.log('disconnected, code:', code);
 });
 api.connect().then(() =&gt; {
   /* insert code here */
@@ -278,7 +472,7 @@ const api = new RippleAPI();
 <h2 id="value">Value</h2>
 <p>A <em>value</em> is a quantity of a currency represented as a decimal string. Be careful: JavaScript's native number format does not have sufficient precision to represent all values. XRP has different precision from other currencies.</p>
 <p><strong>XRP</strong> has 6 significant digits past the decimal point. In other words, XRP cannot be divided into positive values smaller than <code>0.000001</code> (1e-6). XRP has a maximum value of <code>100000000000</code> (1e11).</p>
-<p><strong>Non-XRP values</strong> have 15 decimal digits of precision, with a maximum value of <code>9999999999999999e80</code>. The smallest positive non-XRP value is <code>1e-81</code>.</p>
+<p><strong>Non-XRP values</strong> have 16 decimal digits of precision, with a maximum value of <code>9999999999999999e80</code>. The smallest positive non-XRP value is <code>1e-81</code>.</p>
 <h2 id="amount">Amount</h2>
 <p>Example amount:</p>
 <pre><code class="json">{
@@ -1351,7 +1545,7 @@ const api = new RippleAPI();
 <tr>
 <td>type</td>
 <td><a href="#transaction-types">transactionType</a></td>
-<td>The type of the tranasction.</td>
+<td>The type of the transaction.</td>
 </tr>
 <tr>
 <td>specification</td>
@@ -4254,7 +4448,7 @@ const trustline = {
     }
   ]
 };
-return api.preparePayment(address, trustline).then(prepared =&gt;
+return api.prepareTrustline(address, trustline).then(prepared =&gt;
   {/* ... */});
 </code></pre>
 <pre><code class="json">{
@@ -4991,7 +5185,7 @@ return api.combine(signedTransactions);
 <tr>
 <td>resultCode</td>
 <td>string</td>
-<td>The result code returned by rippled. <a href="http://pages.lightthenight.org/gba/SanFran15/ripple">List of tranasction responses</a></td>
+<td>The result code returned by rippled. <a href="https://ripple.com/build/transactions/#full-transaction-response-list">List of transaction responses</a></td>
 </tr>
 <tr>
 <td>resultMessage</td>
@@ -5277,54 +5471,81 @@ return api.computeLedgerHash(ledger);
 </code></pre>
 <pre><code>tooBusy: The server is too busy to help you now.
 </code></pre>
-</div>
-</main>
-</div>
+<h2 id="connected">connected</h2>
+<p>This event is emitted after connection successfully opened.</p>
+<h3 id="example-40">Example</h3>
+<pre><code class="javascript">api.on('connected', () =&gt; {
+  console.log('Connection is open now.');
+});
+</code></pre>
+<h2 id="disconnected">disconnected</h2>
+<p>This event is emitted when connection is closed.</p>
+<h3 id="return-value-32">Return Value</h3>
+<p>The only parameter is a number containing the <a href="https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent">close code</a> send by the server.</p>
+<h3 id="example-41">Example</h3>
+<pre><code class="javascript">api.on('disconnected', (code) =&gt; {
+  if (code !== 1000) {
+    console.log('Connection is closed due to error.');
+  } else {
+    console.log('Connection is closed normally.');
+  }
+});
+</code></pre>
+    </div>
+      </main>
+  </div>
+
 <footer class="content-info" role="contentinfo">
-<div class="container">
-<div class="row">
-<section class="col-sm-3 widget nav_menu-3 widget_nav_menu">
-<h4>Resources<hr/></h4>
-<ul class="menu" id="menu-resources">
-<li class="menu-insights"><a href="https://ripple.com/insights/">Insights</a></li>
-<li class="menu-press-center"><a href="https://ripple.com/press-center/">Press Center</a></li>
-<li class="menu-media-resources"><a href="https://ripple.com/media-resources/">Media Resources</a></li>
-<li class="menu-videos"><a href="https://ripple.com/videos/">Videos</a></li>
-<li class="menu-whitepapers-reports"><a href="https://ripple.com/whitepapers-reports/">Whitepapers &amp; Reports</a></li>
-<li class="menu-xrp-portal"><a href="https://ripple.com/xrp-portal/">XRP Portal</a></li>
-</ul>
-</section>
-<section class="col-sm-3 widget nav_menu-5 widget_nav_menu">
-<h4>Regulators<hr/></h4>
-<ul class="menu" id="menu-compliance-regulatory-relations"><li class="menu-compliance"><a href="https://ripple.com/compliance/">Compliance</a></li>
-<li class="menu-policy-framework"><a href="https://ripple.com/policy-framework/">Policy Framework</a></li>
-</ul>
-</section>
-<section class="col-sm-3 widget nav_menu-4 widget_nav_menu">
-<h4>Support<hr/></h4>
-<ul class="menu" id="menu-dev-footer-menu">
-<li class="menu-contact-us"><a href="https://ripple.com/contact/">Contact Us</a></li>
-<li class="active menu-developer-center"><a href="https://ripple.com/build/">Developer Center</a></li>
-<li class="menu-knowledge-center"><a href="https://ripple.com/learn/">Knowledge Center</a></li>
-<li class="menu-ripple-forum"><a href="https://forum.ripple.com/" target="_blank">Ripple Forum</a></li>
-</ul>
-</section>
-<section class="col-sm-3 widget nav_menu-2 widget_nav_menu">
-<h4>About<hr/></h4>
-<ul class="menu" id="menu-company-footer">
-<li class="menu-our-company"><a href="https://ripple.com/company/">Our Company</a></li>
-<li class="menu-careers"><a href="https://ripple.com/company/careers/">Careers</a></li>
-</ul>
-</section>
-<div class="col-sm-12 absolute_bottom_footer">
-<div class="col-sm-8">
-<span>© 2013-2015 Ripple Labs, Inc. All Rights Reserved.</span>
-<span><a href="https://ripple.com/terms-of-use/">Terms</a></span>
-<span><a href="https://ripple.com/privacy-policy/">Privacy</a></span>
-</div>
-</div><!-- /.absolute_bottom_footer -->
-</div><!-- /.row -->
-</div><!-- /.container -->
+    <div class="container">
+        <div class="row">
+
+       		<section class="col-sm-3 widget nav_menu-3 widget_nav_menu">
+   		        <h4>Resources<hr></h4>
+   		        <ul id="menu-resources" class="menu">
+   		            <li class="menu-insights"><a href="https://ripple.com/insights/">Insights</a></li>
+	                <li class="menu-press-center"><a href="https://ripple.com/press-center/">Press Center</a></li>
+                    <li class="menu-media-resources"><a href="https://ripple.com/media-resources/">Media Resources</a></li>
+                    <li class="menu-videos"><a href="https://ripple.com/videos/">Videos</a></li>
+                    <li class="menu-whitepapers-reports"><a href="https://ripple.com/whitepapers-reports/">Whitepapers &#038; Reports</a></li>
+                    <li class="menu-xrp-portal"><a href="https://ripple.com/xrp-portal/">XRP Portal</a></li>
+                </ul>
+            </section>
+
+            <section class="col-sm-3 widget nav_menu-5 widget_nav_menu">
+                <h4>Regulators<hr></h4>
+                <ul id="menu-compliance-regulatory-relations" class="menu"><li class="menu-compliance"><a href="https://ripple.com/compliance/">Compliance</a></li>
+                    <li class="menu-policy-framework"><a href="https://ripple.com/policy-framework/">Policy Framework</a></li>
+                </ul>
+            </section>
+
+            <section class="col-sm-3 widget nav_menu-4 widget_nav_menu">
+                <h4>Support<hr></h4>
+                <ul id="menu-dev-footer-menu" class="menu">
+                    <li class="menu-contact-us"><a href="https://ripple.com/contact/">Contact Us</a></li>
+                    <li class="active menu-developer-center"><a href="https://ripple.com/build/">Developer Center</a></li>
+                    <li class="menu-knowledge-center"><a href="https://ripple.com/learn/">Knowledge Center</a></li>
+                    <li class="menu-ripple-forum"><a target="_blank" href="https://forum.ripple.com/">Ripple Forum</a></li>
+                </ul>
+            </section>
+
+            <section class="col-sm-3 widget nav_menu-2 widget_nav_menu">
+                <h4>About<hr></h4>
+                <ul id="menu-company-footer" class="menu">
+                    <li class="menu-our-company"><a href="https://ripple.com/company/">Our Company</a></li>
+                    <li class="menu-careers"><a href="https://ripple.com/company/careers/">Careers</a></li>
+                </ul>
+            </section>
+
+       		<div class="col-sm-12 absolute_bottom_footer">
+       			<div class="col-sm-8">
+				    <span>&copy; 2013-2015 Ripple Labs, Inc. All Rights Reserved.</span>
+				    <span><a href="https://ripple.com/terms-of-use/">Terms</a></span>
+				    <span><a href="https://ripple.com/privacy-policy/">Privacy</a></span>
+			    </div>
+       		</div><!-- /.absolute_bottom_footer -->
+       		
+	    </div><!-- /.row -->
+	</div><!-- /.container -->
 </footer>
 </body>
 </html>

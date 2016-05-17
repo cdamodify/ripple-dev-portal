@@ -40,6 +40,13 @@ from watchdog.events import PatternMatchingEventHandler
 # The log level is configurable at runtime (see __main__ below)
 logger = logging.getLogger()
 
+# These fields are special, and pages don't inherit them directly
+RESERVED_KEYS_TARGET = [
+    "name",
+    "display_name",
+    "filters",
+    "image_subs",
+]
 filters = {}
 def load_config(config_file=DEFAULT_CONFIG_FILE):
     """Reload config from a YAML file."""
@@ -71,9 +78,10 @@ def load_config(config_file=DEFAULT_CONFIG_FILE):
             filters[filter_name] = import_module("filter_"+filter_name)
 
 
+
 def substitute_links_for_target(soup, target):
     """Replaces local-html-links with appropriate substitutions
-       for the given target"""
+       for the given target, and images likewise"""
     target = get_target(target)
 
     logger.info("... modifying links for target: %s" % target["name"])
@@ -91,6 +99,44 @@ def substitute_links_for_target(soup, target):
                 if link["href"][:len(local_url)] == local_url:
                     link["href"] = link["href"].replace(local_url,
                                                         target_url)
+
+    if "image_subs" in target:
+        images = soup.find_all("img")
+        for img in images:
+            local_path = img["src"]
+            if local_path in target["image_subs"]:
+                logger.info("... replacing image path '%s' with '%s'" %
+                            (local_path, target["image_subs"][local_path]))
+                img["src"] = target["image_subs"][local_path]
+
+        image_links = soup.find_all("a",
+                href=re.compile(r"^[^.]+\.(png|jpg|jpeg|gif|svg)"))
+        for img_link in image_links:
+            local_path = img_link["href"]
+            if local_path in target["image_subs"]:
+                logger.info("... replacing image link '%s' with '%s'" %
+                            (local_path, target["image_subs"][local_path]))
+                img_link["href"] = target["image_subs"][local_path]
+
+
+def substitute_parameter_links(link_parameter, currentpage, target):
+    """Some templates have links in page parameters. Do link substitution for
+       the target on one of those parameters."""
+    target = get_target(target)
+    # We actually want to get all pages, even the ones that aren't built as
+    # part of this target, in case those pages have replacement links.
+    pages = get_pages()
+
+    if link_parameter in currentpage:
+        linked_page = next(p for p in pages
+            if p["html"] == currentpage[link_parameter])
+        if target["name"] in linked_page:
+            #there's a link substitution available
+            currentpage[link_parameter] = linked_page[target["name"]]
+        ## We could warn here, but it would frequently be a false alarm
+        # else:
+        #     logging.warning("No substitution for %s[%s] for this target" %
+        #                     (currentpage["html"],link_parameter))
 
 def get_target(target):
     """Get a target by name, or return the default target object.
@@ -136,7 +182,7 @@ def parse_markdown(page, target=None, pages=None):
     for filter_name in page_filters:
         if "filter_markdown" in dir(filters[filter_name]):
             logging.info("... applying markdown filter %s" % filter_name)
-            md = filters[filter_name].filter_markdown(md)
+            md = filters[filter_name].filter_markdown(md, target=target, page=page)
 
     # Actually parse the markdown
     logger.info("... parsing markdown...")
@@ -147,7 +193,7 @@ def parse_markdown(page, target=None, pages=None):
     for filter_name in page_filters:
         if "filter_html" in dir(filters[filter_name]):
             logging.info("... applying HTML filter %s" % filter_name)
-            html = filters[filter_name].filter_html(html)
+            html = filters[filter_name].filter_html(html, target=target, page=page)
 
     # Some filters would rather operate on a soup than a string.
     # May as well parse once and re-serialize once.
@@ -157,7 +203,7 @@ def parse_markdown(page, target=None, pages=None):
     for filter_name in page_filters:
         if "filter_soup" in dir(filters[filter_name]):
             logging.info("... applying soup filter %s" % filter_name)
-            filters[filter_name].filter_soup(soup)
+            filters[filter_name].filter_soup(soup, target=target, page=page)
             # ^ the soup filters apply to the same object, passed by reference
 
     # Replace links for any non-default target
@@ -234,6 +280,14 @@ def get_pages(target=None):
                 return False
         pages = [page for page in pages
                  if should_include(page, target["name"])]
+
+    # Pages should inherit non-reserved keys from the target
+    for p in pages:
+        for key,val in target.items():
+            if key in RESERVED_KEYS_TARGET:
+                continue
+            elif key not in p:
+                p[key] = val
     return pages
 
 
@@ -306,6 +360,32 @@ def setup_html_env():
     env.trim_blocks = True
     return env
 
+def toc_from_headers(html_string):
+    """make a table of contents from headers"""
+    soup = BeautifulSoup(html_string, "html.parser")
+    headers = soup.find_all(name=re.compile("h[1-3]"), id=True)
+    toc_s = ""
+    for h in headers:
+        if h.name == "h1":
+            toc_level = "level-1"
+        elif h.name == "h2":
+            toc_level = "level-2"
+        else:
+            toc_level = "level-3"
+
+        new_a = soup.new_tag("a", href="#"+h["id"])
+        if h.string:
+            new_a.string = h.string
+        else:
+            new_a.string = " ".join(h.strings)
+        new_li = soup.new_tag("li")
+        new_li["class"] = toc_level
+        new_li.append(new_a)
+
+        toc_s += str(new_li)+"\n"
+
+    return str(toc_s)
+
 def render_pages(target=None, for_pdf=False, bypass_errors=False):
     """Parse and render all pages in target, writing files to out_path."""
     target = get_target(target)
@@ -316,11 +396,19 @@ def render_pages(target=None, for_pdf=False, bypass_errors=False):
     env = setup_html_env()
 
     if for_pdf:
-        logging.info("reading pdf template...")
-        default_template = env.get_template(config["pdf_template"])
+        if "pdf_template" in target:
+            logging.debug("reading pdf template %s from target..." % target["pdf_template"])
+            default_template = env.get_template(target["pdf_template"])
+        else:
+            logging.debug("reading default pdf template %s..." % config["pdf_template"])
+            default_template = env.get_template(config["pdf_template"])
     else:
-        logging.info("reading default template...")
-        default_template = env.get_template(config["default_template"])
+        if "template" in target:
+            logging.debug("reading HTML template %s from target..." % target["template"])
+            default_template = env.get_template(target["template"])
+        else:
+            logging.debug("reading default HTML template %s..." % config["default_template"])
+            default_template = env.get_template(config["default_template"])
 
     for currentpage in pages:
         if "md" in currentpage:
@@ -342,34 +430,34 @@ def render_pages(target=None, for_pdf=False, bypass_errors=False):
         else:
             html_content = ""
 
-        if "template" in currentpage:
-            # Use a template other than the default one
-            template = env.get_template(currentpage["template"])
-
-            #do link substitution for "doc_page" param
-            if "doc_page" in currentpage:
-                doc_page = next(p for p in pages
-                    if p["html"] == currentpage["doc_page"])
-                if target["name"] in doc_page:
-                    currentpage["doc_page"] = doc_page[target["name"]]
-
-            out_html = template.render(currentpage=currentpage,
-                                       categories=categories,
-                                       pages=pages,
-                                       content=html_content,
-                                       target=target)
+        if "sidebar" in currentpage and currentpage["sidebar"] == "toc":
+            sidebar_content = toc_from_headers(html_content)
         else:
-            out_html = default_template.render(currentpage=currentpage,
-                                               categories=categories,
-                                               pages=pages,
-                                               content=html_content,
-                                               target=target)
+            sidebar_content = None
 
-        # Experimental: replace links in full HTML, not just content
-        soup = BeautifulSoup(out_html, "html.parser")
-        if target["name"] != config["targets"][0]["name"]:
-            substitute_links_for_target(soup, target)
-        out_html = str(soup)
+        # Prepare some parameters for rendering
+        substitute_parameter_links("doc_page", currentpage, target)
+        current_time = time.strftime("%B %d, %Y")
+
+        # Figure out which template to use
+        if "template" in currentpage and not for_pdf:
+            logging.info("using template %s from page" % currentpage["template"])
+            use_template = env.get_template(currentpage["template"])
+        elif "pdf_template" in currentpage and for_pdf:
+            logging.info("using pdf_template %s from page" % currentpage["pdf_template"])
+            use_template = env.get_template(currentpage["pdf_template"])
+        else:
+            use_template = default_template
+
+        # Render the content into the appropriate template
+        out_html = use_template.render(currentpage=currentpage,
+                                           categories=categories,
+                                           pages=pages,
+                                           content=html_content,
+                                           target=target,
+                                           current_time=current_time,
+                                           sidebar_content=sidebar_content)
+
 
         if for_pdf:
             out_path = config["temporary_files_path"]
@@ -497,6 +585,9 @@ if __name__ == "__main__":
     parser.add_argument("--copy_static", "-s", action="store_true",
                         help="Copy static files to the out dir",
                         default=False)
+    parser.add_argument("--list_targets_only", "-l", action="store_true",
+                        help="Don't build anything, just display list of "+
+                        "known targets from the config file.")
     cli_args = parser.parse_args()
 
     if not cli_args.quiet:
@@ -506,6 +597,17 @@ if __name__ == "__main__":
         load_config(cli_args.config)
     else:
         load_config()
+
+    if cli_args.list_targets_only:
+        for t in config["targets"]:
+            if "display_name" in t:
+                display_name = t["display_name"]
+            else:
+                display_name = ""
+            print("%s\t\t%s" % (t["name"], display_name))
+
+        #print(" ".join([t["name"] for t in config["targets"]]))
+        exit(0)
 
     if cli_args.out_dir:
         config["out_path"] = cli_args.out_dir
