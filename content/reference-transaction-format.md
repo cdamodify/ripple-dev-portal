@@ -230,7 +230,7 @@ The transaction hash can be used as a "proof of payment" since anyone can [look 
 
 ## Common Fields ##
 
-Every transaction type has the same set of fundamental fields:
+Every transaction type has the same set of fundamental fields. Field names are case-sensitive. The common fields for all transactions are:
 
 | Field | JSON Type | [Internal Type](https://wiki.ripple.com/Binary_Format) | Description |
 |-------|-----------|---------------|-------------|
@@ -388,13 +388,13 @@ Example payment:
 
 | Field | JSON Type | [Internal Type](https://wiki.ripple.com/Binary_Format) | Description |
 |-------|-----------|--------------------------------------------------------|-------------|
-| Amount | String (XRP)<br/>Object (Otherwise) | Amount | The amount of currency to deliver. *Note:* If the [*tfPartialPayment* flag](#payment-flags) is set, this is not the amount actually received. (Formatted as per [Specifying Currency Amounts](reference-rippled.html#specifying-currency-amounts).) |
+| Amount | String (XRP)<br/>Object (Otherwise) | Amount | The amount of currency to deliver. Formatted as per [Specifying Currency Amounts](reference-rippled.html#specifying-currency-amounts). For non-XRP amounts, the nested field names are lower-case. If the [*tfPartialPayment* flag](#payment-flags) is set, deliver _up to_ this amount instead. |
 | Destination | String | Account | The unique address of the account receiving the payment. |
 | DestinationTag | Unsigned Integer | UInt32 | (Optional) Arbitrary tag that identifies the reason for the payment to the destination, or a hosted recipient to pay. |
 | InvoiceID | String | Hash256 | (Optional) Arbitrary 256-bit hash representing a specific reason or identifier for this payment. |
 | Paths | Array of path arrays | PathSet | (Optional, auto-fillable) Array of [payment paths](https://ripple.com/wiki/Payment_paths) to be used for this transaction. Must be omitted for XRP-to-XRP transactions. |
-| SendMax | String/Object | Amount | (Optional) Highest amount of source currency this transaction is allowed to cost, including [transfer fees](concept-transfer-fees.html), exchange rates, and [slippage](http://en.wikipedia.org/wiki/Slippage_%28finance%29). Does not include the [XRP destroyed as a cost for submitting the transaction](#transaction-cost). (Also see [Specifying Currency Amounts](reference-rippled.html#specifying-currency-amounts)) Must be supplied for cross-currency/cross-issue payments. Must be omitted for XRP-to-XRP payments. |
-| DeliverMin | String/Object | Amount | (Optional) Minimum amount of destination currency this transaction should deliver. Only valid if this is a [partial payment](#partial-payments). _(This field is part of [rippled 0.29.0](https://github.com/ripple/rippled/releases/tag/0.29.0), and becomes valid August 17 at 17:00 UTC.)_ |
+| SendMax | String/Object | Amount | (Optional) Highest amount of source currency this transaction is allowed to cost, including [transfer fees](concept-transfer-fees.html), exchange rates, and [slippage](http://en.wikipedia.org/wiki/Slippage_%28finance%29). Does not include the [XRP destroyed as a cost for submitting the transaction](#transaction-cost). See also: [Specifying Currency Amounts](reference-rippled.html#specifying-currency-amounts). For non-XRP amounts, the nested field names are lower-case. Must be supplied for cross-currency/cross-issue payments. Must be omitted for XRP-to-XRP payments. |
+| DeliverMin | String/Object | Amount | (Optional) Minimum amount of destination currency this transaction should deliver. Only valid if this is a [partial payment](#partial-payments). For non-XRP amounts, the nested field names are lower-case. |
 
 ### Special issuer Values for SendMax and Amount ###
 
@@ -773,9 +773,9 @@ Create or modify a trust line linking two accounts.
 
 ### Trust Limits ###
 
-All balances on the Ripple Consensus Ledger (RCL), except for XRP, represent value owed in the world outside the Ripple Ledger. The address that issues those funds in Ripple (identified by the `issuer` field of the `LimitAmount` object) is expected to pay the balance back, outside of the Ripple Consensus LEdger, when users redeem their Ripple balances by returning them to the issuer.
+All balances on the Ripple Consensus Ledger (RCL), except for XRP, represent value owed in the world outside the Ripple Ledger. The address that issues those funds in Ripple (identified by the `issuer` field of the `LimitAmount` object) is expected to pay the balance back, outside of the Ripple Consensus Ledger, when users redeem their Ripple balances by returning them to the issuer.
 
-Since a computer program cannot force a someone to keep its promise and not default in real life, trust lines represent a way of configuring how much you trust issuing address to hold on your behalf. Since a large, reputable financial institution is more likely to be able to pay you back than, say, your broke roommate, you can set different limits on each trust line, to indicate the maximum amount you are willing to let the issuer "owe" you in the RCL. If the issuer defaults or goes out of business, you can lose up to that much money because the balances you hold in the Ripple Consensus Ledger can no longer be exchanged for equivalent balances elsewhere. (You can still keep or trade the issuances in the RCL, but they no longer have any reason to be worth anything.)
+Since a computer program cannot force a someone to keep a promise and not default in real life, trust lines represent a way of configuring how much you trust an issuer to hold on your behalf. Since a large, reputable financial institution is more likely to be able to pay you back than, say, your broke roommate, you can set different limits on each trust line, to indicate the maximum amount you are willing to let the issuer "owe" you in the RCL. If the issuer defaults or goes out of business, you can lose up to that much money because the balances you hold in the Ripple Consensus Ledger can no longer be exchanged for equivalent balances elsewhere. (You can still keep or trade the issuances in the RCL, but they no longer have any reason to be worth anything.)
 
 There are two cases where you can hold a balance on a trust line that is *greater* than your limit: when you acquire more of that currency through [trading](#offercreate), or when you decrease the limit on your trust line.
 
@@ -1049,6 +1049,7 @@ These codes indicate an error in the local server processing the transaction; it
 | telBAD\_DOMAIN | The transaction specified a domain value (for example, the `Domain` field of an [AccountSet transaction](#accountset)) that cannot be used, probably because it is too long to store in the ledger. |
 | telBAD\_PATH_COUNT | The transaction contains too many paths for the local server to process. |
 | telBAD\_PUBLIC\_KEY | The transaction specified a public key value (for example, as the `MessageKey` field of an [AccountSet transaction](#accountset)) that cannot be used, probably because it is too long. |
+| telCAN\_NOT\_QUEUE | The transaction did not meet the [open ledger cost](concept-transaction-cost.html), but this server did not queue it because it failed one of the server's heuristics for being "likely to succeed". You can try again later or sign and submit a replacement transaction with a higher transaction cost in the `Fee` field. |
 | telFAILED\_PROCESSING | An unspecified error occurred when processing the transaction. |
 | telINSUF\_FEE_P | The `Fee` from the transaction is not high enough to meet the server's current [transaction cost](concept-transaction-cost.html) requirement, which is derived from its load level. |
 | telLOCAL_ERROR | Unspecified local error. |
@@ -1121,7 +1122,7 @@ These codes indicate that the transaction failed and was not included in a ledge
 
 ### ter Codes ###
 
-These codes indicate that the transaction failed, but it could apply successfully if some other transaction was applied first. They have numerical values in the range -99 to -1. The exact code for any given error is subject to change, so don't rely on it.
+These codes indicate that the transaction failed, but it could apply successfully in the future, usually if some other hypothetical transaction applies first. They have numerical values in the range -99 to -1. The exact code for any given error is subject to change, so don't rely on it.
 
 | Code | Explanation |
 |------|-------------|
@@ -1135,6 +1136,7 @@ These codes indicate that the transaction failed, but it could apply successfull
 | terOWNERS | The transaction requires that account sending it has a nonzero "owners count", so the transaction cannot succeed. For example, an account cannot enable the [`lsfRequireAuth`](#accountset-flags) flag if it has any trust lines or available offers. |
 | terPRE\_SEQ | The `Sequence` number of the current transaction is higher than the current sequence number of the account sending the transaction. |
 | terRETRY | Unspecified retriable error. |
+| terQUEUED | The transaction met the load-scaled [transaction cost](concept-transaction-cost.html) but did not meet the open ledger requirement, so the transaction has been queued for a future ledger. |
 
 ### tes Success ###
 
