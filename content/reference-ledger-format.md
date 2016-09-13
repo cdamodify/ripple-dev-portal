@@ -44,7 +44,7 @@ Every ledger version has a unique header that describes the contents. You can lo
 | close\_time\_resolution | Number | Uint8        | An integer in the range \[2,120\] indicating the maximum number of seconds by which the `close_time` could be rounded. |
 | [closeFlags](#close-flags) | (Omitted) | UInt8             | A bit-map of flags relating to the closing of this ledger. |
 
-[Internal Type]: https://wiki.ripple.com/Binary_Format
+[Internal Type]: https://github.com/ripple/rippled/blob/master/src/ripple/protocol/impl/SField.cpp
 
 
 ### Ledger Index ###
@@ -345,7 +345,7 @@ A RippleState node has the following fields:
 |-----------------|-----------|---------------|-------------|
 | LedgerEntryType | String    | UInt16 | The value `0x72`, mapped to the string `RippleState`, indicates that this node is a RippleState object. |
 | Flags           | Number    | UInt32 | A bit-map of boolean options enabled for this node. |
-| Balance         | Object    | Amount | The balance of the trust line, from the perspective of the low account. A negative balance indicates that the low account has issued currency to the high account. The issuer in this is always set to the neutral value [ACCOUNT_ONE](https://wiki.ripple.com/Accounts#ACCOUNT_ONE). |
+| Balance         | Object    | Amount | The balance of the trust line, from the perspective of the low account. A negative balance indicates that the low account has issued currency to the high account. The issuer in this is always set to the neutral value [ACCOUNT_ONE](reference-rippled.html#special-addresses). |
 | LowLimit        | Object    | Amount | The limit that the low account has set on the trust line. The `issuer` is the address of the low account that set this limit. |
 | HighLimit       | Object    | Amount | The limit that the high account has set on the trust line. The `issuer` is the address of the high account that set this limit. |
 | PreviousTxnID   | String    | Hash256 | The identifying hash of the transaction that most recently modified this node. |
@@ -472,3 +472,8 @@ When processing a multi-signed transaction, the server dereferences the `Account
 ### SignerLists and Reserves ###
 
 A SignerList contributes to its owner's [reserve requirement](concept-reserves.html). The SignerList itself counts as two objects, and each member of the list counts as one. As a result, the total owner reserve associated with a SignerList is anywhere from 3 times to 10 times the reserve required by a single trust line ([RippleState](#ripplestate)) or [Offer](#offer) node in the ledger.
+
+
+
+<!---- rippled release notes links ---->
+[version 0.31.0]: https://github.com/ripple/rippled/releases/tag/0.31.0

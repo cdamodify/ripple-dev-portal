@@ -312,7 +312,7 @@
       </aside>
       <main class="main" role="main">
     <div class='content'>
-        <p style="margin-top: 1em; font-style: italic">Updated for <a href="https://github.com/ripple/ripple-lib/releases/0.17.1" title="view on GitHub">version 0.17.1</a></p>
+        <p style="margin-top: 1em; font-style: italic">Updated for <a href="https://github.com/ripple/ripple-lib/releases/0.17.2" title="view on GitHub">version 0.17.2</a></p>
 <h1 id="introduction">Introduction</h1>
 <p>RippleAPI is the official client library to the Ripple Consensus Ledger. Currently, RippleAPI is only available in JavaScript. 
 Using RippleAPI, you can:</p>
@@ -1071,7 +1071,7 @@ const api = new RippleAPI();
 <tr>
 <td>transferRate</td>
 <td>number,null</td>
-<td><em>Optional</em>  The fee to charge when users transfer this account’s issuances, represented as billionths of a unit. Use <code>null</code> to set no fee.</td>
+<td><em>Optional</em>  The fee to charge when users transfer this account’s issuances, as the decimal amount that must be sent to deliver 1 unit. Has precision up to 9 digits beyond the decimal point. Use <code>null</code> to set no fee.</td>
 </tr>
 </tbody>
 </table>
@@ -4011,7 +4011,7 @@ return api.getOrderbook(address, orderbook)
 <tr>
 <td>transferRate</td>
 <td>number,null</td>
-<td><em>Optional</em>  The fee to charge when users transfer this account’s issuances, represented as billionths of a unit. Use <code>null</code> to set no fee.</td>
+<td><em>Optional</em>  The fee to charge when users transfer this account’s issuances, as the decimal amount that must be sent to deliver 1 unit. Has precision up to 9 digits beyond the decimal point. Use <code>null</code> to set no fee.</td>
 </tr>
 </tbody>
 </table>
@@ -5501,26 +5501,24 @@ return api.computeLedgerHash(ledger);
 <footer class="content-info" role="contentinfo">
     <div class="container">
         <div class="row">
-
-       		<section class="col-sm-3 widget nav_menu-3 widget_nav_menu">
-   		        <h4>Resources<hr></h4>
-   		        <ul id="menu-resources" class="menu">
-   		            <li class="menu-insights"><a href="https://ripple.com/insights/">Insights</a></li>
-	                <li class="menu-press-center"><a href="https://ripple.com/press-center/">Press Center</a></li>
-                    <li class="menu-media-resources"><a href="https://ripple.com/media-resources/">Media Resources</a></li>
-                    <li class="menu-videos"><a href="https://ripple.com/videos/">Videos</a></li>
-                    <li class="menu-whitepapers-reports"><a href="https://ripple.com/whitepapers-reports/">Whitepapers &#038; Reports</a></li>
+            <section class="col-sm-3 widget nav_menu-3 widget_nav_menu">
+                <h4>Resources<hr></h4>
+                <ul id="menu-resources" class="menu">
+                    <li class="menu-insights"><a href="https://ripple.com/insights/">Insights</a></li>
+                    <li class="menu-events"><a href="https://ripple.com/events/">Events</a></li>
+                    <li class="menu-collateral"><a href="https://ripple.com/collateral/">Collateral</a></li>
+                    <li class="menu-press-center"><a href="https://ripple.com/press-center/">Press Center</a></li>
+                    <li class="menu-media-kit"><a href="https://ripple.com/media-kit/">Media Kit</a></li>
                     <li class="menu-xrp-portal"><a href="https://ripple.com/xrp-portal/">XRP Portal</a></li>
                 </ul>
             </section>
-
             <section class="col-sm-3 widget nav_menu-5 widget_nav_menu">
                 <h4>Regulators<hr></h4>
-                <ul id="menu-compliance-regulatory-relations" class="menu"><li class="menu-compliance"><a href="https://ripple.com/compliance/">Compliance</a></li>
+                <ul id="menu-compliance-regulatory-relations" class="menu">
+                    <li class="menu-compliance"><a href="https://ripple.com/compliance/">Compliance</a></li>
                     <li class="menu-policy-framework"><a href="https://ripple.com/policy-framework/">Policy Framework</a></li>
                 </ul>
             </section>
-
             <section class="col-sm-3 widget nav_menu-4 widget_nav_menu">
                 <h4>Support<hr></h4>
                 <ul id="menu-dev-footer-menu" class="menu">
@@ -5530,7 +5528,6 @@ return api.computeLedgerHash(ledger);
                     <li class="menu-ripple-forum"><a target="_blank" href="https://forum.ripple.com/">Ripple Forum</a></li>
                 </ul>
             </section>
-
             <section class="col-sm-3 widget nav_menu-2 widget_nav_menu">
                 <h4>About<hr></h4>
                 <ul id="menu-company-footer" class="menu">
@@ -5541,14 +5538,14 @@ return api.computeLedgerHash(ledger);
 
        		<div class="col-sm-12 absolute_bottom_footer">
        			<div class="col-sm-8">
-				    <span>&copy; 2013-2015 Ripple Labs, Inc. All Rights Reserved.</span>
-				    <span><a href="https://ripple.com/terms-of-use/">Terms</a></span>
-				    <span><a href="https://ripple.com/privacy-policy/">Privacy</a></span>
-			    </div>
-       		</div><!-- /.absolute_bottom_footer -->
-       		
-	    </div><!-- /.row -->
-	</div><!-- /.container -->
+                    <span>&copy; 2013 - 2016 Ripple Labs, Inc. All Rights Reserved.</span>
+                    <span><a href="/terms-of-use/">Terms</a></span>
+                    <span><a href="/privacy-policy/">Privacy</a></span>
+                </div>
+            </div><!-- /.absolute_bottom_footer -->
+
+        </div><!-- /.row -->
+    </div><!-- /.container -->
 </footer>
 </body>
 </html>

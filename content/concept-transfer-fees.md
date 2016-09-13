@@ -1,6 +1,6 @@
 # Transfer Fees #
 
-The `TransferRate` setting in the Ripple Consensus Ledger (RCL) allows [financial institutions that issue currency in the RCL](https://ripple.com/knowledge_center/gateways/) to charge users a _transfer fee_ for sending the currencies issued by that financial institution. The sender of the transfer is debited an extra percentage based on the transfer fee, while the recipient of the transfer is credited the intended amount. The difference is the transfer fee, which becomes the property of the issuing address, and is no longer tracked in the Ripple Consensus Ledger. The transfer fee does not apply when sending or receiving _directly_ to and from the issuing account, but it does apply when transferring from an [operational address][] to another user.
+The `TransferRate` setting in the Ripple Consensus Ledger (RCL) allows [financial institutions that issue currency in the RCL](tutorial-gateway-guide.html) to charge users a _transfer fee_ for sending the currencies issued by that financial institution. The sender of the transfer is debited an extra percentage based on the transfer fee, while the recipient of the transfer is credited the intended amount. The difference is the transfer fee, which becomes the property of the issuing address, and is no longer tracked in the Ripple Consensus Ledger. The transfer fee does not apply when sending or receiving _directly_ to and from the issuing account, but it does apply when transferring from an [operational address][] to another user.
 
 [operational address]: concept-issuing-and-operational-addresses.html
 [issuing address]: concept-issuing-and-operational-addresses.html
@@ -14,6 +14,8 @@ The following diagram shows a Ripple payment of 2 EUR.ACME from Alice to Charlie
 ![Alice sends 2,02€, Charlie receives 2,00€, and ACME owes 0,02€ less in Ripple](img/e2g-with_transferrate.png)
 
 ## Transfer Fees in Payment Paths ##
+
+<!--{# TODO: Update this for OnwerPaysFee amendment when that gets added #}-->
 
 A transfer fee applies whenever an individual transfer would shift issuances from one party to another through the issuing account. In more complex transactions, this can occur multiple times. Transfer fees apply starting from the end and working backwards, so that ultimately the sender of a payment must send enough to account for all fees. For example:
 

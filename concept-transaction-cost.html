@@ -169,7 +169,7 @@
       <main class="main" role="main">
     <div class='content'>
         <h1 id="transaction-cost">Transaction Cost</h1>
-<p>To protect the Ripple Consensus Ledger from being disrupted by spam and denial-of-service attacks, each transaction must destroy a small amount of <a href="https://ripple.com/knowledge_center/math-based-currency-2/">XRP</a>. This <em>transaction cost</em> is designed to increase along with the load on the network, making it very expensive to deliberately or inadvertently overload the network.</p>
+<p>To protect the Ripple Consensus Ledger from being disrupted by spam and denial-of-service attacks, each transaction must destroy a small amount of <a href="https://ripple.com/xrp-portal/">XRP</a>. This <em>transaction cost</em> is designed to increase along with the load on the network, making it very expensive to deliberately or inadvertently overload the network.</p>
 <p>Every transaction must <a href="#specifying-the-transaction-cost">specify how much XRP to destroy</a> to pay the transaction cost.</p>
 <h2 id="current-transaction-cost">Current Transaction Cost</h2>
 <p>The current minimum transaction cost required by the network for a standard transaction is <strong>0.00001 XRP</strong> (10 drops). It sometimes increases due to higher than usual load.</p>
@@ -215,20 +215,21 @@
 <h2 id="local-load-cost">Local Load Cost</h2>
 <p>Each <code>rippled</code> server maintains a cost threshold based on its current load. If you submit a transaction with a <code>Fee</code> value that is lower than current load-based transaction cost of the <code>rippled</code> server, that server neither applies nor relays the transaction. (<strong>Note:</strong> If you submit a transaction through an <a href="reference-rippled.html#connecting-to-rippled">admin connection</a>, the server applies and relays the transaction as long as the transaction meets the un-scaled minimum transaction cost.) A transaction is very unlikely to survive <a href="https://ripple.com/knowledge_center/the-ripple-ledger-consensus-process/">the consensus process</a> unless its <code>Fee</code> value meets the requirements of a majority of servers.</p>
 <h2 id="open-ledger-cost">Open Ledger Cost</h2>
-<p>The <code>rippled</code> server has a second mechanism for enforcing the transaction cost, called the <em>open ledger cost</em>. A transaction can only be included in the open ledger if it meets the open ledger cost requirement in XRP. Transactions that do not meet the open ledger cost are <a href="#queued-transactions">queued for a following ledger</a> instead.</p>
+<p>The <code>rippled</code> server has a second mechanism for enforcing the transaction cost, called the <em>open ledger cost</em>. A transaction can only be included in the open ledger if it meets the open ledger cost requirement in XRP. Transactions that do not meet the open ledger cost may be <a href="#queued-transactions">queued for a following ledger</a> instead.</p>
 <p>For each new ledger version, the server picks a soft limit on the number of transactions to be included in the open ledger, based on the number of transactions in the previous ledger. The open ledger cost is equal to the minimum un-scaled transaction cost until the number of transactions in the open ledger is equal to the soft limit. After that, the open ledger cost increases exponentially for each transaction included in the open ledger. For the next ledger, the server increases the soft limit if the current ledger contained more transactions than the soft limit, and decreases the soft limit if the consensus process takes more than 5 seconds.</p>
 <p>The open ledger cost requirement is <a href="#fee-levels">proportional to the normal cost of the transaction</a>, not the absolute transaction cost. Transaction types that have a higher-than-normal requirement, such as <a href="reference-transaction-format.html#multi-signing">multi-signed transactions</a> must pay more to meet the open ledger cost than transactions which have minimum transaction cost requirements.</p>
 <p>See also: <a href="https://github.com/ripple/rippled/blob/release/src/ripple/app/misc/FeeEscalation.md">Fee Escalation explanation in <code>rippled</code> repository</a>.</p>
 <h3 id="queued-transactions">Queued Transactions</h3>
-<p>When <code>rippled</code> receives a transaction that meet the server's local load cost but not the open ledger cost, the server estimates whether the transaction is "likely to be included" in a later ledger. If so, the server adds the transaction to the transaction queue and relays the transaction to other members of the network. Otherwise, the server discards the transaction. The server tries minimize the amount of network load caused by transactions that would not pay a transaction cost, since <a href="#transaction-costs-and-failed-transactions">the transaction cost only applies when a transaction is included in a validated ledger</a>.</p>
-<p>When the current open ledger closes and the server starts a new open ledger, the server starts taking transactions from the queue to include in the new open ledger. The transaction queue is sorted with the transactions that would pay the highest transaction cost first, proportional to the un-scaled cost of those transactions. Transactions that pay the same transaction cost are queued in the order the server receives them.</p>
+<p>When <code>rippled</code> receives a transaction that meet the server's local load cost but not the <a href="#open-ledger-cost">open ledger cost</a>, the server estimates whether the transaction is "likely to be included" in a later ledger. If so, the server adds the transaction to the transaction queue and relays the transaction to other members of the network. Otherwise, the server discards the transaction. The server tries to minimize the amount of network load caused by transactions that would not pay a transaction cost, since <a href="#transaction-costs-and-failed-transactions">the transaction cost only applies when a transaction is included in a validated ledger</a>.</p>
+<p>When the current open ledger closes and the server starts a new open ledger, the server starts taking transactions from the queue to include in the new open ledger. The transaction queue is sorted with the transactions that would pay the highest transaction cost first, proportional to the <a href="#reference-transaction-cost">reference cost</a> of those transactions. Transactions that pay the same transaction cost are queued in the order the server receives them.</p>
+<p class="devportal-callout note"><strong>Note:</strong> When <code>rippled</code> queues a transaction, the provisional <a href="reference-transaction-format.html#transaction-results">transaction response code</a> is <code>terQUEUED</code>. This means that the transaction is likely to succeed in a future. As with all provisional response codes, the outcome of the transaction is not final until the transaction is either included in a validated ledger, or <a href="reference-transaction-format.html#finality-of-results">rendered permanently invalid</a>.</p>
 <h4 id="queuing-restrictions">Queuing Restrictions</h4>
 <p>The <code>rippled</code> server uses a variety of heuristics to estimate which transactions are "likely to be included in a ledger." The current implementation uses the following rules to decide which transactions to queue:</p>
 <ul>
 <li>Transactions must be properly-formed and <a href="reference-transaction-format.html#authorizing-transactions">authorized</a> with valid signatures.</li>
 <li>Transactions with an <code>AccountTxnID</code> field cannot be queued.</li>
 <li>A single sending address can have at most 10 transactions queued at the same time. In order for a transaction to be queued, the sender must have enough XRP to pay all the XRP costs of all the sender's queued transactions including both the <code>Fee</code> fields and the sum of the XRP that each transaction could send. If a transaction affects how the address authorizes accounts, no other transactions from the same address can be queued behind it. <em>(New in <a href="https://github.com/ripple/rippled/releases/tag/0.32.0"><code>rippled</code> 0.32.0</a>)</em></li>
-<li>If the transaction includes a <code>LastLedgerSequence</code> field, the value of that field must not be more than <strong>the current ledger index + 2</strong>.</li>
+<li>If the transaction includes a <code>LastLedgerSequence</code> field, the value of that field must be at least <strong>the current ledger index + 2</strong>.</li>
 </ul>
 <h2 id="reference-transaction-cost">Reference Transaction Cost</h2>
 <p>The "Reference Transaction" is the cheapest (non-free) transaction, in terms of the necessary <a href="concept-transaction-cost.html">transaction cost</a> before load scaling. Most transactions have the same cost as the reference transaction. Some transactions, such as <a href="reference-transaction-format.html#multi-signing">multi-signed transactions</a>, require a multiple of this cost instead. When the open ledger cost escalates, the requirement is proportional to the basic cost of the transaction.</p>
@@ -316,26 +317,24 @@
 <footer class="content-info" role="contentinfo">
     <div class="container">
         <div class="row">
-
-       		<section class="col-sm-3 widget nav_menu-3 widget_nav_menu">
-   		        <h4>Resources<hr></h4>
-   		        <ul id="menu-resources" class="menu">
-   		            <li class="menu-insights"><a href="https://ripple.com/insights/">Insights</a></li>
-	                <li class="menu-press-center"><a href="https://ripple.com/press-center/">Press Center</a></li>
-                    <li class="menu-media-resources"><a href="https://ripple.com/media-resources/">Media Resources</a></li>
-                    <li class="menu-videos"><a href="https://ripple.com/videos/">Videos</a></li>
-                    <li class="menu-whitepapers-reports"><a href="https://ripple.com/whitepapers-reports/">Whitepapers &#038; Reports</a></li>
+            <section class="col-sm-3 widget nav_menu-3 widget_nav_menu">
+                <h4>Resources<hr></h4>
+                <ul id="menu-resources" class="menu">
+                    <li class="menu-insights"><a href="https://ripple.com/insights/">Insights</a></li>
+                    <li class="menu-events"><a href="https://ripple.com/events/">Events</a></li>
+                    <li class="menu-collateral"><a href="https://ripple.com/collateral/">Collateral</a></li>
+                    <li class="menu-press-center"><a href="https://ripple.com/press-center/">Press Center</a></li>
+                    <li class="menu-media-kit"><a href="https://ripple.com/media-kit/">Media Kit</a></li>
                     <li class="menu-xrp-portal"><a href="https://ripple.com/xrp-portal/">XRP Portal</a></li>
                 </ul>
             </section>
-
             <section class="col-sm-3 widget nav_menu-5 widget_nav_menu">
                 <h4>Regulators<hr></h4>
-                <ul id="menu-compliance-regulatory-relations" class="menu"><li class="menu-compliance"><a href="https://ripple.com/compliance/">Compliance</a></li>
+                <ul id="menu-compliance-regulatory-relations" class="menu">
+                    <li class="menu-compliance"><a href="https://ripple.com/compliance/">Compliance</a></li>
                     <li class="menu-policy-framework"><a href="https://ripple.com/policy-framework/">Policy Framework</a></li>
                 </ul>
             </section>
-
             <section class="col-sm-3 widget nav_menu-4 widget_nav_menu">
                 <h4>Support<hr></h4>
                 <ul id="menu-dev-footer-menu" class="menu">
@@ -345,7 +344,6 @@
                     <li class="menu-ripple-forum"><a target="_blank" href="https://forum.ripple.com/">Ripple Forum</a></li>
                 </ul>
             </section>
-
             <section class="col-sm-3 widget nav_menu-2 widget_nav_menu">
                 <h4>About<hr></h4>
                 <ul id="menu-company-footer" class="menu">
@@ -356,14 +354,14 @@
 
        		<div class="col-sm-12 absolute_bottom_footer">
        			<div class="col-sm-8">
-				    <span>&copy; 2013-2015 Ripple Labs, Inc. All Rights Reserved.</span>
-				    <span><a href="https://ripple.com/terms-of-use/">Terms</a></span>
-				    <span><a href="https://ripple.com/privacy-policy/">Privacy</a></span>
-			    </div>
-       		</div><!-- /.absolute_bottom_footer -->
-       		
-	    </div><!-- /.row -->
-	</div><!-- /.container -->
+                    <span>&copy; 2013 - 2016 Ripple Labs, Inc. All Rights Reserved.</span>
+                    <span><a href="/terms-of-use/">Terms</a></span>
+                    <span><a href="/privacy-policy/">Privacy</a></span>
+                </div>
+            </div><!-- /.absolute_bottom_footer -->
+
+        </div><!-- /.row -->
+    </div><!-- /.container -->
 </footer>
 </body>
 </html>

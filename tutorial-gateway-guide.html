@@ -185,7 +185,7 @@
       <main class="main" role="main">
     <div class='content'>
         <h1 id="becoming-a-ripple-gateway">Becoming a Ripple Gateway</h1>
-<p>If you have an existing online financial system, you can expand it to act as a gateway in the the Ripple Consensus Ledger (RCL). <a href="https://ripple.com/knowledge_center/gateways/">Gateways</a> are the businesses that link the Ripple Consensus Ledger to the rest of the world. By becoming a Ripple gateway, existing online financial services, such as payment systems and digital currency exchange, can gain several advantages:</p>
+<p><strong>Gateways</strong> are the businesses that link the Ripple Consensus Ledger to the rest of the world. An existing online financial institution can expand to act as a gateway in the the Ripple Consensus Ledger (RCL). By becoming a Ripple gateway, a financial services business can gain several advantages:</p>
 <ul>
 <li>By enabling its customers to send and receive value in the Ripple Consensus Ledger, the business increases its value proposition to customers.</li>
 <li>By accepting payments from the Ripple Consensus Ledger, the business increases the number of ways that customers can fund accounts at its business, even internationally.</li>
@@ -196,7 +196,7 @@
 <p>You are not on your own. Ripple depends on the success of individual gateways, so we are here to help. Please contact us if you need help building and growing your gateway.</p>
 <ul>
 <li>Contact <a href="mailto:partners@ripple.com">partners@ripple.com</a> for enterprise-class integrations, infrastructure advice, and other business development needs.</li>
-<li>Contact <a href="mailto:developers@ripple.com">developers@ripple.com</a> for technical questions, clarifications, bug reports, and feature requests.</li>
+<li>Contact <a href="mailto:support@ripple.com">support@ripple.com</a> for technical questions, clarifications, bug reports, and feature requests.</li>
 </ul>
 <h2 id="ripple-gateways-explained">Ripple Gateways Explained</h2>
 <p>Gateways are businesses that provide a way for money and other forms of value to move in and out of the Ripple Consensus Ledger. There are three major models that gateways can follow, with different purposes and modes of operation.</p>
@@ -211,8 +211,8 @@
 <p>The Ripple Consensus Ledger has a system of directional accounting relationships, called <em>trust lines</em>, to make sure that users only hold issuances from counterparties they trust.</p>
 <p>A "trust line" is link between two addresses in Ripple. A trust line represents an explicit statement of willingness to hold gateway debt obligations. When a customer sends money into the RCL, a gateway takes custody of those assets outside of Ripple, and sends issuances in the RCL to the customer's address. When a customer sends money out of the RCL, she makes a Ripple payment to the gateway, and the gateway credits the customer in its own system of record, or in some other account.</p>
 <h3 id="xrp">XRP</h3>
-<p>XRP is the native <a href="https://ripple.com/knowledge_center/math-based-currency/">cryptocurrency</a> of the Ripple Consensus Ledger. Like issuances, XRP can be freely sent and exchanged among Ripple addresses. Unlike issuances, XRP is not tied to an accounting relationship. XRP can be sent directly from any Ripple address to any other, without going through a gateway or liquidity provider. This helps make XRP a convenient <a href="https://ripple.com/knowledge_center/bridge-currency-2/">bridge currency</a>.</p>
-<p>XRP also serves other purposes in the RCL, in particular as <a href="https://ripple.com/knowledge_center/abuse-protection/">a protective measure against spamming the network</a>. All Ripple addresses need a small amount of XRP to pay the costs of maintaining the Ripple Consensus Ledger. The <a href="concept-transaction-cost.html">transaction cost</a> and <a href="concept-reserves.html">reserve</a> are neutral fees not paid to any party.</p>
+<p><strong>XRP</strong> is the native cryptocurrency of the Ripple Consensus Ledger. Like issuances, XRP can be freely sent and exchanged among Ripple addresses. Unlike issuances, XRP is not tied to an accounting relationship. XRP can be sent directly from any Ripple address to any other, without going through a gateway or liquidity provider. This helps make XRP a convenient bridge currency. For more information on XRP, see the <a href="https://ripple.com/xrp-portal/">XRP Portal</a>.</p>
+<p>XRP also serves other purposes in the RCL, in particular as a protective measure against spamming the network. All Ripple addresses need a small amount of XRP to pay the costs of maintaining the Ripple Consensus Ledger. The <a href="concept-transaction-cost.html">transaction cost</a> and <a href="concept-reserves.html">reserve</a> are neutral fees denoted in XRP and not paid to any party.</p>
 <p>Issuing gateways do not need to accumulate or exchange XRP. They must only hold a small balance of XRP to send transactions through the network. The XRP equivalent of $10 USD should be enough for at least one year of transaction costs for a busy gateway.</p>
 <p>Private exchanges and liquidity providers may choose to hold additional XRP for trading. Ripple (the company) <strong>does not</strong> promote XRP as a speculative investment.</p>
 <h3 id="liquidity-and-currency-exchange">Liquidity and Currency Exchange</h3>
@@ -605,7 +605,7 @@ Content-Type: application/json
 <li>If you have a <a href="#transferrate">TransferRate</a> set, then your obligations within the RCL decrease slightly whenever other Ripple addresses transfer your issuances among themselves.</li>
 </ul>
 <h2 id="transferrate">TransferRate</h2>
-<p>The <em>TransferRate</em> setting (<code>transferRate</code> in RippleAPI) defines a fee to charge for transferring issuances from one Ripple address to another. See <a href="https://ripple.com/knowledge_center/transfer-fees/">Transfer Fees</a> in the Knowledge Center for more information.</p>
+<p>The <em>TransferRate</em> setting (<code>transferRate</code> in RippleAPI) defines a fee to charge for transferring issuances from one Ripple address to another. See <a href="concept-transfer-fees.html">Transfer Fees</a> for more information.</p>
 <p>The following is an example of using a locally-hosted <code>rippled</code>'s <a href="reference-rippled.html#submit"><code>submit</code> command</a> to send an AccountSet transaction for the issuing address rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW, setting the TransferRate to charge a fee of 0.5%.</p>
 <p>Request:</p>
 <pre><code>
@@ -756,26 +756,24 @@ Content-Type: application/json
 <footer class="content-info" role="contentinfo">
     <div class="container">
         <div class="row">
-
-       		<section class="col-sm-3 widget nav_menu-3 widget_nav_menu">
-   		        <h4>Resources<hr></h4>
-   		        <ul id="menu-resources" class="menu">
-   		            <li class="menu-insights"><a href="https://ripple.com/insights/">Insights</a></li>
-	                <li class="menu-press-center"><a href="https://ripple.com/press-center/">Press Center</a></li>
-                    <li class="menu-media-resources"><a href="https://ripple.com/media-resources/">Media Resources</a></li>
-                    <li class="menu-videos"><a href="https://ripple.com/videos/">Videos</a></li>
-                    <li class="menu-whitepapers-reports"><a href="https://ripple.com/whitepapers-reports/">Whitepapers &#038; Reports</a></li>
+            <section class="col-sm-3 widget nav_menu-3 widget_nav_menu">
+                <h4>Resources<hr></h4>
+                <ul id="menu-resources" class="menu">
+                    <li class="menu-insights"><a href="https://ripple.com/insights/">Insights</a></li>
+                    <li class="menu-events"><a href="https://ripple.com/events/">Events</a></li>
+                    <li class="menu-collateral"><a href="https://ripple.com/collateral/">Collateral</a></li>
+                    <li class="menu-press-center"><a href="https://ripple.com/press-center/">Press Center</a></li>
+                    <li class="menu-media-kit"><a href="https://ripple.com/media-kit/">Media Kit</a></li>
                     <li class="menu-xrp-portal"><a href="https://ripple.com/xrp-portal/">XRP Portal</a></li>
                 </ul>
             </section>
-
             <section class="col-sm-3 widget nav_menu-5 widget_nav_menu">
                 <h4>Regulators<hr></h4>
-                <ul id="menu-compliance-regulatory-relations" class="menu"><li class="menu-compliance"><a href="https://ripple.com/compliance/">Compliance</a></li>
+                <ul id="menu-compliance-regulatory-relations" class="menu">
+                    <li class="menu-compliance"><a href="https://ripple.com/compliance/">Compliance</a></li>
                     <li class="menu-policy-framework"><a href="https://ripple.com/policy-framework/">Policy Framework</a></li>
                 </ul>
             </section>
-
             <section class="col-sm-3 widget nav_menu-4 widget_nav_menu">
                 <h4>Support<hr></h4>
                 <ul id="menu-dev-footer-menu" class="menu">
@@ -785,7 +783,6 @@ Content-Type: application/json
                     <li class="menu-ripple-forum"><a target="_blank" href="https://forum.ripple.com/">Ripple Forum</a></li>
                 </ul>
             </section>
-
             <section class="col-sm-3 widget nav_menu-2 widget_nav_menu">
                 <h4>About<hr></h4>
                 <ul id="menu-company-footer" class="menu">
@@ -796,14 +793,14 @@ Content-Type: application/json
 
        		<div class="col-sm-12 absolute_bottom_footer">
        			<div class="col-sm-8">
-				    <span>&copy; 2013-2015 Ripple Labs, Inc. All Rights Reserved.</span>
-				    <span><a href="https://ripple.com/terms-of-use/">Terms</a></span>
-				    <span><a href="https://ripple.com/privacy-policy/">Privacy</a></span>
-			    </div>
-       		</div><!-- /.absolute_bottom_footer -->
-       		
-	    </div><!-- /.row -->
-	</div><!-- /.container -->
+                    <span>&copy; 2013 - 2016 Ripple Labs, Inc. All Rights Reserved.</span>
+                    <span><a href="/terms-of-use/">Terms</a></span>
+                    <span><a href="/privacy-policy/">Privacy</a></span>
+                </div>
+            </div><!-- /.absolute_bottom_footer -->
+
+        </div><!-- /.row -->
+    </div><!-- /.container -->
 </footer>
 </body>
 </html>
