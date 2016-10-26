@@ -8,12 +8,12 @@
     <title>Reliable Transaction Submission - Ripple Developer Portal</title>
 
     <!-- favicon -->
-    <link rel="icon" href="favicon.ico" type="image/x-icon"> 
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 
     <!-- jQuery -->
     <script src="assets/vendor/jquery-1.11.1.min.js"></script>
-    
+
     <!-- Custom Stylesheets. ripple.css includes bootstrap, font stuff -->
     <link href="assets/css/ripple.css" rel="stylesheet" />
     <link href="assets/css/devportal.css" rel="stylesheet" />
@@ -96,6 +96,13 @@
             </ul>
           </li>
           <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Gateway Bulletins <span class="caret"></span></a>
+            <ul class="dropdown-menu" role="menu">
+                  <li><a href="gb-2015-06.html">GB-2015-06: Corrections to Autobridging</a></li>
+                  <li><a href="gb-2015-05.html">GB-2015-05: Historical Ledger Query Migration</a></li>
+            </ul>
+          </li>
+          <li class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">API Tools <span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu">
                   <li><a href="ripple-api-tool.html">WebSocket API Tool</a></li>
@@ -103,18 +110,8 @@
                   <li><a href="tool-jsonrpc.html">rippled JSON-RPC Tool</a></li>
             </ul>
           </li>
-          
-          <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Resources <span class="caret"></span></a>
-            <ul class="dropdown-menu" role="menu">
-			  <li><a href="https://forum.ripple.com/viewforum.php?f=2">Forums</a></li>
-              <li><a href="https://www.bountysource.com/teams/ripple/bounties">Bounties</a></li>
-              <li><a href="https://ripplelabs.atlassian.net/">Bug Tracking</a></li>
-              <li><a href="https://ripple.com/category/dev-blog/">Dev Blog</a></li>
-              <li><a href="https://ripple.com/press-releases/">Press Center</a></li>
-              <li><a href="https://ripple.com/brand-guidelines/">Brand Guidelines</a></li>
-            </ul>
-            <li><a href="https://github.com/ripple/ripple-dev-portal" title="GitHub">Site Source</a></li>
+
+          <li><a href="https://github.com/ripple/ripple-dev-portal" title="GitHub">Site Source</a></li>
         </ul><!-- /#dev-menu -->
       </div><!-- /.subnav .container -->
     </div><!-- /.subnav -->
@@ -171,21 +168,25 @@
 </ol>
 <p>These types of errors can potentially lead to serious problems.  For example, an application that fails to find a prior successful payment transaction might erroneously submit another transaction, duplicating the original payment.  This underscores the importance that applications base their actions on authoritive transaction results, using the techniques described in this document.</p>
 <h2 id="background">Background</h2>
-<p>The Ripple protocol provides a ledger shared across all nodes in the network.  Through a <a href="https://ripple.com/knowledge_center/the-ripple-ledger-consensus-process/">process of consensus and validation</a>, the network agrees on order in which transactions are applied to (or omitted from) the ledger.</p>
+<p>The Ripple protocol provides a ledger shared across all nodes in the network.  Through a <a href="https://ripple.com/build/ripple-ledger-consensus-process/">process of consensus and validation</a>, the network agrees on order in which transactions are applied to (or omitted from) the ledger.</p>
 <p>Well-formed transactions submitted to trusted Ripple network nodes are usually validated or rejected in a matter of seconds.  There are cases, however, in which a well-formed transaction is neither validated nor rejected this quickly. One specific case can occur if the global <a href="concept-transaction-cost.html">transaction cost</a> increases after an application sends a transaction.  If the transaction cost increases above what has been specified in the transaction, the transaction is not included in the next validated ledger. If at some later date the global transaction cost decreases, the transaction could be included in a later ledger. If the transaction does not specify an expiration, there is no limit to how much later this can occur.</p>
 <p>If a power or network outage occurs, applications face more challenges finding the status of submitted transactions. Applications must take care both to properly submit a transaction and later to properly get authoritative results.</p>
 <h3 id="transaction-timeline">Transaction Timeline</h3>
 <p>Ripple provides several APIs for submitting transactions, including <a href="reference-rippled.html"><code>rippled</code></a>, and <a href="reference-rippleapi.html">RippleAPI</a>.  Regardless of the API used, the transaction is applied to the ledger as follows.</p>
 <ol>
 <li>An account owner creates and signs a transaction.</li>
-<li>The owner submits the transaction to the network as a candidate transaction.</li>
+<li>The owner submits the transaction to the network as a candidate transaction.<ul>
 <li>Malformed or nonsensical transactions are rejected immediately.</li>
 <li>Well-formed transactions may provisionally succeed, then later fail.</li>
 <li>Well-formed transactions may provisionally fail, then later succeed.</li>
 <li>Well-formed transactions may provisionally succeed, and then later succeed in a slightly different way. (For example, by consuming a different offer and achieving a better or worse exchange rate than the provisional execution.)</li>
+</ul>
+</li>
 <li>Through consensus and validation, the transaction is applied to the ledger. Even some failed transactions are applied, to enforce a cost for being propagated through the network.</li>
-<li>The validated ledger includes the transaction, and its effects are reflected in the ledger state.</li>
+<li>The validated ledger includes the transaction, and its effects are reflected in the ledger state.<ul>
 <li>Transaction results are no longer provisional, success or failure is now final and immutable.</li>
+</ul>
+</li>
 </ol>
 <p class="devportal-callout note"><strong>Note:</strong> When submitting a transaction via <code>rippled</code>, a successful status code returned from a submit command indicates the <code>rippled</code> server has received the candidate transaction. The transaction may or may not be applied to a validated ledger.</p>
 <p>APIs may return provisional results based on the result of applying candidate transactions to the current, in-progress ledger. Applications must not confuse these with the final, <em>immutable</em>, results of a transaction.  Immutable results are found only in validated ledgers.  Applications may need to query the status of a transaction repeatedly, until the ledger containing the transaction results is validated.</p>
@@ -208,13 +209,17 @@
 <p><a href="https://en.wikipedia.org/wiki/Persistence_%28computer_science%29">Persist</a> details of the transaction before submission, in case of power failure or network failure before submission completes.  On restart, the persisted values make it possible to verify the status of the transaction.</p>
 <p>The submission process:</p>
 <ol>
-<li>Construct and sign the transaction</li>
+<li>Construct and sign the transaction<ul>
 <li>Include <code>LastLedgerSequence</code> parameter</li>
-<li>Persist the transaction details, saving:</li>
+</ul>
+</li>
+<li>Persist the transaction details, saving:<ul>
 <li>Transaction hash</li>
 <li><code>LastLedgerSequence</code></li>
 <li>Sender address and sequence number</li>
 <li>Application-specific data, as needed</li>
+</ul>
+</li>
 <li>Submit the transaction</li>
 </ol>
 <h3 id="verification">Verification</h3>
@@ -542,8 +547,8 @@
 <li><a href="reference-transaction-format.html">Transaction Format</a></li>
 <li><a href="concept-transaction-cost.html">Transaction Cost</a></li>
 <li>Documentation of <a href="reference-transaction-format.html#lastledgersequence"><code>LastLedgerSequence</code></a></li>
-<li><a href="http://ripple.com/knowledge_center/the-ripple-ledger-consensus-process/">Overview of Ripple Ledger Consensus Process</a></li>
-<li><a href="https://ripple.com/knowledge_center/reaching-consensus-in-ripple/">Reaching Consensus in Ripple</a></li>
+<li><a href="https://ripple.com/build/ripple-ledger-consensus-process/">Overview of Ripple Ledger Consensus Process</a></li>
+<li><a href="https://ripple.com/build/reaching-consensus-ripple/">Reaching Consensus in Ripple</a></li>
 </ul>
     </div>
       </main>

@@ -8,12 +8,12 @@
     <title>Transaction Cost - Ripple Developer Portal</title>
 
     <!-- favicon -->
-    <link rel="icon" href="favicon.ico" type="image/x-icon"> 
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 
     <!-- jQuery -->
     <script src="assets/vendor/jquery-1.11.1.min.js"></script>
-    
+
     <!-- Custom Stylesheets. ripple.css includes bootstrap, font stuff -->
     <link href="assets/css/ripple.css" rel="stylesheet" />
     <link href="assets/css/devportal.css" rel="stylesheet" />
@@ -96,6 +96,13 @@
             </ul>
           </li>
           <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Gateway Bulletins <span class="caret"></span></a>
+            <ul class="dropdown-menu" role="menu">
+                  <li><a href="gb-2015-06.html">GB-2015-06: Corrections to Autobridging</a></li>
+                  <li><a href="gb-2015-05.html">GB-2015-05: Historical Ledger Query Migration</a></li>
+            </ul>
+          </li>
+          <li class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">API Tools <span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu">
                   <li><a href="ripple-api-tool.html">WebSocket API Tool</a></li>
@@ -103,18 +110,8 @@
                   <li><a href="tool-jsonrpc.html">rippled JSON-RPC Tool</a></li>
             </ul>
           </li>
-          
-          <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Resources <span class="caret"></span></a>
-            <ul class="dropdown-menu" role="menu">
-			  <li><a href="https://forum.ripple.com/viewforum.php?f=2">Forums</a></li>
-              <li><a href="https://www.bountysource.com/teams/ripple/bounties">Bounties</a></li>
-              <li><a href="https://ripplelabs.atlassian.net/">Bug Tracking</a></li>
-              <li><a href="https://ripple.com/category/dev-blog/">Dev Blog</a></li>
-              <li><a href="https://ripple.com/press-releases/">Press Center</a></li>
-              <li><a href="https://ripple.com/brand-guidelines/">Brand Guidelines</a></li>
-            </ul>
-            <li><a href="https://github.com/ripple/ripple-dev-portal" title="GitHub">Site Source</a></li>
+
+          <li><a href="https://github.com/ripple/ripple-dev-portal" title="GitHub">Site Source</a></li>
         </ul><!-- /#dev-menu -->
       </div><!-- /.subnav .container -->
     </div><!-- /.subnav -->
@@ -213,7 +210,7 @@
 <li>Transactions in between, which get <a href="#queued-transactions">queued for a later ledger version</a>.</li>
 </ul>
 <h2 id="local-load-cost">Local Load Cost</h2>
-<p>Each <code>rippled</code> server maintains a cost threshold based on its current load. If you submit a transaction with a <code>Fee</code> value that is lower than current load-based transaction cost of the <code>rippled</code> server, that server neither applies nor relays the transaction. (<strong>Note:</strong> If you submit a transaction through an <a href="reference-rippled.html#connecting-to-rippled">admin connection</a>, the server applies and relays the transaction as long as the transaction meets the un-scaled minimum transaction cost.) A transaction is very unlikely to survive <a href="https://ripple.com/knowledge_center/the-ripple-ledger-consensus-process/">the consensus process</a> unless its <code>Fee</code> value meets the requirements of a majority of servers.</p>
+<p>Each <code>rippled</code> server maintains a cost threshold based on its current load. If you submit a transaction with a <code>Fee</code> value that is lower than current load-based transaction cost of the <code>rippled</code> server, that server neither applies nor relays the transaction. (<strong>Note:</strong> If you submit a transaction through an <a href="reference-rippled.html#connecting-to-rippled">admin connection</a>, the server applies and relays the transaction as long as the transaction meets the un-scaled minimum transaction cost.) A transaction is very unlikely to survive <a href="https://ripple.com/build/ripple-ledger-consensus-process/">the consensus process</a> unless its <code>Fee</code> value meets the requirements of a majority of servers.</p>
 <h2 id="open-ledger-cost">Open Ledger Cost</h2>
 <p>The <code>rippled</code> server has a second mechanism for enforcing the transaction cost, called the <em>open ledger cost</em>. A transaction can only be included in the open ledger if it meets the open ledger cost requirement in XRP. Transactions that do not meet the open ledger cost may be <a href="#queued-transactions">queued for a following ledger</a> instead.</p>
 <p>For each new ledger version, the server picks a soft limit on the number of transactions to be included in the open ledger, based on the number of transactions in the previous ledger. The open ledger cost is equal to the minimum un-scaled transaction cost until the number of transactions in the open ledger is equal to the soft limit. After that, the open ledger cost increases exponentially for each transaction included in the open ledger. For the next ledger, the server increases the soft limit if the current ledger contained more transactions than the soft limit, and decreases the soft limit if the consensus process takes more than 5 seconds.</p>
@@ -228,9 +225,19 @@
 <ul>
 <li>Transactions must be properly-formed and <a href="reference-transaction-format.html#authorizing-transactions">authorized</a> with valid signatures.</li>
 <li>Transactions with an <code>AccountTxnID</code> field cannot be queued.</li>
-<li>A single sending address can have at most 10 transactions queued at the same time. In order for a transaction to be queued, the sender must have enough XRP to pay all the XRP costs of all the sender's queued transactions including both the <code>Fee</code> fields and the sum of the XRP that each transaction could send. If a transaction affects how the address authorizes accounts, no other transactions from the same address can be queued behind it. <em>(New in <a href="https://github.com/ripple/rippled/releases/tag/0.32.0"><code>rippled</code> 0.32.0</a>)</em></li>
+<li>A single sending address can have at most 10 transactions queued at the same time. In order for a transaction to be queued, the sender must have enough XRP to pay all the XRP costs of all the sender's queued transactions including both the <code>Fee</code> fields and the sum of the XRP that each transaction could send. <a href="https://github.com/ripple/rippled/releases/tag/0.32.0" title="New in: rippled 0.32.0"><img alt="New in: rippled 0.32.0" class="dactyl_badge" src="https://img.shields.io/badge/New%20in-rippled%200.32.0-blue.svg"/></a></li>
+<li>If a transaction affects how the sending address authorizes accounts, no other transactions from the same address can be queued behind it. <a href="https://github.com/ripple/rippled/releases/tag/0.32.0" title="New in: rippled 0.32.0"><img alt="New in: rippled 0.32.0" class="dactyl_badge" src="https://img.shields.io/badge/New%20in-rippled%200.32.0-blue.svg"/></a></li>
 <li>If the transaction includes a <code>LastLedgerSequence</code> field, the value of that field must be at least <strong>the current ledger index + 2</strong>.</li>
 </ul>
+<h4 id="fee-averaging">Fee Averaging</h4>
+<p><a href="https://github.com/ripple/rippled/releases/tag/0.33.0" title="New in: rippled 0.33.0"><img alt="New in: rippled 0.33.0" class="dactyl_badge" src="https://img.shields.io/badge/New%20in-rippled%200.33.0-blue.svg"/></a></p>
+<p>If a sending address has one or more transactions queued, that sender can "push" the existing queued transactions into the open ledger by submitting a new transaction with a high enough transaction cost to pay for all of them. Specifically, the new transaction must increase the total transaction cost of the queued transactions from the same sending address, including itself, to cover the open ledger cost of each transaction as it gets added to the ledger. The total must include the increased open ledger cost for each new transaction. The transactions must still follow the other <a href="#queuing-restrictions">queuing restrictions</a> and the sending address must have enough XRP to pay the transaction costs of all the queued transactions.</p>
+<p>This feature helps you work around a particular situation. If you submitted one or more transactions with a low cost, which got queued, you cannot send new transactions from the same address unless you do one of the following:</p>
+<ul>
+<li>Wait for the queued transactions to be included in a validated ledger, <em>or</em></li>
+<li><a href="reference-transaction-format.html#canceling-or-skipping-a-transaction">Cancel the queued transactions</a> by submitting a new transaction with the same sequence number.</li>
+</ul>
+<p>Queued transactions can wait in the queue for a theoretically unlimited amount of time, unless they have the <code>LastLedgerSequence</code> field set, because other senders can "cut in line" by submitting transactions with higher transaction costs. Since signed transactions are immutable, you cannot increase the transaction cost of the queued transactions to increase their priority. If you do not want to invalidate the previously submitted transactions, fee averaging provides a workaround. If you increase the transaction cost of your new transaction to compensate, you can ensure the queued transactions are included in an open ledger right away.</p>
 <h2 id="reference-transaction-cost">Reference Transaction Cost</h2>
 <p>The "Reference Transaction" is the cheapest (non-free) transaction, in terms of the necessary <a href="concept-transaction-cost.html">transaction cost</a> before load scaling. Most transactions have the same cost as the reference transaction. Some transactions, such as <a href="reference-transaction-format.html#multi-signing">multi-signed transactions</a>, require a multiple of this cost instead. When the open ledger cost escalates, the requirement is proportional to the basic cost of the transaction.</p>
 <h3 id="fee-levels">Fee Levels</h3>
@@ -310,6 +317,7 @@
 <p>When the <a href="concept-amendments.html#feeescalation">FeeEscalation amendment</a> is enabled, <code>rippled</code> prioritizes key reset transactions above other transactions even though the nominal transaction cost of a key reset transaction is zero.</p>
 <h2 id="changing-the-transaction-cost">Changing the Transaction Cost</h2>
 <p>The Ripple Consensus Ledger has a mechanism for changing the minimum transaction cost to account for long-term changes in the value of XRP. Any changes have to be approved by the consensus process. See <a href="concept-fee-voting.html">Fee Voting</a> for more information.</p>
+<!-- rippled release notes links -->
     </div>
       </main>
   </div>

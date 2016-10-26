@@ -17,7 +17,7 @@ These types of errors can potentially lead to serious problems.  For example, an
 
 ## Background
 
-The Ripple protocol provides a ledger shared across all nodes in the network.  Through a [process of consensus and validation](https://ripple.com/knowledge_center/the-ripple-ledger-consensus-process/), the network agrees on order in which transactions are applied to (or omitted from) the ledger.
+The Ripple protocol provides a ledger shared across all nodes in the network.  Through a [process of consensus and validation](https://ripple.com/build/ripple-ledger-consensus-process/), the network agrees on order in which transactions are applied to (or omitted from) the ledger.
 
 Well-formed transactions submitted to trusted Ripple network nodes are usually validated or rejected in a matter of seconds.  There are cases, however, in which a well-formed transaction is neither validated nor rejected this quickly. One specific case can occur if the global [transaction cost](concept-transaction-cost.html) increases after an application sends a transaction.  If the transaction cost increases above what has been specified in the transaction, the transaction is not included in the next validated ledger. If at some later date the global transaction cost decreases, the transaction could be included in a later ledger. If the transaction does not specify an expiration, there is no limit to how much later this can occur.
 
@@ -32,13 +32,13 @@ Ripple provides several APIs for submitting transactions, including [`rippled`](
 
 1. An account owner creates and signs a transaction.
 2. The owner submits the transaction to the network as a candidate transaction.
-   - Malformed or nonsensical transactions are rejected immediately.
-   - Well-formed transactions may provisionally succeed, then later fail.
-   - Well-formed transactions may provisionally fail, then later succeed.
-   - Well-formed transactions may provisionally succeed, and then later succeed in a slightly different way. (For example, by consuming a different offer and achieving a better or worse exchange rate than the provisional execution.)
+    - Malformed or nonsensical transactions are rejected immediately.
+    - Well-formed transactions may provisionally succeed, then later fail.
+    - Well-formed transactions may provisionally fail, then later succeed.
+    - Well-formed transactions may provisionally succeed, and then later succeed in a slightly different way. (For example, by consuming a different offer and achieving a better or worse exchange rate than the provisional execution.)
 3. Through consensus and validation, the transaction is applied to the ledger. Even some failed transactions are applied, to enforce a cost for being propagated through the network.
 4. The validated ledger includes the transaction, and its effects are reflected in the ledger state.
-   - Transaction results are no longer provisional, success or failure is now final and immutable.
+    - Transaction results are no longer provisional, success or failure is now final and immutable.
 
 **Note:** When submitting a transaction via `rippled`, a successful status code returned from a submit command indicates the `rippled` server has received the candidate transaction. The transaction may or may not be applied to a validated ledger.
 
@@ -82,12 +82,12 @@ Submission and verification are two separate procedures which may be implemented
 The submission process:
 
 1. Construct and sign the transaction
-   - Include `LastLedgerSequence` parameter
+    - Include `LastLedgerSequence` parameter
 2. Persist the transaction details, saving:
-   - Transaction hash
-   - `LastLedgerSequence`
-   - Sender address and sequence number
-   - Application-specific data, as needed
+    - Transaction hash
+    - `LastLedgerSequence`
+    - Sender address and sequence number
+    - Application-specific data, as needed
 3. Submit the transaction
 
 
@@ -484,5 +484,5 @@ Finally the server may show one or more gaps in the transaction history. The `co
 - [Transaction Format](reference-transaction-format.html)
 - [Transaction Cost](concept-transaction-cost.html)
 - Documentation of [`LastLedgerSequence`](reference-transaction-format.html#lastledgersequence)
-- [Overview of Ripple Ledger Consensus Process](http://ripple.com/knowledge_center/the-ripple-ledger-consensus-process/)
-- [Reaching Consensus in Ripple](https://ripple.com/knowledge_center/reaching-consensus-in-ripple/)
+- [Overview of Ripple Ledger Consensus Process](https://ripple.com/build/ripple-ledger-consensus-process/)
+- [Reaching Consensus in Ripple](https://ripple.com/build/reaching-consensus-ripple/)

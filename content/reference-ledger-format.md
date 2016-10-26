@@ -1,6 +1,6 @@
 # The Ledger #
 
-The Ripple Consensus Ledger is a shared, global ledger that is open to all. Individual participants can trust the integrity of the ledger without having to trust any single institution to manage it. The `rippled` server software accomplishes this by managing a ledger database that can only be updated according to very specific rules. Each instance of `rippled` keeps a full copy of the ledger, and the peer-to-peer network of `rippled` servers distributes candidate transactions among themselves. The consensus process determines which transactions get applied to each new version of the ledger. See also: [The Consensus Process](https://ripple.com/knowledge_center/the-ripple-ledger-consensus-process/).
+The Ripple Consensus Ledger is a shared, global ledger that is open to all. Individual participants can trust the integrity of the ledger without having to trust any single institution to manage it. The `rippled` server software accomplishes this by managing a ledger database that can only be updated according to very specific rules. Each instance of `rippled` keeps a full copy of the ledger, and the peer-to-peer network of `rippled` servers distributes candidate transactions among themselves. The consensus process determines which transactions get applied to each new version of the ledger. See also: [The Consensus Process](https://ripple.com/build/ripple-ledger-consensus-process/).
 
 ![Diagram: Each ledger is the result of applying transactions to the previous ledger version.](img/ledger-process.png)
 
@@ -408,7 +408,7 @@ The `index` of a RippleState node is the SHA-512Half of the following values put
 ## SignerList ##
 [[Source]<br>](https://github.com/ripple/rippled/blob/6d2e3da30696bd10e3bb11a5ff6d45d2c4dae90f/src/ripple/protocol/impl/LedgerFormats.cpp#L127 "Source")
 
-The `SignerList` node type represents a list of parties that, as a group, are authorized to sign a transaction in place of an individual account. You can create, replace, or remove a SignerList using the [SignerListSet transaction type](reference-transaction-format.html#signerlistset) This node type is introduced by the [MultiSign amendment](concept-amendments.html#multisign). _(New in [version 0.31.0][])_
+The `SignerList` node type represents a list of parties that, as a group, are authorized to sign a transaction in place of an individual account. You can create, replace, or remove a SignerList using the [SignerListSet transaction type](reference-transaction-format.html#signerlistset) This node type is introduced by the [MultiSign amendment](concept-amendments.html#multisign). [New in: rippled 0.31.0][]
 
 Example SignerList node:
 
@@ -474,6 +474,4 @@ When processing a multi-signed transaction, the server dereferences the `Account
 A SignerList contributes to its owner's [reserve requirement](concept-reserves.html). The SignerList itself counts as two objects, and each member of the list counts as one. As a result, the total owner reserve associated with a SignerList is anywhere from 3 times to 10 times the reserve required by a single trust line ([RippleState](#ripplestate)) or [Offer](#offer) node in the ledger.
 
 
-
-<!---- rippled release notes links ---->
-[version 0.31.0]: https://github.com/ripple/rippled/releases/tag/0.31.0
+{% include 'snippets/rippled_versions.md' %}

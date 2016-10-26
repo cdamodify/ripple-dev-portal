@@ -1,6 +1,6 @@
 # Amendments #
 
-_(Introduced in [version 0.31.0][])_
+[Introduced in: rippled 0.31.0][New in: rippled 0.31.0]
 
 The Amendments system provides a means of introducing new features to the decentralized Ripple consensus network without causing disruptions. The amendments system works by utilizing the core consensus process of the network to approve any changes by showing continuous support before those changes go into effect. An amendment normally requires **80% support for two weeks** before it can apply.
 
@@ -9,11 +9,11 @@ When an Amendment has been enabled, it applies permanently to all ledger version
 
 ## Background ##
 
-Any changes to transaction processing could cause servers to build a different ledger with the same set of transactions. If some _validators_ (`rippled` servers [participating in consensus](tutorial-rippled-setup.html#reasons-to-run-a-validator)) have upgraded to a new version of the software while other validators use the old version, this could cause anything from minor inconveniences to full outages. In the minor case, a minority of servers spend more time and bandwidth fetching the actual consensus ledger because they cannot build it using the transaction processing rules they already know. In the worst case, [the consensus process](https://ripple.com/knowledge_center/the-ripple-ledger-consensus-process/) might be unable to validate new ledger versions because servers with different rules could not reach a consensus on the exact ledger to build.
+Any changes to transaction processing could cause servers to build a different ledger with the same set of transactions. If some _validators_ (`rippled` servers [participating in consensus](tutorial-rippled-setup.html#reasons-to-run-a-validator)) have upgraded to a new version of the software while other validators use the old version, this could cause anything from minor inconveniences to full outages. In the minor case, a minority of servers spend more time and bandwidth fetching the actual consensus ledger because they cannot build it using the transaction processing rules they already know. In the worst case, [the consensus process](https://ripple.com/build/ripple-ledger-consensus-process/) might be unable to validate new ledger versions because servers with different rules could not reach a consensus on the exact ledger to build.
 
 Amendments solve this problem, so that new features can be enabled only when enough validators support those features.
 
-Users and businesses who rely on the Ripple Consensus Ledger can also use Amendments to provide advance notice of changes in transaction processing that might affect their business. However, API changes that do not impact transaction processing or [the consensus process](https://ripple.com/knowledge_center/the-ripple-ledger-consensus-process/) do not need Amendments.
+Users and businesses who rely on the Ripple Consensus Ledger can also use Amendments to provide advance notice of changes in transaction processing that might affect their business. However, API changes that do not impact transaction processing or [the consensus process](https://ripple.com/build/ripple-ledger-consensus-process/) do not need Amendments.
 
 
 ## About Amendments ##
@@ -111,16 +111,16 @@ The following is a comprehensive list of all known amendments and their status o
 
 | Name                            | Introduced | Status                        |
 |:--------------------------------|:-----------|:------------------------------|
-| [SHAMapV2](#shamapv2)           | TBD        | TBD                           |
-| [PayChan](#paychan)             | TBD        | TBD                           |
-| [OwnerPaysFee](#ownerpaysfee)   | TBD        | TBD                           |
-| [Flow](#flow)                   | TBD        | TBD                           |
-| [FlowV2](#flowv2)               | v0.32.1    | To be removed                 |
-| [Tickets](#tickets)             | v0.31.0    | TBD                           |
-| [SusPay](#suspay)               | v0.31.0    | TBD                           |
-| [TrustSetAuth](#trustsetauth)   | v0.30.0    | [Enabled 2016-07-19T10:10:32Z in ledger 22721281](https://www.ripplecharts.com/#/transactions/0E589DE43C38AED63B64FF3DA87D349A038F1821212D370E403EB304C76D70DF) |
-| [MultiSign](#multisign)         | v0.31.0    | [Enabled 2016-06-27T11:34:41Z in ledger 22178817](https://www.ripplecharts.com/#/transactions/168F8B15F643395E59B9977FC99D6310E8708111C85659A9BAF8B9222EEAC5A7) |
-| [FeeEscalation](#feeescalation) | v0.31.0    | [Enabled 2016-05-19T16:44:51Z in ledger 21225473](https://www.ripplecharts.com/#/transactions/5B1F1E8E791A9C243DD728680F108FEF1F28F21BA3B202B8F66E7833CA71D3C3) |
+| [SHAMapV2](#shamapv2)           | v0.33.0    | [Planned: TBD]( "BADGE_LIGHTGREY") |
+| [PayChan](#paychan)             | v0.33.0    | [Planned: TBD]( "BADGE_LIGHTGREY") |
+| [OwnerPaysFee](#ownerpaysfee)   | v0.33.0    | [Planned: TBD]( "BADGE_LIGHTGREY") |
+| [Tickets](#tickets)             | v0.31.0    | [Planned: TBD]( "BADGE_LIGHTGREY") |
+| [SusPay](#suspay)               | v0.31.0    | [Planned: TBD]( "BADGE_LIGHTGREY") |
+| [Flow](#flow)                   | v0.33.0    | [Enabled: 2016-10-21](https://www.ripplecharts.com/#/transactions/C06CE3CABA3907389E4DD296C5F31C73B1548CC20BD7B83416C78CD7D4CD38FC "BADGE_GREEN") |
+| [FlowV2](#flowv2)               | v0.32.1    | [Vetoed: Removed in v0.33.0](https://ripple.com/dev-blog/flowv2-amendment-vetoed/ "BADGE_RED") |
+| [TrustSetAuth](#trustsetauth)   | v0.30.0    | [Enabled: 2016-07-19](https://www.ripplecharts.com/#/transactions/0E589DE43C38AED63B64FF3DA87D349A038F1821212D370E403EB304C76D70DF "BADGE_GREEN") |
+| [MultiSign](#multisign)         | v0.31.0    | [Enabled: 2016-06-27](https://www.ripplecharts.com/#/transactions/168F8B15F643395E59B9977FC99D6310E8708111C85659A9BAF8B9222EEAC5A7 "BADGE_GREEN") |
+| [FeeEscalation](#feeescalation) | v0.31.0    | [Enabled: 2016-05-19](https://www.ripplecharts.com/#/transactions/5B1F1E8E791A9C243DD728680F108FEF1F28F21BA3B202B8F66E7833CA71D3C3 "BADGE_GREEN") |
 
 **Note:** In many cases, an incomplete version of the code for an amendment is present in previous versions of the software. The "Introduced" version in the table above is the first stable version.
 
@@ -146,19 +146,21 @@ A transaction remains in the queue until one of the following happens:
 
 | Amendment ID                                                     | Status    |
 |:-----------------------------------------------------------------|:----------|
-| 740352F2412A9909880C23A559FCECEDA3BE2126FED62FC7660D628A06927F11 | In development. |
+| 740352F2412A9909880C23A559FCECEDA3BE2126FED62FC7660D628A06927F11 | Enabled   |
 
-Replaces the payment processing engine with a more robust and efficient rewrite called the Flow engine. The new version of the payment processing engine is intended to follow the same rules as the old one, but occasionally produces different results due to floating point rounding. This Amendment supersedes the [FlowV2](#flowv2) amendment.
+Replaces the payment processing engine with a more robust and efficient rewrite called the Flow engine. The new version of the payment processing engine is intended to follow the same rules as the old one, but occasionally produces different results due to floating point rounding. This Amendment supersedes the [FlowV2](https://ripple.com/dev-blog/flowv2-amendment-vetoed/) amendment.
 
 The Flow Engine also makes it easier to improve and expand the payment engine with further Amendments.
+
 
 ## FlowV2 ##
 
 | Amendment ID                                                     | Status    |
 |:-----------------------------------------------------------------|:----------|
-| 5CC22CFF2864B020BD79E0E1F048F63EF3594F95E650E43B3F837EF1DF5F4B26 | Failed to hold a majority. To be removed. |
+| 5CC22CFF2864B020BD79E0E1F048F63EF3594F95E650E43B3F837EF1DF5F4B26 | Withdrawn |
 
-This amendment was intended to replace the payment processing engine with a more robust and efficient rewrite called the FlowV2 engine. However, Ripple [found a flaw in the FlowV2 amendment](https://github.com/ripple/rippled/commit/b92a7d415eecb07ace2b72b6792d9dfa489c5a04) during the voting period, so key validators vetoed the Amendment and it lost its majority. Ripple plans to remove the FlowV2 amendment in future versions of `rippled` and replace it with the [Flow](#flow) amendment.
+This is a previous version of the [Flow](#flow) amendment. It was [rejected due to a bug](https://ripple.com/dev-blog/flowv2-amendment-vetoed/) and removed in version 0.33.0.
+
 
 ## MultiSign ##
 
@@ -187,9 +189,9 @@ An address with a SignerList can disable the master key even if a regular key is
 
 | Amendment ID                                                     | Status    |
 |:-----------------------------------------------------------------|:----------|
-| 9178256A980A86CF3D70D0260A7DA6402AAFE43632FDBCB88037978404188871 | In development. |
+| 9178256A980A86CF3D70D0260A7DA6402AAFE43632FDBCB88037978404188871 | Released but not enabled |
 
-Fixes an inconsistency in the way [transfer fees](concept-transfer-fees.html) are calculated between [OfferCreate](reference-transaction-format.html#offercreate) and [Payment](reference-transaction-format.html#payment) transaction types. Without this amendment, the holder of the issuances pays the transfer fee if an offer is executed in offer placement, but the initial sender of a transaction pays the transfer fees for offers that are executed as part of payment processing. With OwnerPaysFee, the holder of the issuances always pays the transfer fee, regardless of whether the offer is executed as part of a Payment or an OfferCreate transaction. Offer processing outside of payments is unaffected.
+Fixes an inconsistency in the way [transfer fees](concept-transfer-fees.html) are calculated between [OfferCreate](reference-transaction-format.html#offercreate) and [Payment](reference-transaction-format.html#payment) transaction types. Without this amendment, the holder of the issuances pays the transfer fee if an offer is executed in offer placement, but the initial sender of a transaction pays the transfer fees for offers that are executed as part of payment processing. With this amendment, the holder of the issuances always pays the transfer fee, regardless of whether the offer is executed as part of a Payment or an OfferCreate transaction. Offer processing outside of payments is unaffected.
 
 This Amendment requires the [Flow Amendment](#flow) to be enabled.
 
@@ -198,9 +200,9 @@ This Amendment requires the [Flow Amendment](#flow) to be enabled.
 
 | Amendment ID                                                     | Status    |
 |:-----------------------------------------------------------------|:----------|
-| 08DE7D96082187F6E6578530258C77FAABABE4C20474BDB82F04B021F1A68647 | In development. |
+| 08DE7D96082187F6E6578530258C77FAABABE4C20474BDB82F04B021F1A68647 | Released but not enabled |
 
-Creates "Payment Channels" for XRP. Payment channels are a tool for facilitating repeated unidirectional payments or extensions of credit between two parties. Ripple expects this feature to be useful for the [Interledger Protocol](https://interledger.org/). One party creates a Payment Channel and sets aside some XRP in that channel for a predetermined expiration. Then, through off-ledger secure communications, the sender can send "Claim" messages to the receiver. The receiver can redeem the Claim messages before the expiration, or choose not to in case the payment is not needed. The receiver can verify Claims individually without actually distributing them to the network and waiting for the consensus process to redeem them, then redeem the batched content of many small Claims later, as long as it is within the expiration.
+Creates "Payment Channels" for XRP. Payment channels are a tool for facilitating repeated, unidirectional payments or temporary credit between two parties. Ripple expects this feature to be useful for the [Interledger Protocol](https://interledger.org/). One party creates a Payment Channel and sets aside some XRP in that channel for a predetermined expiration. Then, through off-ledger secure communications, the sender can send "Claim" messages to the receiver. The receiver can redeem the Claim messages before the expiration, or choose not to in case the payment is not needed. The receiver can verify Claims individually without actually distributing them to the network and waiting for the consensus process to redeem them, then redeem the batched content of many small Claims later, as long as it is within the expiration.
 
 Creates three new transaction types: `ChannelCreate`, `ChannelFund`, and `ChannelClaim`. Creates a new ledger node type, `Channel`. Defines an off-ledger data structure called a `Claim`, used in the ChannelClaim transaction. Creates new `rippled` API methods: `channel_authorize` (creates a signed Claim), `channel_verify` (verifies a signed Claim), and `account_channels` (lists Channels associated with an account).
 
@@ -211,7 +213,7 @@ Creates three new transaction types: `ChannelCreate`, `ChannelFund`, and `Channe
 
 | Amendment ID                                                     | Status    |
 |:-----------------------------------------------------------------|:----------|
-| C6970A8B603D8778783B61C0D445C23D1633CCFAEF0D43E7DBCD1521D34BD7C3 | In development. |
+| C6970A8B603D8778783B61C0D445C23D1633CCFAEF0D43E7DBCD1521D34BD7C3 | Released but not enabled |
 
 Changes the hash tree structure that `rippled` uses to represent a ledger. The new structure is more compact and efficient than the previous version. This affects how ledger hashes are calculated, but has no other user-facing consequences.
 
@@ -220,11 +222,11 @@ Changes the hash tree structure that `rippled` uses to represent a ledger. The n
 
 | Amendment ID                                                     | Status    |
 |:-----------------------------------------------------------------|:----------|
-| DA1BD556B42D85EA9C84066D028D355B52416734D3283F85E216EA5DA6DB7E13 | In development. <br />Enabled on TestNet |
+| DA1BD556B42D85EA9C84066D028D355B52416734D3283F85E216EA5DA6DB7E13 | Released but not enabled <br />Enabled on TestNet |
 
 Provides "Suspended Payments" for XRP for escrow within the Ripple Consensus Ledger. Creates the `SuspendedPayment` ledger node type and the new transaction types `SuspendedPaymentCreate`, `SuspendedPaymentFinish`, and `SuspendedPaymentCancel`.
 
-**Note:** This amendment is still in development. The current version is enabled on the [Ripple Test Net](https://ripple.com/build/ripple-test-net/).
+The current version is enabled on the [Ripple Test Net](https://ripple.com/build/ripple-test-net/).
 
 ## TrustSetAuth ##
 
@@ -244,5 +246,6 @@ With this amendment enabled, a `TrustSet` transaction with [`tfSetfAuth` enabled
 
 Introduces Tickets as a way to reserve a transaction sequence number for later execution. Creates the `Ticket` ledger node type and the transaction types `TicketCreate` and `TicketCancel`.
 
-This amendment is still in development.
- {% include 'snippets/rippled_versions.md' %}
+**Caution:** This amendment is still in development.
+
+{% include 'snippets/rippled_versions.md' %}
