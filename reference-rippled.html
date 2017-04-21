@@ -251,7 +251,7 @@
 <h1 id="websocket-and-json-rpc-apis">WebSocket and JSON-RPC APIs</h1>
 <p>If you want to communicate directly with a <code>rippled</code> server, you can use either the WebSocket API or the JSON-RPC API. Both APIs use the same list of commands, with almost entirely the same parameters in each command. Alternatively, you can use <a href="reference-rippleapi.html">RippleAPI</a>, which is a simplified JavaScript client library, which communicates directly with a <code>rippled</code> server from <a href="http://nodejs.org/">Node.js</a> or a web browser.</p>
 <ul>
-<li>The WebSocket API uses the <a href="http://www.html5rocks.com/en/tutorials/websockets/basics/">WebSocket protocol</a>, available in most browsers and Javascript implementations, to achieve persistent two-way communication. There is not a 1:1 correlation between requests and responses. Some requests prompt the server to send multiple messages back asynchronously; other times, responses may arrive in a different order than the requests that prompted them. The <code>rippled</code> server can be configured to accept secured (wss:), unsecured (ws:) WebSocket connections, or both.</li>
+<li>The WebSocket API uses the <a href="https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API">WebSocket protocol</a>, available in most browsers and Javascript implementations, to achieve persistent two-way communication. There is not a 1:1 correlation between requests and responses. Some requests prompt the server to send multiple messages back asynchronously; other times, responses may arrive in a different order than the requests that prompted them. The <code>rippled</code> server can be configured to accept secured (wss:), unsecured (ws:) WebSocket connections, or both.</li>
 <li>The JSON-RPC API relies on request-response communication via HTTP or HTTPS. (The <code>rippled</code> server can be configured to accept HTTP, HTTPS, or both.) For commands that prompt multiple responses, you can provide a callback URL.</li>
 <li>The <code>rippled</code> program can also be used as a quick commandline client to make JSON-RPC requests to a running <code>rippled</code> server. This is only intended for administrative purposes, and is not a supported API.</li>
 </ul>
@@ -262,11 +262,11 @@
 <h2 id="connecting-to-rippled">Connecting to rippled</h2>
 <p>Before you can run any commands against a <code>rippled</code> server, you must know which server you are connecting to. Most servers are configured not to accept API requests directly from the outside network.</p>
 <p>Alternatively, you can <a href="tutorial-rippled-setup.html">run your own local copy of <code>rippled</code></a>. This is required if you want to access any of the <a href="#list-of-admin-commands">Admin Commands</a>. In this case, you should use whatever IP and port you configured the server to bind. (For example, <code>127.0.0.1:54321</code>) Additionally, to access admin functionality, you must connect from a port/IP address marked as admin in the config file.</p>
-<p>The <a href="https://github.com/ripple/rippled/blob/d7def5509d8338b1e46c0adf309b5912e5168af0/doc/rippled-example.cfg#L831-L854">example config file</a> listens for connections on the local loopback network (127.0.0.1), with JSON-RPC (HTTP) on port 5005 and WebSocket (WS) on port 6006, and treats all connected clients as admin.</p>
+<p>The <a href="https://github.com/ripple/rippled/blob/release/doc/rippled-example.cfg#L907-L930">example config file</a> listens for connections on the local loopback network (127.0.0.1), with JSON-RPC (HTTP) on port 5005 and WebSocket (WS) on port 6006, and treats all connected clients as admin.</p>
 <h3 id="websocket-api">WebSocket API</h3>
-<p>If you are looking to try out some methods on the Ripple Consensus Ledger, you can skip writing your own WebSocket code and go straight to using the API at the <a href="ripple-api-tool.html">Ripple WebSocket API Tool</a>. Later on, when you want to connect to your own <code>rippled</code> server, you can build your own client in Javascript to run in a browser (See <a href="http://www.websocket.org/echo.html">this example</a> ) or possibly <a href="https://github.com/einaros/ws">Node.js</a>.</p>
+<p>If you are looking to try out some methods on the Ripple Consensus Ledger, you can skip writing your own WebSocket code and go straight to using the API at the <a href="ripple-api-tool.html">Ripple WebSocket API Tool</a>. Later on, when you want to connect to your own <code>rippled</code> server, you can <a href="https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_client_applications">build your own client in the browser</a> or <a href="https://www.npmjs.com/package/ws">in Node.js</a>.</p>
 <h4 id="request-formatting">Request Formatting</h4>
-<p>After you open a WebSocket to the <code>rippled</code> server, you can send commands as a <a href="http://www.w3schools.com/json/">JSON</a> object, with the following attributes:</p>
+<p>After you open a WebSocket to the <code>rippled</code> server, you can send commands as a <a href="https://en.wikipedia.org/wiki/JSON">JSON</a> object, with the following attributes:</p>
 <ul>
 <li>Put command name in top-level <code>"command"</code> field</li>
 <li>All the relevant parameters for the command are also in the top level</li>
@@ -298,12 +298,12 @@
 </table>
 <p>These public servers are not for sustained or business use, and they may become unavailable at any time. For regular use, you should run your own <code>rippled</code> server or contract someone you trust to do so.</p>
 <h3 id="json-rpc">JSON-RPC</h3>
-<p>You can use any HTTP client (like <a href="https://addons.mozilla.org/en-US/firefox/addon/poster/">Poster for Firefox</a> or <a href="https://chrome.google.com/webstore/detail/postman-rest-client/fdmmgilgnpjigdojojpjoooidkmcomcm?hl=en">Postman for Chrome</a>) to make JSON-RPC calls a <code>rippled</code> server. Most programming languages have a library for making HTTP requests built in.</p>
+<p>You can use any HTTP client (like <a href="https://addons.mozilla.org/en-US/firefox/addon/poster/">Poster for Firefox</a> or <a href="https://chrome.google.com/webstore/detail/postman/fhbjgbiflinjbdggehcddcbncdddomop?hl=en">Postman for Chrome</a>) to make JSON-RPC calls a <code>rippled</code> server. Most programming languages have a library for making HTTP requests built in.</p>
 <h4 id="request-formatting-1">Request Formatting</h4>
 <p>To make a JSON-RPC request, send an HTTP <strong>POST</strong> request to the root path (<code>/</code>) on the port and IP where the <code>rippled</code> server is listening for JSON-RPC connections. You can use HTTP/1.0 or HTTP/1.1. If you use HTTPS, you should use TLS v1.2. For security reasons, <code>rippled</code> <em>does not support</em> SSL v3 or earlier.</p>
 <p>Always include a <code>Content-Type</code> header with the value <code>application/json</code>.</p>
 <p>If you plan on making multiple requests, use <a href="http://tools.ietf.org/html/rfc7230#section-6.3">Keep-Alives</a> so that you do not have to close and re-open the connection in between requests.</p>
-<p>Send request body as a <a href="http://www.w3schools.com/json/">JSON</a> object with the following attributes:</p>
+<p>Send request body as a <a href="https://en.wikipedia.org/wiki/JSON">JSON</a> object with the following attributes:</p>
 <ul>
 <li>Put the command in the top-level <code>"method"</code> field</li>
 <li>Include a top-level <code>"params"</code> field. The contents of this field should be <strong>a one-item array</strong> containing only a nested JSON object with all the parameters for the command.</li>
@@ -950,7 +950,7 @@ Null method
 }
 </code></pre></div>
 </div>
-<p><a class="button" href="ripple-api-tool.html#account_currencies">Try it! &gt;</a></p>
+<p><a class="button" href="ripple-api-tool.html#account_currencies">Try it!</a></p>
 <p>The request includes the following parameters:</p>
 <table>
 <thead>
@@ -1131,7 +1131,7 @@ Null method
 rippled account_info r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59 true
 </code></pre></div>
 </div>
-<p><a class="button" href="ripple-api-tool.html#account_info">Try it! &gt;</a></p>
+<p><a class="button" href="ripple-api-tool.html#account_info">Try it!</a></p>
 <p>The request contains the following parameters:</p>
 <table>
 <thead>
@@ -1425,7 +1425,7 @@ rippled account_info r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59 true
 }
 </code></pre></div>
 </div>
-<p><a class="button" href="ripple-api-tool.html#account_lines">Try it! &gt;</a></p>
+<p><a class="button" href="ripple-api-tool.html#account_lines">Try it!</a></p>
 <p>The request accepts the following paramters:</p>
 <table>
 <thead>
@@ -1703,7 +1703,7 @@ rippled account_info r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59 true
 rippled account_offers r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59 current
 </code></pre></div>
 </div>
-<p><a class="button" href="ripple-api-tool.html#account_offers">Try it! &gt;</a></p>
+<p><a class="button" href="ripple-api-tool.html#account_offers">Try it!</a></p>
 <p>A request can include the following parameters:</p>
 <table>
 <thead>
@@ -1928,7 +1928,15 @@ rippled account_offers r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59 current
 </ul>
 <h2 id="account-objects">account_objects</h2>
 <p><a href="https://github.com/ripple/rippled/blob/399c43cae6e90a428e9ce6a988123972b0f03c99/src/ripple/rpc/handlers/AccountObjects.cpp" title="Source">[Source]<br/></a></p>
-<p>The <code>account_objects</code> command returns the raw <a href="reference-ledger-format.html">ledger format</a> for all objects owned by an account, such as <a href="reference-transaction-format.html#lifecycle-of-an-offer">outstanding offers</a>, trust lines in non-default state, and <a href="reference-transaction-format.html#multi-signing">signer lists</a>. For getting the balance of an account's trust lines, we recommend <a href="#account-lines"><code>account_lines</code></a> instead.</p>
+<p>The <code>account_objects</code> command returns the raw <a href="reference-ledger-format.html">ledger format</a> for all objects owned by an account. For a higher-level view of an account's trust lines and balances, see <a href="#account-lines"><code>account_lines</code></a> instead.</p>
+<p>The types of objects that may appear in the <code>account_objects</code> response for an account include:</p>
+<ul>
+<li><a href="reference-ledger-format.html#offer">Offer nodes</a> for orders that are currently live, unfunded, or expired but not yet removed. (See <a href="reference-transaction-format.html#lifecycle-of-an-offer">Lifecycle of an Offer</a> for more information.)</li>
+<li><a href="reference-ledger-format.html#ripplestate">RippleState nodes</a> for trust lines where this account's side is not in the default state.</li>
+<li>The account's <a href="reference-ledger-format.html#signerlist">SignerList node</a>, if the account has <a href="reference-transaction-format.html#multi-signing">multi-signing</a> enabled.</li>
+<li><a href="reference-ledger-format.html#escrow">Escrow nodes</a> for held payments that have not yet been executed or canceled.</li>
+<li><a href="reference-ledger-format.html#paychannel">PayChannel nodes</a> for open payment channels.</li>
+</ul>
 <h4 id="request-format-4">Request Format</h4>
 <p>An example of the request format:</p>
 <div class="multicode" id="code-11"><ul class="codetabs"><li><a href="#code-11-0">WebSocket</a></li><li><a href="#code-11-1">JSON-RPC</a></li><li><a href="#code-11-2">Commandline</a></li></ul>
@@ -2620,7 +2628,7 @@ rippled account_objects r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59 validated
 rippled account_tx r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59 -1 -1 2 false false false
 </code></pre></div>
 </div>
-<p><a class="button" href="ripple-api-tool.html#account_tx">Try it! &gt;</a></p>
+<p><a class="button" href="ripple-api-tool.html#account_tx">Try it!</a></p>
 <p>The request includes the following parameters:</p>
 <table>
 <thead>
@@ -3958,7 +3966,7 @@ Connecting to 127.0.0.1:5005
 rippled ledger current
 </code></pre></div>
 </div>
-<p><a class="button" href="ripple-api-tool.html#ledger">Try it! &gt;</a></p>
+<p><a class="button" href="ripple-api-tool.html#ledger">Try it!</a></p>
 <p>The request can contain the following parameters:</p>
 <table>
 <thead>
@@ -4212,7 +4220,7 @@ rippled ledger current
 rippled ledger_closed
 </code></pre></div>
 </div>
-<p><a class="button" href="ripple-api-tool.html#ledger_closed">Try it! &gt;</a></p>
+<p><a class="button" href="ripple-api-tool.html#ledger_closed">Try it!</a></p>
 <p>This method accepts no parameters.</p>
 <h4 id="response-format-10">Response Format</h4>
 <p>An example of a successful response:</p>
@@ -4290,7 +4298,7 @@ rippled ledger_closed
 rippled ledger_current
 </code></pre></div>
 </div>
-<p><a class="button" href="ripple-api-tool.html#ledger_current">Try it! &gt;</a></p>
+<p><a class="button" href="ripple-api-tool.html#ledger_current">Try it!</a></p>
 <p>The request contains no parameters.</p>
 <h4 id="response-format-11">Response Format</h4>
 <p>An example of a successful response:</p>
@@ -4675,7 +4683,7 @@ rippled ledger_current
 }
 </code></pre></div>
 </div>
-<p><a class="button" href="ripple-api-tool.html#ledger_entry">Try it! &gt;</a></p>
+<p><a class="button" href="ripple-api-tool.html#ledger_entry">Try it!</a></p>
 <p>This method can retrieve several different types of data. You can select which type of item to retrieve by passing the appropriate parameters. Specifically, you should provide exactly one of the following fields:</p>
 <ol>
 <li><code>index</code> - Retrieve any type of ledger node by its unique index</li>
@@ -5148,7 +5156,7 @@ rippled ledger_accept
 rippled tx E08D6E9754025BA2534A78707605E0601F03ACE063687A0CA1BDDACFCD1698C7 false
 </code></pre></div>
 </div>
-<p><a class="button" href="ripple-api-tool.html#tx">Try it! &gt;</a></p>
+<p><a class="button" href="ripple-api-tool.html#tx">Try it!</a></p>
 <p>The request includes the following parameters:</p>
 <table>
 <thead>
@@ -5378,7 +5386,7 @@ rippled tx E08D6E9754025BA2534A78707605E0601F03ACE063687A0CA1BDDACFCD1698C7 fals
 rippled transaction_entry E08D6E9754025BA2534A78707605E0601F03ACE063687A0CA1BDDACFCD1698C7 348734
 </code></pre></div>
 </div>
-<p><a class="button" href="ripple-api-tool.html#transaction_entry">Try it! &gt;</a></p>
+<p><a class="button" href="ripple-api-tool.html#transaction_entry">Try it!</a></p>
 <p>The request includes the following parameters:</p>
 <table>
 <thead>
@@ -5614,7 +5622,7 @@ rippled transaction_entry E08D6E9754025BA2534A78707605E0601F03ACE063687A0CA1BDDA
 rippled tx_history 0
 </code></pre></div>
 </div>
-<p><a class="button" href="ripple-api-tool.html#tx_history">Try it! &gt;</a></p>
+<p><a class="button" href="ripple-api-tool.html#tx_history">Try it!</a></p>
 <p>The request includes the following parameters:</p>
 <table>
 <thead>
@@ -6511,7 +6519,7 @@ rippled tx_history 0
 }
 </code></pre></div>
 </div>
-<p><a class="button" href="ripple-api-tool.html#path_find">Try it! &gt;</a></p>
+<p><a class="button" href="ripple-api-tool.html#path_find">Try it!</a></p>
 <p>The request includes the following parameters:</p>
 <table>
 <thead>
@@ -7188,7 +7196,7 @@ rippled tx_history 0
 rippled ripple_path_find '{"source_account": "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59", "source_currencies": [ { "currency": "XRP" }, { "currency": "USD" } ], "destination_account": "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59", "destination_amount": { "value": "0.001", "currency": "USD", "issuer": "rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B" } }'
 </code></pre></div>
 </div>
-<p><a class="button" href="ripple-api-tool.html#ripple_path_find">Try it! &gt;</a></p>
+<p><a class="button" href="ripple-api-tool.html#ripple_path_find">Try it!</a></p>
 <p>The request includes the following parameters:</p>
 <table>
 <thead>
@@ -7566,7 +7574,7 @@ rippled ripple_path_find '{"source_account": "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59
 rippled sign s████████████████████████████ '{"TransactionType": "Payment", "Account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn", "Destination": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX", "Amount": { "currency": "USD", "value": "1", "issuer" : "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn" }, "Sequence": 360, "Fee": "10000"}' offline
 </code></pre></div>
 </div>
-<p><a class="button" href="ripple-api-tool.html#sign">Try it! &gt;</a></p>
+<p><a class="button" href="ripple-api-tool.html#sign">Try it!</a></p>
 <p>To sign a transaction, you must provide a secret key that can <a href="reference-transaction-format.html#authorizing-transactions">authorize the transaction</a>. You can do this in a few ways:</p>
 <ul>
 <li>Provide a <code>secret</code> value and omit the <code>key_type</code> field. This value can be formatted as base-58 seed, RFC-1751, hexadecimal, or as a string passphrase. (secp256k1 keys only)</li>
@@ -8073,7 +8081,7 @@ Connecting to 127.0.0.1:5005
 submit 1200002280000000240000000361D4838D7EA4C6800000000000000000000000000055534400000000004B4E9C06F24296074F7BC48F92A97916C6DC5EA968400000000000000A732103AB40A0490F9B7ED8DF29D246BF2D6269820A0EE7742ACDD457BEA7C7D0931EDB74473045022100D184EB4AE5956FF600E7536EE459345C7BBCF097A84CC61A93B9AF7197EDB98702201CEA8009B7BEEBAA2AACC0359B41C427C1C5B550A4CA4B80CF2174AF2D6D5DCE81144B4E9C06F24296074F7BC48F92A97916C6DC5EA983143E9D4A2B8AA0780F682D136F7A56D6724EF53754
 </code></pre></div>
 </div>
-<p><a class="button" href="ripple-api-tool.html#submit">Try it! &gt;</a></p>
+<p><a class="button" href="ripple-api-tool.html#submit">Try it!</a></p>
 <h3 id="sign-and-submit-mode">Sign-and-Submit Mode</h3>
 <p>This mode signs a transaction and immediately submits it. This mode is intended to be used for testing. You cannot use this mode for <a href="reference-transaction-format.html#multi-signing">multi-signed transactions</a>.</p>
 <p>You can provide the secret key used to sign the transaction in the following ways:</p>
@@ -8198,7 +8206,7 @@ submit 1200002280000000240000000361D4838D7EA4C6800000000000000000000000000055534
 rippled submit s████████████████████████████ '{"Account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn", "Amount": { "currency": "USD", "issuer": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn", "value": "1" }, "Destination": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX", "TransactionType": "Payment", "Fee": "10000"}'
 </code></pre></div>
 </div>
-<p><a class="button" href="ripple-api-tool.html#submit">Try it! &gt;</a></p>
+<p><a class="button" href="ripple-api-tool.html#submit">Try it!</a></p>
 <h4 id="response-format-25">Response Format</h4>
 <p>An example of a successful response:</p>
 <div class="multicode" id="code-53"><ul class="codetabs"><li><a href="#code-53-0">WebSocket</a></li><li><a href="#code-53-1">JSON-RPC</a></li><li><a href="#code-53-2">Commandline</a></li></ul>
@@ -8656,7 +8664,7 @@ rippled submit_multisigned '{
 rippled book_offers 'USD/rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B' 'EUR/rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B'
 </code></pre></div>
 </div>
-<p><a class="button" href="ripple-api-tool.html#book_offers">Try it! &gt;</a></p>
+<p><a class="button" href="ripple-api-tool.html#book_offers">Try it!</a></p>
 <p>The request includes the following parameters:</p>
 <table>
 <thead>
@@ -8885,7 +8893,7 @@ rippled book_offers 'USD/rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B' 'EUR/rvYAfWj5gh67oV6
 }
 </code></pre></div>
 </div>
-<p><a class="button" href="ripple-api-tool.html#subscribe">Try it! &gt;</a></p>
+<p><a class="button" href="ripple-api-tool.html#subscribe">Try it!</a></p>
 <p>The request includes the following parameters:</p>
 <table>
 <thead>
@@ -9632,7 +9640,7 @@ rippled book_offers 'USD/rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B' 'EUR/rvYAfWj5gh67oV6
 }
 </code></pre></div>
 </div>
-<p><a class="button" href="ripple-api-tool.html#unsubscribe">Try it! &gt;</a></p>
+<p><a class="button" href="ripple-api-tool.html#unsubscribe">Try it!</a></p>
 <p>The parameters in the request are specified almost exactly like the parameters to <a href="#subscribe"><code>subscribe</code></a>, except that they are used to define which subscriptions to end instead. The parameters are:</p>
 <table>
 <thead>
@@ -9749,7 +9757,7 @@ rippled book_offers 'USD/rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B' 'EUR/rvYAfWj5gh67oV6
 rippled server_info
 </code></pre></div>
 </div>
-<p><a class="button" href="ripple-api-tool.html#server_info">Try it! &gt;</a></p>
+<p><a class="button" href="ripple-api-tool.html#server_info">Try it!</a></p>
 <p>The request does not takes any parameters.</p>
 <h4 id="response-format-30">Response Format</h4>
 <p>An example of a successful response:</p>
@@ -10175,7 +10183,7 @@ rippled server_info
 rippled server_state
 </code></pre></div>
 </div>
-<p><a class="button" href="ripple-api-tool.html#server_state">Try it! &gt;</a></p>
+<p><a class="button" href="ripple-api-tool.html#server_state">Try it!</a></p>
 <p>The request does not takes any parameters.</p>
 <h4 id="response-format-31">Response Format</h4>
 <p>An example of a successful response:</p>
@@ -11264,6 +11272,7 @@ rippled fee
       "open_ledger_fee": "10"
     },
     "expected_ledger_size": "24",
+    "ledger_current_index": 26575101,
     "levels": {
       "median_level": "281600",
       "minimum_level": "256",
@@ -11287,6 +11296,7 @@ rippled fee
             "open_ledger_fee": "2653937"
         },
         "expected_ledger_size": "55",
+        "ledger_current_index": 26575101,
         "levels": {
             "median_level": "256000",
             "minimum_level": "256",
@@ -11312,6 +11322,7 @@ Connecting to 127.0.0.1:5005
          "open_ledger_fee" : "3203982"
       },
       "expected_ledger_size" : "15",
+      "ledger_current_index": 26575101,
       "levels" : {
          "median_level" : "281600",
          "minimum_level" : "256",
@@ -11373,6 +11384,11 @@ Connecting to 127.0.0.1:5005
 <td align="left"><code>expected_ledger_size</code></td>
 <td align="left">String (Integer)</td>
 <td align="left">The approximate number of transactions expected to be included in the current ledger. This is based on the number of transactions in the previous ledger.</td>
+</tr>
+<tr>
+<td align="left"><code>ledger_current_index</code></td>
+<td align="left">Number</td>
+<td align="left">The <a href="#ledger-index">Ledger Index</a> of the current open ledger these stats describe. <a href="https://github.com/ripple/rippled/releases/tag/0.50.0" title="New in: rippled 0.50.0"><img alt="New in: rippled 0.50.0" class="dactyl_badge" src="https://img.shields.io/badge/New%20in-rippled%200.50.0-blue.svg"/></a></td>
 </tr>
 <tr>
 <td align="left"><code>levels</code></td>
@@ -12784,7 +12800,7 @@ Connecting to 127.0.0.1:5005
 rippled ping
 </code></pre></div>
 </div>
-<p><a class="button" href="ripple-api-tool.html#ping">Try it! &gt;</a></p>
+<p><a class="button" href="ripple-api-tool.html#ping">Try it!</a></p>
 <p>The request includes no parameters.</p>
 <h4 id="response-format-44">Response Format</h4>
 <p>An example of a successful response:</p>

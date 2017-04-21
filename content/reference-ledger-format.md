@@ -39,7 +39,7 @@ Every ledger version has a unique header that describes the contents. You can lo
 | close\_time     | Number    | UInt32            | The approximate time this ledger closed, as the number of seconds since the Ripple Epoch of 2000-01-01 00:00:00. This value is rounded based on the `close_time_resolution`, so later ledgers can have the same value. |
 | closed          | Boolean   | bool              | If true, this transaction is no longer accepting new transactions. (However, unless this ledger is validated, it might be replaced by a different ledger with a different set of transactions.) |
 | parent\_hash    | String    | Hash256           | The `ledger_hash` value of the previous ledger that was used to build this one. If there are different versions of the previous ledger index, this indicates from which one the ledger was derived. |
-| total\_coins    | String    | UInt64            | The total number of drops of XRP owned by accounts in the ledger. This subtracts XRP that has been destroyed by transaction fees. The actual amount of XRP in circulation is lower because some accounts are "black holes" whose keys are not known by anyone. |
+| total\_coins    | String    | UInt64            | The total number of [drops of XRP][XRP, in drops] owned by accounts in the ledger. This omits XRP that has been destroyed by transaction fees. The actual amount of XRP in circulation is lower because some accounts are "black holes" whose keys are not known by anyone. |
 | transaction\_hash | String  | Hash256           | The SHA-512Half of the transactions included in this ledger. |
 | close\_time\_resolution | Number | Uint8        | An integer in the range \[2,120\] indicating the maximum number of seconds by which the `close_time` could be rounded. |
 | [closeFlags](#close-flags) | (Omitted) | UInt8             | A bit-map of flags relating to the closing of this ledger. |
@@ -65,8 +65,11 @@ There are several different kinds of nodes that can appear in the ledger's state
 
 * [**AccountRoot** - The settings, XRP balance, and other metadata for one account.](#accountroot)
 * [**DirectoryNode** - Contains links to other nodes.](#directorynode)
+* [**Escrow** - Contains XRP held for a conditional payment](#escrow)
 * [**Offer** - An offer to exchange currencies, known in finance as an _order_.](#offer)
+* [**PayChannel** - A channel for asynchronous XRP payments.](#paychannel)
 * [**RippleState** - Links two accounts, tracking the balance of one currency between them. The concept of a _trust line_ is really an abstraction of this node type.](#ripplestate)
+* [**SignerList** - A list of addresses for multi-signing transactions.](#signerlist)
 
 Each ledger node consists of several fields. In the peer protocol that `rippled` servers use to communicate with each other, ledger nodes are represented in their raw binary format. In other [`rippled` APIs](reference-rippled.html), ledger nodes are represented as JSON objects.
 
@@ -102,7 +105,7 @@ The `AccountRoot` node has the following fields:
 | Account         | String | AccountID | The identifying address of this account, such as rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn. |
 | [Flags](#accountroot-flags) | Number | UInt32 | A bit-map of boolean flags enabled for this account. |
 | Sequence        | Number | UInt32 | The sequence number of the next valid transaction for this account. (Each account starts with Sequence = 1 and increases each time a transaction is made.) |
-| Balance         | String | Amount | The account's current XRP balance in drops, represented as a string. |
+| Balance         | String | Amount | The account's current [XRP balance in drops][XRP, in drops], represented as a string. |
 | OwnerCount      | Number | UInt32 | The number of objects this account owns in the ledger, which contributes to its owner reserve. |
 | PreviousTxnID   | String | Hash256 | The identifying hash of the transaction that most recently modified this node. |
 | PreviousTxnLgrSeq | Number | UInt32 | The [index of the ledger](#ledger-index) that contains the transaction that most recently modified this node. |
@@ -112,6 +115,7 @@ The `AccountRoot` node has the following fields:
 | WalletLocator   | String | Hash256 | (Optional) **DEPRECATED**. Do not use. |
 | WalletSize      | Number | UInt32  | (Optional) **DEPRECATED**. Do not use. |
 | MessageKey      | String | VariableLength  | (Optional) A public key that may be used to send encrypted messages to this account. In JSON, uses hexadecimal. No more than 33 bytes. |
+| TickSize        | Number | UInt8   | (Optional) How many significant digits to use for exchange rates of Offers involving currencies issued by this address. Valid values are `3` to `15`, inclusive. _(Requires the [TickSize amendment](concept-amendments.html#ticksize).)_ |
 | TransferRate    | Number | UInt32  | (Optional) A [transfer fee](https://ripple.com/knowledge_center/transfer-fees/) to charge other users for sending currency issued by this account to each other. |
 | Domain          | String | VariableLength | (Optional) A domain associated with this account. In JSON, this is the hexadecimal for the ASCII representation of the domain. |
 
@@ -128,7 +132,7 @@ AccountRoot nodes can have the following flag values:
 | lsfRequireAuth | 0x00040000 | 262144 | This account must individually approve other users for those users to hold this account's issuances. | asfRequireAuth |
 | lsfDisallowXRP | 0x00080000 | 524288 | Client applications should not send XRP to this account. Not enforced by `rippled`. | asfDisallowXRP |
 | lsfDisableMaster | 0x00100000 | 1048576 | Disallows use of the master key to sign transactions for this account. | asfDisableMaster |
-| lsfNoFreeze | 0x00200000 | 209715　| This address cannot freeze trust lines connected to it. Once enabled, cannot be disabled. | asfNoFreeze |
+| lsfNoFreeze | 0x00200000 | 2097152 | This address cannot freeze trust lines connected to it. Once enabled, cannot be disabled. | asfNoFreeze |
 | lsfGlobalFreeze | 0x00400000 | 4194304 |　All assets issued by this address are frozen. | asfGlobalFreeze |
 | lsfDefaultRipple | 0x00800000 | 8388608 | Enable [rippling](concept-noripple.html) on this addresses's trust lines by default. Required for issuing addresses; discouraged for others. | asfDefaultRipple |
 
@@ -197,8 +201,8 @@ Example Directories:
 | Flags             | Number    | UInt32    | A bit-map of boolean flags enabled for this directory. Currently, the protocol defines no flags for DirectoryNode objects. |
 | RootIndex         | Number    | Hash256   | The index of root node for this directory. |
 | Indexes           | Array     | Vector256 | The contents of this Directory: an array of indexes to other nodes. |
-| IndexNext         | Number    | UInt64    | (Optional) If this Directory consists of multiple nodes, this index links to the next node in the chain, wrapping around at the end. |
-| IndexPrevious     | Number    | UInt64    | (Optional) If this Directory consists of multiple nodes, this index links to the previous node in the chain, wrapping around at the beginning. |
+| IndexNext         | Number    | UInt64    | (Optional) If this Directory consists of multiple pages, this index links to the next node in the chain, wrapping around at the end. |
+| IndexPrevious     | Number    | UInt64    | (Optional) If this Directory consists of multiple pages, this index links to the previous node in the chain, wrapping around at the beginning. |
 | Owner             | String    | AccountID | (Owner Directories only) The address of the account that owns the objects in this directory. |
 | ExchangeRate      | Number    | UInt64    | (Offer Directories only) **DEPRECATED**. Do not use. |
 | TakerPaysCurrency | String    | Hash160   | (Offer Directories only) The currency code of the TakerPays amount from the offers in this directory. |
@@ -234,6 +238,67 @@ The lower 64 bits of an Offer Directory's index represent the TakerPays amount d
 * The Directory Node space key (`d`)
 * The `index` of the root DirectoryNode
 * The page number of this node. (Since 0 is the root DirectoryNode, this value is an integer 1 or higher.)
+
+
+## Escrow
+[[Source]<br>](https://github.com/ripple/rippled/blob/c6b6d82a754fe449cc533e18659df483c10a5c98/src/ripple/protocol/impl/LedgerFormats.cpp#L90-L101 "Source")
+
+_(Requires the [Escrow Amendment](concept-amendments.html#paychan).)_
+
+The `Escrow` node type represents a held payment of XRP waiting to be executed or canceled. An [EscrowCreate transaction](reference-transaction-format.html#escrowcreate) creates an Escrow node in the ledger. A successful [EscrowFinish](reference-transaction-format.html#escrowfinish) or [EscrowCancel](reference-transaction-format.html#escrowcancel) transaction deletes the node. If the Escrow node has a [_crypto-condition_](https://tools.ietf.org/html/draft-thomas-crypto-conditions-02), the payment can only succeed if an EscrowFinish transaction provides the corresponding _fulfillment_ that satisfies the condition. (The only supported crypto-condition type is [PREIMAGE-SHA-256](https://tools.ietf.org/html/draft-thomas-crypto-conditions-02#section-8.1).) If the Escrow node has a `FinishAfter` time, the held payment can only execute after that time.
+
+An Escrow node is associated with two addresses:
+
+- The owner, who provides the XRP when creating the Escrow node. If the held payment is canceled, the XRP returns to the owner.
+- The destination, where the XRP is paid when the held payment succeeds. The destination can be the same as the owner.
+
+Example Escrow node:
+
+```
+{
+    "Account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+    "Amount": "10000",
+    "CancelAfter": 545440232,
+    "Condition": "A0258020A82A88B2DF843A54F58772E4A3861866ECDB4157645DD9AE528C1D3AEEDABAB6810120",
+    "Destination": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+    "DestinationTag": 23480,
+    "FinishAfter": 545354132,
+    "Flags": 0,
+    "LedgerEntryType": "Escrow",
+    "OwnerNode": "0000000000000000",
+    "PreviousTxnID": "C44F2EB84196B9AD820313DBEBA6316A15C9A2D35787579ED172B87A30131DA7",
+    "PreviousTxnLgrSeq": 28991004,
+    "SourceTag": 11747,
+    "index": "DC5F3851D8A1AB622F957761E5963BC5BD439D5C24AC6AD7AC4523F0640244AC"
+}
+```
+
+An Escrow node has the following fields:
+
+| Name              | JSON Type | [Internal Type][] | Description |
+|-------------------|-----------|---------------|-------------|
+| Account           | String | AccountID | The address of the owner (sender) of this held payment. This is the account that provided the XRP, and gets it back if the held payment is canceled. |
+| Destination       | String | AccountID | The destination address where the XRP is paid if the held payment is successful. |
+| Amount            | String | Amount    | The amount of XRP, in drops, to be delivered by the held payment. |
+| Condition         | String | VariableLength | _(Optional)_ A [PREIMAGE-SHA-256 crypto-condition](https://tools.ietf.org/html/draft-thomas-crypto-conditions-02#section-8.1), as hexadecimal. If present, the [EscrowFinish transaction][] must contain a fulfillment that satisfies this condition. |
+| CancelAfter       | Number | UInt32 | _(Optional)_ The held payment can be canceled if and only if this field is present _and_ the time it specifies has passed. Specifically, this is specified as [seconds since the Ripple epoch](reference-rippled.html#specifying-time) and it "has passed" if it's earlier than the close time of the previous validated ledger. |
+| FinishAfter       | Number | UInt32 | _(Optional)_ The time, in [seconds since the Ripple epoch](reference-rippled.html#specifying-time), after which this held payment can be finished. Any [EscrowFinish transaction][] before this time fails. (Specifically, this is compared with the close time of the previous validated ledger.) |
+| SourceTag         | Number | UInt32 | _(Optional)_ An arbitrary tag to further specify the source for this held payment, such as a hosted recipient at the owner's address. |
+| DestinationTag    | Number | UInt32 | _(Optional)_ An arbitrary tag to further specify the destination for this held payment, such as a hosted recipient at the destination address. |
+| OwnerNode         | String    | UInt64    | A hint indicating which page of the owner directory links to this node, in case the directory consists of multiple pages. **Note:** The node does not contain a direct link to the owner directory containing it, since that value can be derived from the `Account`. |
+| PreviousTxnID     | String | Hash256 | The identifying hash of the transaction that most recently modified this node. |
+| PreviousTxnLgrSeq | Number | UInt32 | The [index of the ledger](#ledger-index) that contains the transaction that most recently modified this node. |
+
+[EscrowFinish transaction]: reference-transaction-format.html#escrowfinish
+
+### Escrow Index Format ###
+
+The `index` of an Escrow node is the SHA-512Half of the following values put together:
+
+* The Escrow space key (`u`)
+* The AccountID of the sender of the EscrowCreate transaction that created the Escrow node
+* The Sequence number of the EscrowCreate transaction that created the Escrow node
+
 
 
 ## Offer ##
@@ -277,8 +342,8 @@ An Offer node has the following fields:
 | TakerPays         | String or Object | Amount | The remaining amount and type of currency requested by the offer creator. |
 | TakerGets         | String or Object | Amount | The remaining amount and type of currency being provided by the offer creator. |
 | BookDirectory     | String    | UInt256   | The index of the [Offer Directory](#directorynode) that links to this offer. |
-| BookNode          | String    | UInt64    | A hint indicating which page of the offer directory links to this node, in case the directory consists of multiple nodes. |
-| OwnerNode         | String    | UInt64    | A hint indicating which page of the owner directory links to this node, in case the directory consists of multiple nodes. **Note:** The offer does not contain a direct link to the owner directory containing it, since that value can be derived from the `Account`. |
+| BookNode          | String    | UInt64    | A hint indicating which page of the offer directory links to this node, in case the directory consists of multiple pages. |
+| OwnerNode         | String    | UInt64    | A hint indicating which page of the owner directory links to this node, in case the directory consists of multiple pages. **Note:** The offer does not contain a direct link to the owner directory containing it, since that value can be derived from the `Account`. |
 | PreviousTxnID     | String | Hash256 | The identifying hash of the transaction that most recently modified this node. |
 | PreviousTxnLgrSeq | Number | UInt32 | The [index of the ledger](#ledger-index) that contains the transaction that most recently modified this node. |
 | Expiration        | Number    | UInt32    | (Optional) Indicates the time after which this offer is considered unfunded. See [Specifying Time](reference-rippled.html#specifying-time) for details. |
@@ -301,6 +366,103 @@ The `index` of an Offer node is the SHA-512Half of the following values put toge
 * The Offer space key (`o`)
 * The AccountID of the account placing the offer
 * The Sequence number of the transaction that created the offer
+
+
+
+## PayChannel ##
+[[Source]<br>](https://github.com/ripple/rippled/blob/develop/src/ripple/protocol/impl/LedgerFormats.cpp#L134 "Source")
+
+_(Requires the [PayChan Amendment](concept-amendments.html#paychan).)_
+
+The `PayChannel` node type represents a payment channel. Payment channels enable small, rapid off-ledger payments of XRP that can be later reconciled with the consensus ledger. A payment channel holds a balance of XRP that can only be paid out to a specific destination address until the channel is closed. Any unspent XRP is returned to the channel's owner (the source address that created and funded it) when the channel closes.
+
+The PaymentChannelCreate transaction type creates a `PayChannel` node. The PaymentChannelFund and PaymentChannelClaim transaction types modify existing `PayChannel` nodes.
+
+When a payment channel expires, at first it remains on the ledger, because only new transactions can modify ledger contents. Transaction processing automatically closes a payment channel when any transaction accesses it after the expiration. Therefore, to "finalize" the closing of an expired channel and return the unspent XRP to the owner, some address must send a new PaymentChannelClaim or PaymentChannelFund transaction accessing the channel.
+
+<!--{# TODO: provide cross-references to tutorial, concept, and tx types when they are ready #}-->
+
+Example PayChannel node:
+
+```json
+{
+    "Account": "rBqb89MRQJnMPq8wTwEbtz4kvxrEDfcYvt",
+    "Destination": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+    "Amount": "4325800",
+    "Balance": "2323423",
+    "PublicKey": "32D2471DB72B27E3310F355BB33E339BF26F8392D5A93D3BC0FC3B566612DA0F0A",
+    "SettleDelay": 3600,
+    "Expiration": 536027313,
+    "CancelAfter": 536891313,
+    "SourceTag": 0,
+    "DestinationTag": 1002341,
+    "Flags": 0,
+    "LedgerEntryType": "PayChannel",
+    "OwnerNode": "0000000000000000",
+    "PreviousTxnID": "F0AB71E777B2DA54B86231E19B82554EF1F8211F92ECA473121C655BFC5329BF",
+    "PreviousTxnLgrSeq": 14524914,
+    "index": "96F76F27D8A327FC48753167EC04A46AA0E382E6F57F32FD12274144D00F1797"
+}
+```
+
+A `PayChannel` node has the following fields:
+
+| Name                | JSON Type | [Internal Type][] | Description            |
+|:--------------------|:----------|:------------------|:-----------------------|
+| `LedgerEntryType`   | String    | UInt16            | The value `0x78`, mapped to the string `PayChannel`, indicates that this node is a payment channel object. |
+| `Account`           | String    | AccountID         | The source address that owns this payment channel. This comes from the sending address of the transaction that created the channel. |
+| `Destination`       | String    | AccountID         | The destination address for this payment channel. While the payment channel is open, this address is the only one that can receive XRP from the channel. This comes from the `Destination` field of the transaction that created the channel. |
+| `Amount`            | String    | Amount            | Total [XRP, in drops][], that has been allocated to this channel. This includes XRP that has been paid to the destination address. This is initially set by the transaction that created the channel and can be increased if the source address sends a PaymentChannelFund transaction. |
+| `Balance`           | String    | Amount            | Total [XRP, in drops][], already paid out by the channel. The difference between this value and the `Amount` field is how much XRP can still be paid to the destination address with PaymentChannelClaim transactions. If the channel closes, the remaining difference is returned to the source address. |
+| `PublicKey`         | String    | PubKey            | Public key, in hexadecimal, of the key pair that can be used to sign claims against this channel. This can be any valid secp256k1 or Ed25519 public key. This is set by the transaction that created the channel and must match the public key used in claims against the channel. The channel source address can also send XRP from this channel to the destination without signed claims. |
+| `SettleDelay`       | Number    | UInt32            | Number of seconds the source address must wait to close the channel if it still has any XRP in it. Smaller values mean that the destination address has less time to redeem any outstanding claims after the source address requests to close the channel. Can be any value that fits in a 32-bit unsigned integer (0 to 2^32-1). This is set by the transaction that creates the channel. |
+| `OwnerNode`         | String    | UInt64            | A hint indicating which page of the source address's owner directory links to this node, in case the directory consists of multiple pages. |
+| `PreviousTxnID`     | String    | Hash256           | The identifying hash of the transaction that most recently modified this node. |
+| `PreviousTxnLgrSeq` | Number    | UInt32            | The [index of the ledger](#ledger-index) that contains the transaction that most recently modified this node. |
+| `Flags`             | Number    | UInt32            | A bit-map of boolean flags enabled for this payment channel. Currently, the protocol defines no flags for `PayChannel` nodes. |
+| `Expiration`        | Number    | UInt32            | _(Optional)_ The mutable expiration time for this payment channel, in [seconds since the Ripple Epoch](reference-rippled.html#specifying-time). The channel is expired if this value is present and smaller than the previous ledger's [`close_time` field](#header-format). See [Setting Channel Expiration](#setting-channel-expiration) for more details. |
+| `CancelAfter`       | Number    | UInt32            | _(Optional)_ The immutable expiration time for this payment channel, in [seconds since the Ripple Epoch](reference-rippled.html#specifying-time). This channel is expired if this value is present and smaller than the previous ledger's [`close_time` field](#header-format). This is optionally set by the transaction that created the channel, and cannot be changed. |
+
+[XRP, in drops]: reference-rippled.html#specifying-currency-amounts
+
+### Setting Channel Expiration
+
+The `Expiration` field of a payment channel is the mutable expiration time, in contrast to the immutable expiration time represented by the `CancelAfter` field. The expiration of a channel is always considered relative to the [`close_time` field](#header-format) of the previous ledger. The `Expiration` field is omitted when a `PayChannel` node is created. There are several ways the `Expiration` field of a `PayChannel` node can be updated, which can be summarized as follows: a channel's source address can set the `Expiration` of the channel freely as long as the channel always remains open at least `SettleDelay` seconds after the first attempt to close it.
+
+#### Source Address
+
+The source address can set the `Expiration` directly with the PaymentChannelFund transaction type. The new value must not be earlier than whichever of the following values is earliest:
+
+- The current `Expiration` value (if one is set)
+- The previous ledger's close time plus the `SettleDelay` of the channel
+
+In other words, the source address can always make the `Expiration` later if an expiration is already set. The source can make an `Expiration` value earlier or set an `Expiration` if one isn't currently set, as long as the new value is at least `SettleDelay` seconds in the future. If the source address attempts to set an invalid `Expiration` date, the transaction fails with the `temBAD_EXPIRATION` error code.
+
+The source address can also set the `Expiration` with the `tfClose` flag of the PaymentChannelClaim transaction type. If the flag is enabled, the ledger automatically sets the `Expiration` to whichever of the following values is earlier:
+
+- The current `Expiration` value (if one is set)
+- The previous ledger's close time plus the `SettleDelay` of the channel
+
+The source address can remove the `Expiration` with the `tfRenew` flag of the PaymentChannelClaim transaction type.
+
+#### Destination Address
+
+The destination address cannot set the `Expiration` field. However, the destination address can use the PaymentChannelClaim's `tfClose` flag to close a channel immediately.
+
+#### Other Addresses
+
+If any other address attempts to set an `Expiration` field, the transaction fails with the `tecNO_PERMISSION` error code. However, if the channel is already expired, the transaction causes the channel to close and results in `tesSUCCESS` instead.
+
+
+### PayChannel Index Format ###
+
+The `index` of a PayChannel node is the SHA-512Half of the following values put together:
+
+* The PayChannel space key (`x`)
+* The AccountID of the source account
+* The AccountID of the destination account
+* The Sequence number of the transaction that created the channel
+
 
 
 ## RippleState ##
@@ -350,8 +512,8 @@ A RippleState node has the following fields:
 | HighLimit       | Object    | Amount | The limit that the high account has set on the trust line. The `issuer` is the address of the high account that set this limit. |
 | PreviousTxnID   | String    | Hash256 | The identifying hash of the transaction that most recently modified this node. |
 | PreviousTxnLgrSeq | Number  | UInt32 | The [index of the ledger](#ledger-index) that contains the transaction that most recently modified this node. |
-| LowNode         | String    | UInt64 | (Omitted in some historical ledgers) A hint indicating which page of the low account's owner directory links to this node, in case the directory consists of multiple nodes. |
-| HighNode        | String    | UInt64 | (Omitted in some historical ledgers) A hint indicating which page of the high account's owner directory links to this node, in case the directory consists of multiple nodes. |
+| LowNode         | String    | UInt64 | (Omitted in some historical ledgers) A hint indicating which page of the low account's owner directory links to this node, in case the directory consists of multiple pages. |
+| HighNode        | String    | UInt64 | (Omitted in some historical ledgers) A hint indicating which page of the high account's owner directory links to this node, in case the directory consists of multiple pages. |
 | LowQualityIn    | Number    | UInt32 | (Optional) The inbound quality set by the low account, as an integer in the implied ratio LowQualityIn:1,000,000,000. The value 0 is equivalent to 1 billion, or face value. |
 | LowQualityOut   | Number    | UInt32 | (Optional) The outbound quality set by the low account, as an integer in the implied ratio LowQualityOut:1,000,000,000. The value 0 is equivalent to 1 billion, or face value. |
 | HighQualityIn   | Number    | UInt32 | (Optional) The inbound quality set by the high account, as an integer in the implied ratio HighQualityIn:1,000,000,000. The value 0 is equivalent to 1 billion, or face value. |
@@ -449,7 +611,7 @@ A SignerList node has the following fields:
 
 | Name            | JSON Type | Internal Type | Description |
 |-----------------|-----------|---------------|-------------|
-| OwnerNode       | String    | UInt64        | A hint indicating which page of the owner directory links to this node, in case the directory consists of multiple nodes. |
+| OwnerNode       | String    | UInt64        | A hint indicating which page of the owner directory links to this node, in case the directory consists of multiple pages. |
 | SignerQuorum    | Number    | UInt32        | A target number for signer weights. To produce a valid signature for the owner of this SignerList, the signers must provide valid signatures whose weights sum to this value or more. |
 | SignerEntries   | Array     | Array         | An array of SignerEntry objects representing the parties who are part of this signer list. |
 | SignerListID    | Number    | UInt32        | An ID for this signer list. Currently always set to `0`. If a future [amendment](concept-amendments.html) allows multiple signer lists for an account, this may change. |
@@ -472,6 +634,14 @@ When processing a multi-signed transaction, the server dereferences the `Account
 ### SignerLists and Reserves ###
 
 A SignerList contributes to its owner's [reserve requirement](concept-reserves.html). The SignerList itself counts as two objects, and each member of the list counts as one. As a result, the total owner reserve associated with a SignerList is anywhere from 3 times to 10 times the reserve required by a single trust line ([RippleState](#ripplestate)) or [Offer](#offer) node in the ledger.
+
+### SignerList Index Format
+
+The `index` of a SignerList node is the SHA-512Half of the following values put together:
+
+* The RippleState space key (`S`)
+* The AccountID of the owner of the SignerList
+* The SignerListID (currently always `0`)
 
 
 {% include 'snippets/rippled_versions.md' %}

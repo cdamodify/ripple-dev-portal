@@ -134,7 +134,7 @@
             <hr />
             <h5>In this page:</h5>
             <ul class="dev_nav_sidebar" id="dactyl_toc_sidebar">
-                <li class="level-1"><a href="#transactions">Transactions</a></li>
+                <li class="level-1"><a href="#transactions-overview">Transactions Overview</a></li>
 <li class="level-2"><a href="#authorizing-transactions">Authorizing Transactions</a></li>
 <li class="level-2"><a href="#signing-and-submitting-transactions">Signing and Submitting Transactions</a></li>
 <li class="level-3"><a href="#unsigned-transaction-format">Unsigned Transaction Format</a></li>
@@ -150,18 +150,15 @@
 <li class="level-3"><a href="#memos">Memos</a></li>
 <li class="level-3"><a href="#signers-field">Signers Field</a></li>
 <li class="level-3"><a href="#flags">Flags</a></li>
-<li class="level-2"><a href="#payment">Payment</a></li>
-<li class="level-3"><a href="#special-issuer-values-for-sendmax-and-amount">Special issuer Values for SendMax and Amount</a></li>
-<li class="level-3"><a href="#creating-accounts">Creating Accounts</a></li>
-<li class="level-3"><a href="#paths">Paths</a></li>
-<li class="level-3"><a href="#payment-flags">Payment Flags</a></li>
-<li class="level-3"><a href="#partial-payments">Partial Payments</a></li>
-<li class="level-3"><a href="#limit-quality">Limit Quality</a></li>
+<li class="level-1"><a href="#transaction-types">Transaction Types</a></li>
 <li class="level-2"><a href="#accountset">AccountSet</a></li>
 <li class="level-3"><a href="#domain">Domain</a></li>
 <li class="level-3"><a href="#accountset-flags">AccountSet Flags</a></li>
 <li class="level-3"><a href="#transferrate">TransferRate</a></li>
-<li class="level-2"><a href="#setregularkey">SetRegularKey</a></li>
+<li class="level-2"><a href="#escrowcancel">EscrowCancel</a></li>
+<li class="level-2"><a href="#escrowcreate">EscrowCreate</a></li>
+<li class="level-2"><a href="#escrowfinish">EscrowFinish</a></li>
+<li class="level-2"><a href="#offercancel">OfferCancel</a></li>
 <li class="level-2"><a href="#offercreate">OfferCreate</a></li>
 <li class="level-3"><a href="#lifecycle-of-an-offer">Lifecycle of an Offer</a></li>
 <li class="level-3"><a href="#offers-and-trust">Offers and Trust</a></li>
@@ -169,15 +166,26 @@
 <li class="level-3"><a href="#expiration">Expiration</a></li>
 <li class="level-3"><a href="#auto-bridging">Auto-Bridging</a></li>
 <li class="level-3"><a href="#offercreate-flags">OfferCreate Flags</a></li>
-<li class="level-2"><a href="#offercancel">OfferCancel</a></li>
+<li class="level-2"><a href="#payment">Payment</a></li>
+<li class="level-3"><a href="#special-issuer-values-for-sendmax-and-amount">Special issuer Values for SendMax and Amount</a></li>
+<li class="level-3"><a href="#creating-accounts">Creating Accounts</a></li>
+<li class="level-3"><a href="#paths">Paths</a></li>
+<li class="level-3"><a href="#payment-flags">Payment Flags</a></li>
+<li class="level-3"><a href="#partial-payments">Partial Payments</a></li>
+<li class="level-3"><a href="#limit-quality">Limit Quality</a></li>
+<li class="level-2"><a href="#paymentchannelclaim">PaymentChannelClaim</a></li>
+<li class="level-3"><a href="#paymentchannelclaim-flags">PaymentChannelClaim Flags</a></li>
+<li class="level-2"><a href="#paymentchannelcreate">PaymentChannelCreate</a></li>
+<li class="level-2"><a href="#paymentchannelfund">PaymentChannelFund</a></li>
+<li class="level-2"><a href="#setregularkey">SetRegularKey</a></li>
+<li class="level-2"><a href="#signerlistset">SignerListSet</a></li>
 <li class="level-2"><a href="#trustset">TrustSet</a></li>
 <li class="level-3"><a href="#trust-limits">Trust Limits</a></li>
 <li class="level-3"><a href="#trustset-flags">TrustSet Flags</a></li>
-<li class="level-2"><a href="#signerlistset">SignerListSet</a></li>
 <li class="level-1"><a href="#pseudo-transactions">Pseudo-Transactions</a></li>
-<li class="level-2"><a href="#setfee">SetFee</a></li>
 <li class="level-2"><a href="#enableamendment">EnableAmendment</a></li>
 <li class="level-3"><a href="#enableamendment-flags">EnableAmendment Flags</a></li>
+<li class="level-2"><a href="#setfee">SetFee</a></li>
 <li class="level-1"><a href="#transaction-results">Transaction Results</a></li>
 <li class="level-2"><a href="#immediate-response">Immediate Response</a></li>
 <li class="level-2"><a href="#looking-up-transaction-results">Looking up Transaction Results</a></li>
@@ -200,29 +208,12 @@
       </aside>
       <main class="main" role="main">
     <div class='content'>
-        <h1 id="transactions">Transactions</h1>
-<p>A <em>Transaction</em> is the only way to modify the Ripple Ledger. All transactions have certain fields in common:</p>
+        <h1 id="transactions-overview">Transactions Overview</h1>
+<p>A <em>Transaction</em> is the only way to modify the Ripple Ledger. Transactions are only valid if signed, submitted, and accepted into a validated ledger version following the <a href="https://ripple.com/build/ripple-ledger-consensus-process/">consensus process</a>. Some ledger rules also generate <em><a href="#pseudo-transactions">pseudo-transactions</a></em>, which aren't signed or submitted, but still must be accepted by consensus. Transactions that fail are also included in ledgers because they modify balances of XRP to pay for the anti-spam <a href="concept-transaction-cost.html">transaction cost</a>.</p>
 <ul>
-<li><a href="#common-fields">Common Fields</a></li>
-</ul>
-<p>There are several different types of transactions that do different actions, each with additional fields relevant to that type of action:</p>
-<ul>
-<li><a href="#payment">Payment - Send funds from one account to another</a></li>
-<li><a href="#accountset">AccountSet - Set options on an account</a></li>
-<li><a href="#setregularkey">SetRegularKey - Set an account's regular key</a></li>
-<li><a href="#offercreate">OfferCreate - Submit an order to exchange currency</a></li>
-<li><a href="#offercancel">OfferCancel - Withdraw a currency-exchange order</a></li>
-<li><a href="#trustset">TrustSet - Add or modify a trust line</a></li>
-<li><a href="#signerlistset">SignerListSet - Set multi-signing settings</a></li>
-</ul>
-<p>Additionally, there are <em>Pseudo-Transactions</em> that are not created and submitted in the usual way, but may appear in ledgers:</p>
-<ul>
-<li><a href="#setfee">SetFee - Adjust the minimum transaction cost or account reserve</a></li>
-<li><a href="#enableamendment">EnableAmendment - Apply a change to transaction processing</a></li>
-</ul>
-<p>Transactions are only valid if signed, submitted, and accepted into a validated ledger version. There are many ways a transaction can fail.</p>
-<ul>
-<li><a href="#authorizing-transactions">Authorized Transactions</a></li>
+<li><a href="#authorizing-transactions">Authorizing Transactions</a></li>
+<li><a href="#common-fields">Common Fields of All Transactions</a></li>
+<li><a href="#transaction-types">Transaction Types</a></li>
 <li><a href="#reliable-transaction-submission">Reliable Transaction Submission</a></li>
 <li><a href="#transaction-results">Transaction Results - How to find and interpret transaction results</a></li>
 <li><a href="#full-transaction-response-list">Full Transaction Response List - Complete table of all error codes</a></li>
@@ -252,7 +243,7 @@
 <li>If enough <a href="tutorial-rippled-setup.html#reasons-to-run-a-validator">trusted validators</a> created the exact same ledger, that ledger is declared <em>validated</em> and the <a href="#transaction-results">results of the transactions</a> in that ledger are immutable.</li>
 </ol>
 <h3 id="unsigned-transaction-format">Unsigned Transaction Format</h3>
-<p>Here is an example of an unsigned <a href="#payment">Payment-type transaction</a> in JSON:</p>
+<p>Here is an example of an unsigned <a href="#payment">Payment transaction</a> in JSON:</p>
 <pre><code>{
   "TransactionType" : "Payment",
   "Account" : "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -489,7 +480,7 @@
 <td align="left">TransactionType</td>
 <td align="left">String</td>
 <td align="left">UInt16</td>
-<td align="left">The type of transaction. Valid types include: <code>Payment</code>, <code>OfferCreate</code>, <code>OfferCancel</code>, <code>TrustSet</code>, <code>AccountSet</code>, <code>SetRegularKey</code>, and <code>SignerListSet</code>.</td>
+<td align="left">The type of transaction. Valid types include: <code>Payment</code>, <code>OfferCreate</code>, <code>OfferCancel</code>, <code>TrustSet</code>, <code>AccountSet</code>, <code>SetRegularKey</code>, <code>SignerListSet</code>, <code>EscrowCreate</code>, <code>EscrowFinish</code>, <code>EscrowCancel</code>, <code>PaymentChannelCreate</code>, <code>PaymentChannelFund</code>, and <code>PaymentChannelClaim</code>.</td>
 </tr>
 <tr>
 <td align="left">TxnSignature</td>
@@ -630,147 +621,33 @@
 </tr>
 </tbody>
 </table>
-<h2 id="payment">Payment</h2>
-<p><a href="https://github.com/ripple/rippled/blob/5425a90f160711e46b2c1f1c93d68e5941e4bfb6/src/ripple/app/transactors/Payment.cpp" title="Source">[Source]<br/></a></p>
-<p>A Payment transaction represents a transfer of value from one account to another. (Depending on the path taken, this can involve additional exchanges of value, which occur atomically.)</p>
-<p>Payments are also the only way to <a href="#creating-accounts">create accounts</a>.</p>
-<p>Example payment:</p>
-<pre><code>{
-  "TransactionType" : "Payment",
-  "Account" : "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
-  "Destination" : "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
-  "Amount" : {
-     "currency" : "USD",
-     "value" : "1",
-     "issuer" : "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn"
-  },
-  "Fee": "10",
-  "Flags": 2147483648,
-  "Sequence": 2,
-}
-</code></pre>
-<table>
-<thead>
-<tr>
-<th align="left">Field</th>
-<th align="left">JSON Type</th>
-<th align="left"><a href="https://github.com/ripple/rippled/blob/master/src/ripple/protocol/impl/SField.cpp">Internal Type</a></th>
-<th align="left">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td align="left">Amount</td>
-<td align="left"><a href="reference-rippled.html#specifying-currency-amounts">Currency Amount</a></td>
-<td align="left">Amount</td>
-<td align="left">The amount of currency to deliver. For non-XRP amounts, the nested field names MUST be lower-case. If the <a href="#payment-flags"><strong>tfPartialPayment</strong> flag</a> is set, deliver <em>up to</em> this amount instead.</td>
-</tr>
-<tr>
-<td align="left">Destination</td>
-<td align="left">String</td>
-<td align="left">Account</td>
-<td align="left">The unique address of the account receiving the payment.</td>
-</tr>
-<tr>
-<td align="left">DestinationTag</td>
-<td align="left">Unsigned Integer</td>
-<td align="left">UInt32</td>
-<td align="left">(Optional) Arbitrary tag that identifies the reason for the payment to the destination, or a hosted recipient to pay.</td>
-</tr>
-<tr>
-<td align="left">InvoiceID</td>
-<td align="left">String</td>
-<td align="left">Hash256</td>
-<td align="left">(Optional) Arbitrary 256-bit hash representing a specific reason or identifier for this payment.</td>
-</tr>
-<tr>
-<td align="left">Paths</td>
-<td align="left">Array of path arrays</td>
-<td align="left">PathSet</td>
-<td align="left">(Optional, auto-fillable) Array of <a href="concept-paths.html">payment paths</a> to be used for this transaction. Must be omitted for XRP-to-XRP transactions.</td>
-</tr>
-<tr>
-<td align="left">SendMax</td>
-<td align="left"><a href="reference-rippled.html#specifying-currency-amounts">Currency Amount</a></td>
-<td align="left">Amount</td>
-<td align="left">(Optional) Highest amount of source currency this transaction is allowed to cost, including <a href="concept-transfer-fees.html">transfer fees</a>, exchange rates, and <a href="http://en.wikipedia.org/wiki/Slippage_%28finance%29">slippage</a>. Does not include the <a href="#transaction-cost">XRP destroyed as a cost for submitting the transaction</a>. For non-XRP amounts, the nested field names MUST be lower-case. Must be supplied for cross-currency/cross-issue payments. Must be omitted for XRP-to-XRP payments.</td>
-</tr>
-<tr>
-<td align="left">DeliverMin</td>
-<td align="left"><a href="reference-rippled.html#specifying-currency-amounts">Currency Amount</a></td>
-<td align="left">Amount</td>
-<td align="left">(Optional) Minimum amount of destination currency this transaction should deliver. Only valid if this is a <a href="#partial-payments">partial payment</a>. For non-XRP amounts, the nested field names are lower-case.</td>
-</tr>
-</tbody>
-</table>
-<h3 id="special-issuer-values-for-sendmax-and-amount">Special issuer Values for SendMax and Amount</h3>
-<p>Most of the time, the <code>issuer</code> field of a non-XRP <a href="reference-rippled.html#specifying-currency-amounts">Currency Amount</a> indicates a financial institution's <a href="concept-issuing-and-operational-addresses.html">issuing address</a>. However, when describing payments, there are special rules for the <code>issuer</code> field in the <code>Amount</code> and <code>SendMax</code> fields of a payment.</p>
+<h1 id="transaction-types">Transaction Types</h1>
+<p>The type of a transaction (<code>TransactionType</code> field) is the most fundamental information about a transaction. This indicates what operations it can or is supposed to perform.</p>
+<p>All transactions have certain fields in common:</p>
 <ul>
-<li>There is only ever one balance for the same currency between two addresses. This means that, sometimes, the <code>issuer</code> field of an amount actually refers to a counterparty that is redeeming issuances, instead of the address that created the issuances.</li>
-<li>When the <code>issuer</code> field of the destination <code>Amount</code> field matches the <code>Destination</code> address, it is treated as a special case meaning "any issuer that the destination accepts." This includes all addresses to which the destination has extended trust lines, as well as issuances created by the destination which are held on other trust lines.</li>
-<li>When the <code>issuer</code> field of the <code>SendMax</code> field matches the source account's address, it is treated as a special case meaning "any issuer that the source can use." This includes creating new issuances on trust lines that other accounts have extended to the source account, and sending issuances the source account holds from other issuers.</li>
+<li><a href="#common-fields">Common Fields</a></li>
 </ul>
-<h3 id="creating-accounts">Creating Accounts</h3>
-<p>The Payment transaction type is the only way to create new accounts in the Ripple Consensus Ledger. To do so, send an amount of XRP that is equal or greater than the <a href="concept-reserves.html">account reserve</a> to a mathematically-valid account address that does not exist yet. When the Payment is processed, a new <a href="reference-ledger-format.html#accountroot">AccountRoot node</a> is added to the ledger.</p>
-<p>If you send an insufficient amount of XRP, or any other currency, the Payment fails.</p>
-<h3 id="paths">Paths</h3>
-<p>If present, the <code>Paths</code> field must contain a <em>path set</em> - an array of path arrays. Each individual path represents one way value can flow from the sender to receiver through various intermediary accounts and order books. A single transaction can potentially use multiple paths, for example if the transaction exchanges currency using several different order books to achieve the best rate.</p>
-<p>You must omit the <code>Paths</code> field for direct payments, including:</p>
+<p>Each transaction type has additional fields relevant to the type of action it causes:</p>
 <ul>
-<li>An XRP-to-XRP transfer.</li>
-<li>A direct transfer on a trust line that connects the sender and receiver.</li>
+<li><a href="#accountset">AccountSet - Set options on an account</a></li>
+<li><a href="#escrowcancel">EscrowCancel - Reclaim escrowed XRP</a></li>
+<li><a href="#escrowcreate">EscrowCreate - Create an escrowed XRP payment</a></li>
+<li><a href="#escrowfinish">EscrowFinish - Deliver escrowed XRP to recipient</a></li>
+<li><a href="#offercancel">OfferCancel - Withdraw a currency-exchange order</a></li>
+<li><a href="#offercreate">OfferCreate - Submit an order to exchange currency</a></li>
+<li><a href="#payment">Payment - Send funds from one account to another</a></li>
+<li><a href="#paymentchannelclaim">PaymentChannelClaim - Claim money from a payment channel</a></li>
+<li><a href="#paymentchannelcreate">PaymentChannelCreate - Open a new payment channel</a></li>
+<li><a href="#paymentchannelfund">PaymentChannelFund - Add more XRP to a payment channel</a></li>
+<li><a href="#setregularkey">SetRegularKey - Set an account's regular key</a></li>
+<li><a href="#signerlistset">SignerListSet - Set multi-signing settings</a></li>
+<li><a href="#trustset">TrustSet - Add or modify a trust line</a></li>
 </ul>
-<p>If the <code>Paths</code> field is provided, the server decides at transaction processing time which paths to use, from the provided set plus a <em>default path</em> (the most direct way possible to connect the specified accounts). This decision is deterministic and attempts to minimize costs, but it is not guaranteed to be perfect.</p>
-<p>The <code>Paths</code> field must not be an empty array, nor an array whose members are all empty arrays.</p>
-<p>For more information, see <a href="concept-paths.html">Paths</a>.</p>
-<h3 id="payment-flags">Payment Flags</h3>
-<p>Transactions of the Payment type support additional values in the <a href="#flags"><code>Flags</code> field</a>, as follows:</p>
-<table>
-<thead>
-<tr>
-<th align="left">Flag Name</th>
-<th align="left">Hex Value</th>
-<th align="left">Decimal Value</th>
-<th align="left">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td align="left">tfNoDirectRipple</td>
-<td align="left">0x00010000</td>
-<td align="left">65536</td>
-<td align="left">Do not use the default path; only use paths included in the <code>Paths</code> field. This is intended to force the transaction to take arbitrage opportunities. Most clients do not need this.</td>
-</tr>
-<tr>
-<td align="left">tfPartialPayment</td>
-<td align="left">0x00020000</td>
-<td align="left">131072</td>
-<td align="left">If the specified <code>Amount</code> cannot be sent without spending more than <code>SendMax</code>, reduce the received amount instead of failing outright. See <a href="#partial-payments">Partial Payments</a> for more details.</td>
-</tr>
-<tr>
-<td align="left">tfLimitQuality</td>
-<td align="left">0x00040000</td>
-<td align="left">262144</td>
-<td align="left">Only take paths where all the conversions have an input:output ratio that is equal or better than the ratio of <code>Amount</code>:<code>SendMax</code>. See <a href="#limit-quality">Limit Quality</a> for details.</td>
-</tr>
-</tbody>
-</table>
-<h3 id="partial-payments">Partial Payments</h3>
-<p>A partial payment allows a payment to succeed by reducing the amount received, instead of increasing the <code>SendMax</code>. Partial payments are useful for <a href="tutorial-gateway-guide.html#bouncing-payments">returning payments</a> without incurring additional costs to oneself.</p>
-<p>By default, the <code>Amount</code> field of a Payment transaction specifies the amount of currency that is <em>received</em> by the account that is the destination of the payment. Any additional amount needed for fees or currency exchange is deducted from the sending account's balances, up to the <code>SendMax</code> amount. (If <code>SendMax</code> is not specified, that is equivalent to setting the <code>SendMax</code> to the <code>Amount</code> field.) If the amount needed to make the payment exceeds the <code>SendMax</code> parameter, or the full amount cannot be delivered for any other reason, the transaction fails.</p>
-<p>The <a href="#payment-flags"><em>tfPartialPayment</em> flag</a> allows you to make a "partial payment" instead. When this flag is enabled for a payment, it delivers as much as possible, up to the <code>Amount</code> value, without exceeding the <code>SendMax</code> value. Fees and currency exchange rates are calculated the same way, but the amount being sent automatically scales down until the total amount deducted from the sending account's balances is within <code>SendMax</code>. The transaction is considered successful as long as it delivers equal or more than the <code>DeliverMin</code> value; if DeliverMin is omitted, then any positive amount is considered a success. This means that partial payments can succeed at sending <em>some</em> of the intended value despite limitations including fees, lack of liquidity, insufficient space in the receiving account's trustlines, or other reasons.</p>
-<p>A partial payment cannot provide the XRP to fund an address; this case returns the error code <code>telNO_DST_PARTIAL</code>. Direct XRP-to-XRP payments also cannot be partial payments <code>temBAD_SEND_XRP_PARTIAL</code>.</p>
-<p>The amount of XRP used for the <a href="#transaction-cost">transaction cost</a> is always deducted from the sender’s account, regardless of the <em>tfPartialPayment</em> flag.</p>
-<h4 id="partial-payments-warning">Partial Payments Warning</h4>
-<p>When the <a href="#payment-flags"><em>tfPartialPayment</em> flag</a> is enabled, the <code>Amount</code> field <strong><em>is not guaranteed to be the amount received</em></strong>. The <a href="#delivered-amount"><code>delivered_amount</code></a> field of a payment's metadata indicates the amount of currency actually received by the destination account. When receiving a payment, use <code>delivered_amount</code> instead of the <code>Amount</code> field to determine how much your account received instead.</p>
-<h3 id="limit-quality">Limit Quality</h3>
-<p>Ripple defines the "quality" of a currency exchange as the ratio of the numeric amount in to the numeric amount out. For example, if you spend $2 USD to receive £1 GBP, then the "quality" of that exchange is <code>0.5</code>.</p>
-<p>The <a href="#payment-flags"><em>tfLimitQuality</em> flag</a> allows you to set a minimum quality of conversions that you are willing to take. This limit quality is defined as the destination <code>Amount</code> divided by the <code>SendMax</code> amount (the numeric amounts only, regardless of currency). When set, the payment processing engine avoids using any paths whose quality (conversion rate) is worse (numerically lower) than the limit quality.</p>
-<p>By itself, the tfLimitQuality flag reduces the number of situations in which a transaction can succeed. Specifically, it rejects payments where some part of the payment uses an unfavorable conversion, even if the overall average <em>average</em> quality of conversions in the payment is equal or better than the limit quality. If a payment is rejected in this way, the <a href="#transaction-results">transaction result</a> is <code>tecPATH_DRY</code>.</p>
-<p>Consider the following example. If I am trying to send you 100 Chinese Yuan (<code>Amount</code> = 100 CNY) for 20 United States dollars (<code>SendMax</code> = 20 USD) or less, then the limit quality is <code>5</code>. Imagine one trader is offering ¥95 for $15 (a ratio of about <code>6.3</code> CNY per USD), but the next best offer in the market is ¥5 for $2 (a ratio of <code>2.5</code> CNY per USD). If I were to take both offers to send you 100 CNY, then it would cost me 17 USD, for an average quality of about <code>5.9</code>.</p>
-<p>Without the tfLimitQuality flag set, this transaction would succeed, because the $17 it costs me is within my specified <code>SendMax</code>. However, with the tfLimitQuality flag enabled, the transaction would fail instead, because the path to take the second offer has a quality of <code>2.5</code>, which is worse than the limit quality of <code>5</code>.</p>
-<p>The tfLimitQuality flag is most useful when combined with <a href="#partial-payments">partial payments</a>. When both <em>tfPartialPayment</em> and <em>tfLimitQuality</em> are set on a transaction, then the transaction delivers as much of the destination <code>Amount</code> as it can, without using any conversions that are worse than the limit quality.</p>
-<p>In the above example with a ¥95/$15 offer and a ¥5/$2 offer, the situation is different if my transaction has both tfPartialPayment and tfLimitQuality enabled. If we keep my <code>SendMax</code> of 20 USD and a destination <code>Amount</code> of 100 CNY, then the limit quality is still <code>5</code>. However, because I am doing a partial payment, the transaction sends as much as it can instead of failing if the full destination amount cannot be sent. This means that my transaction consumes the ¥95/$15 offer, whose quality is about <code>6.3</code>, but it rejects the ¥5/$2 offer because that offer's quality of <code>2.5</code> is worse than the quality limit of <code>5</code>. In the end, my transaction only delivers ¥95 instead of the full ¥100, but it avoids wasting money on poor exchange rates.</p>
+<p><em>Pseudo-Transactions</em> that are not created and submitted in the usual way, but may be added to open ledgers according to ledger rules. They still must be approved by consensus to be included in a validated ledger. Pseudo-transactions have their own unique transaction types:</p>
+<ul>
+<li><a href="#setfee">SetFee - Adjust the minimum transaction cost or account reserve</a></li>
+<li><a href="#enableamendment">EnableAmendment - Apply a change to transaction processing</a></li>
+</ul>
 <h2 id="accountset">AccountSet</h2>
 <p><a href="https://github.com/ripple/rippled/blob/f65cea66ef99b1de149c02c15f06de6c61abf360/src/ripple/app/transactors/SetAccount.cpp" title="Source">[Source]<br/></a></p>
 <p>An AccountSet transaction modifies the properties of an <a href="reference-ledger-format.html#accountroot">account in the Ripple Consensus Ledger</a>.</p>
@@ -830,6 +707,12 @@
 <td align="left">Unsigned Integer</td>
 <td align="left">UInt32</td>
 <td align="left">(Optional) The fee to charge when users transfer this account's issuances, represented as billionths of a unit. Use <code>0</code> to set no fee.</td>
+</tr>
+<tr>
+<td align="left"><a href="#ticksize">TickSize</a></td>
+<td align="left">Unsigned Integer</td>
+<td align="left">UInt8</td>
+<td align="left">(Optional) Tick size to use for offers involving a currency issued by this address. The exchange rates of those offers is rounded to this many significant digits. Valid values are <code>3</code> to <code>15</code> inclusive, or <code>0</code> to disable. <em>(Requires the <a href="concept-amendments.html#ticksize">TickSize amendment</a>.)</em></td>
 </tr>
 <tr>
 <td align="left">WalletLocator</td>
@@ -975,17 +858,18 @@
 <p>For example, a destination tag is typically used to identify which hosted balance should be credited when a financial institution receives a payment. If the destination tag is omitted, it may be unclear which account should be credited, creating a need for refunds, among other problems. By using the <code>asfRequireDest</code> tag, you can ensure that every incoming payment has a destination tag, which makes it harder for others to send you an ambiguous payment by accident.</p>
 <p>You can protect against unwanted incoming payments for non-XRP currencies by not creating trust lines in those currencies. Since XRP does not require trust, the <code>asfDisallowXRP</code> flag is used to discourage users from sending XRP to an account. However, this flag is not enforced in <code>rippled</code> because it could potentially cause accounts to become unusable. (If an account did not have enough XRP to send a transaction that disabled the flag, the account would be completely unusable.) Instead, client applications should disallow or discourage XRP payments to accounts with the <code>asfDisallowXRP</code> flag enabled.</p>
 <h3 id="transferrate">TransferRate</h3>
-<p>The TransferRate field specifies a fee to charge whenever counterparties transfer the currency you issue. See <a href="https://ripple.com/knowledge_center/transfer-fees/">Transfer Fees article</a> in the Knowledge Center for more information.</p>
+<p>The TransferRate field specifies a fee to charge whenever counterparties transfer the currency you issue. See <a href="concept-transfer-fees.html">Transfer Fees</a> for more information.</p>
 <p>In <code>rippled</code>'s WebSocket and JSON-RPC APIs, the TransferRate is represented as an integer, the amount that must be sent for 1 billion units to arrive. For example, a 20% transfer fee is represented as the value <code>1200000000</code>.  The value cannot be less than 1000000000. (Less than that would indicate giving away money for sending transactions, which is exploitable.) You can specify 0 as a shortcut for 1000000000, meaning no fee.</p>
-<h2 id="setregularkey">SetRegularKey</h2>
-<p><a href="https://github.com/ripple/rippled/blob/4239880acb5e559446d2067f00dabb31cf102a23/src/ripple/app/transactors/SetRegularKey.cpp" title="Source">[Source]<br/></a></p>
-<p>A SetRegularKey transaction changes the regular key associated with an address.</p>
-<pre><code>{
-    "Flags": 0,
-    "TransactionType": "SetRegularKey",
+<h2 id="escrowcancel">EscrowCancel</h2>
+<p><a href="https://github.com/ripple/rippled/blob/develop/src/ripple/app/tx/impl/Escrow.cpp" title="Source">[Source]<br/></a></p>
+<p><em>Requires the <a href="concept-amendments.html#escrow">Escrow Amendment</a>.</em></p>
+<p>Return escrowed XRP to the sender.</p>
+<p>Example EscrowCancel:</p>
+<pre><code class="json">{
     "Account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
-    "Fee": "12",
-    "RegularKey": "rAR8rR8sUkBoCZFawhkWzY4Y5YoyuznwD"
+    "TransactionType": "EscrowCancel",
+    "Owner": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+    "OfferSequence": 7,
 }
 </code></pre>
 <table>
@@ -999,17 +883,184 @@
 </thead>
 <tbody>
 <tr>
-<td align="left">RegularKey</td>
+<td align="left"><code>Owner</code></td>
 <td align="left">String</td>
 <td align="left">AccountID</td>
-<td align="left">(Optional) A base-58-encoded <a href="reference-rippled.html#addresses">Ripple address</a> to use as the regular key. If omitted, removes the existing regular key.</td>
+<td align="left">Address of the source account that funded the escrow payment.</td>
+</tr>
+<tr>
+<td align="left"><code>OfferSequence</code></td>
+<td align="left">Unsigned Integer</td>
+<td align="left">UInt32</td>
+<td align="left">Transaction sequence of <a href="#escrowcreate">EscrowCreate transaction</a> that created the escrow to cancel.</td>
 </tr>
 </tbody>
 </table>
-<p>In addition to the master key, which is mathematically-related to an address, you can associate <strong>at most 1 additional key pair</strong> with an address using this type of transaction. The additional key pair is called a <em>regular key</em>. If your address has a regular key pair defined, you can use the secret key of the regular key pair to <a href="#authorizing-transactions">authorize transactions</a>.</p>
-<p>A regular key pair is generated in the same way as any other Ripple keys (for example, with <a href="reference-rippled.html#wallet-propose">wallet_propose</a>), but it can be changed. A master key pair is an intrinsic part of an address's identity (the address is derived from the master public key). You can <a href="#accountset-flags">disable</a> a master key but you cannot change it.</p>
-<p>You can protect your master secret by using a regular key instead of the master key to sign transactions whenever possible. If your regular key is compromised, but the master key is not, you can use a SetRegularKey transaction to regain control of your address. In some cases, you can even send a <a href="concept-transaction-cost.html#key-reset-transaction">key reset transaction</a> without paying the <a href="#transaction-cost">transaction cost</a>.</p>
-<p>For even greater security, you can use <a href="#multi-signing">multi-signing</a>, but multi-signing requires additional XRP for the <a href="concept-transaction-cost.html">transaction cost</a> and <a href="concept-reserves.html">reserve</a>.</p>
+<p>Any account may submit an EscrowCancel transaction.</p>
+<ul>
+<li>If the corresponding <a href="#escrowcreate">EscrowCreate transaction</a> did not specify a <code>CancelAfter</code> time, the EscrowCancel transaction fails.</li>
+<li>Otherwise the EscrowCancel transaction fails if the <code>CancelAfter</code> time is after the close time of the most recently-closed ledger.</li>
+</ul>
+<h2 id="escrowcreate">EscrowCreate</h2>
+<p><a href="https://github.com/ripple/rippled/blob/develop/src/ripple/app/tx/impl/Escrow.cpp" title="Source">[Source]<br/></a></p>
+<p><em>Requires the <a href="concept-amendments.html#escrow">Escrow Amendment</a>.</em></p>
+<p>Sequester XRP until the escrow process either finishes or is canceled.</p>
+<p>Example EscrowCreate:</p>
+<pre><code class="json">{
+    "Account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+    "TransactionType": "EscrowCreate",
+    "Amount": "10000",
+    "Destination": "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
+    "CancelAfter": 533257958,
+    "FinishAfter": 533171558,
+    "Condition": "A0258020E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855810100",
+    "DestinationTag": 23480,
+    "SourceTag": 11747
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th align="left">Field</th>
+<th align="left">JSON Type</th>
+<th align="left"><a href="https://github.com/ripple/rippled/blob/master/src/ripple/protocol/impl/SField.cpp">Internal Type</a></th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left"><code>Amount</code></td>
+<td align="left">String</td>
+<td align="left">Amount</td>
+<td align="left">Amount of <a href="reference-rippled.html#specifying-currency-amounts">XRP, in drops</a>, to deduct from the sender's balance and escrow. Once escrowed, the XRP can either go to the <code>Destination</code> address (after the <code>FinishAfter</code> time) or returned to the sender (after the <code>CancelAfter</code> time).</td>
+</tr>
+<tr>
+<td align="left"><code>Destination</code></td>
+<td align="left">String</td>
+<td align="left">AccountID</td>
+<td align="left">Address to receive escrowed XRP.</td>
+</tr>
+<tr>
+<td align="left"><code>CancelAfter</code></td>
+<td align="left">Number</td>
+<td align="left">UInt32</td>
+<td align="left">(Optional) The time, in <a href="reference-rippled.html#specifying-time">seconds since the Ripple Epoch</a>, when this escrow expires. This value is immutable; the funds can only be returned the sender after this time.</td>
+</tr>
+<tr>
+<td align="left"><code>FinishAfter</code></td>
+<td align="left">Number</td>
+<td align="left">UInt32</td>
+<td align="left">(Optional) The time, in <a href="reference-rippled.html#specifying-time">seconds since the Ripple Epoch</a>, when the escrowed XRP can be released to the recipient. This value is immutable; the funds cannot move until this time is reached.</td>
+</tr>
+<tr>
+<td align="left"><code>Condition</code></td>
+<td align="left">String</td>
+<td align="left">VariableLength</td>
+<td align="left">(Optional) Hex value representing a <a href="https://tools.ietf.org/html/draft-thomas-crypto-conditions-02#section-8.1">PREIMAGE-SHA-256 crypto-condition</a>. The funds can only be delivered to the recipient if this condition is fulfilled.</td>
+</tr>
+<tr>
+<td align="left"><code>DestinationTag</code></td>
+<td align="left">Number</td>
+<td align="left">UInt32</td>
+<td align="left">(Optional) Arbitrary tag to further specify the destination for this escrowed payment, such as a hosted recipient at the destination address.</td>
+</tr>
+<tr>
+<td align="left"><code>SourceTag</code></td>
+<td align="left">Number</td>
+<td align="left">UInt32</td>
+<td align="left">(Optional) Arbitrary tag to further specify the source for this escrowed payment, such as a hosted sender at the source address.</td>
+</tr>
+</tbody>
+</table>
+<p>Either <code>CancelAfter</code> or <code>FinishAfter</code> must be specified. If both are included, the <code>FinishAfter</code> time must precede that of <code>CancelAfter</code>.</p>
+<h2 id="escrowfinish">EscrowFinish</h2>
+<p><a href="https://github.com/ripple/rippled/blob/develop/src/ripple/app/tx/impl/Escrow.cpp" title="Source">[Source]<br/></a></p>
+<p><em>Requires the <a href="concept-amendments.html#escrow">Escrow Amendment</a>.</em></p>
+<p>Deliver escrowed XRP the recipient.</p>
+<p>Example EscrowFinish:</p>
+<pre><code class="json">{
+    "Account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+    "TransactionType": "EscrowFinish",
+    "Owner": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+    "OfferSequence": 7,
+    "Condition": "A0258020E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855810100",
+    "Fulfillment": "A0028000"
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th align="left">Field</th>
+<th align="left">JSON Type</th>
+<th align="left"><a href="https://github.com/ripple/rippled/blob/master/src/ripple/protocol/impl/SField.cpp">Internal Type</a></th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left"><code>Owner</code></td>
+<td align="left">String</td>
+<td align="left">AccountID</td>
+<td align="left">Address of the source account that funded the held payment.</td>
+</tr>
+<tr>
+<td align="left"><code>OfferSequence</code></td>
+<td align="left">Unsigned Integer</td>
+<td align="left">UInt32</td>
+<td align="left">Transaction sequence of <a href="#escrowcreate">EscrowCreate transaction</a> that created the held payment to finish.</td>
+</tr>
+<tr>
+<td align="left"><code>Condition</code></td>
+<td align="left">String</td>
+<td align="left">VariableLength</td>
+<td align="left">(Optional) Hex value matching the previously-supplied <a href="https://tools.ietf.org/html/draft-thomas-crypto-conditions-02#section-8.1">PREIMAGE-SHA-256 crypto-condition</a> of the held payment.</td>
+</tr>
+<tr>
+<td align="left"><code>Fulfillment</code></td>
+<td align="left">String</td>
+<td align="left">VariableLength</td>
+<td align="left">(Optional) Hex value of the <a href="https://tools.ietf.org/html/draft-thomas-crypto-conditions-02#section-8.1.4">PREIMAGE-SHA-256 crypto-condition fulfillment</a> matching the held payment's <code>Condition</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>Any account may submit an EscrowFinish transaction.</p>
+<ul>
+<li>If the corresponding <a href="#escrowcreate">EscrowCreate transaction</a> specified a <code>FinishAfter</code> time that is after the close time of the most recently-closed ledger, the EscrowFinish transaction fails.</li>
+<li>If the corresponding <a href="#escrowcreate">EscrowCreate transaction</a> specified a <code>CancelAfter</code> time that is before the close time of the most recently-closed ledger, the EscrowFinish transaction fails.</li>
+</ul>
+<h2 id="offercancel">OfferCancel</h2>
+<p><a href="https://github.com/ripple/rippled/blob/master/src/ripple/app/tx/impl/CancelOffer.cpp" title="Source">[Source]<br/></a></p>
+<p>An OfferCancel transaction removes an Offer node from the Ripple Consensus Ledger.</p>
+<pre><code>{
+    "TransactionType": "OfferCancel",
+    "Account": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+    "Fee": "12",
+    "Flags": 0,
+    "LastLedgerSequence": 7108629,
+    "OfferSequence": 6,
+    "Sequence": 7
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th align="left">Field</th>
+<th align="left">JSON Type</th>
+<th align="left"><a href="https://github.com/ripple/rippled/blob/master/src/ripple/protocol/impl/SField.cpp">Internal Type</a></th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">OfferSequence</td>
+<td align="left">Unsigned Integer</td>
+<td align="left">UInt32</td>
+<td align="left">The sequence number of a previous OfferCreate transaction. If specified, cancel any offer node in the ledger that was created by that transaction. It is not considered an error if the offer specified does not exist.</td>
+</tr>
+</tbody>
+</table>
+<p class="devportal-callout tip"><em>Tip:</em> To remove an old offer and replace it with a new one, you can use an <a href="#offercreate">OfferCreate transaction</a> with an <code>OfferSequence</code> parameter, instead of using OfferCancel and another OfferCreate.</p>
+<p>The OfferCancel method returns <a href="#transaction-results">tesSUCCESS</a> even if it did not find an offer with the matching sequence number.</p>
 <h2 id="offercreate">OfferCreate</h2>
 <p><a href="https://github.com/ripple/rippled/blob/master/src/ripple/app/tx/impl/CreateOffer.cpp" title="Source">[Source]<br/></a></p>
 <p>An OfferCreate transaction is effectively a <a href="http://en.wikipedia.org/wiki/limit_order">limit order</a>. It defines an intent to exchange currencies, and creates an Offer node in the Ripple Consensus Ledger if not completely fulfilled when placed. Offers can be partially fulfilled.</p>
@@ -1070,12 +1121,18 @@
 <p>You can create an offer so long as you have at least some (any positive, nonzero amount) of the currency specified by the <code>TakerGets</code> parameter of the offer. The offer sells as much of the currency as you have, up to the <code>TakerGets</code> amount, until the <code>TakerPays</code> amount is satisfied. An offer cannot place anyone in debt.</p>
 <p>It is possible for an offer to become temporarily or permanently <em>unfunded</em>:</p>
 <ul>
-<li>If the creator no longer has any of the <code>TakerGets</code> currency.</li>
+<li>If the creator no longer has any of the <code>TakerGets</code> currency.<ul>
 <li>The offer becomes funded again when the creator obtains more of that currency.</li>
-<li>If the currency required to fund the offer is held in a <a href="concept-freeze.html">frozen trust line</a>.</li>
+</ul>
+</li>
+<li>If the currency required to fund the offer is held in a <a href="concept-freeze.html">frozen trust line</a>.<ul>
 <li>The offer becomes funded again when the trust line is no longer frozen.</li>
-<li>If the creator does not have enough XRP for the reserve amount of a new trust line required by the offer. (See <a href="#offers-and-trust">Offers and Trust</a>.)</li>
+</ul>
+</li>
+<li>If the creator does not have enough XRP for the reserve amount of a new trust line required by the offer. (See <a href="#offers-and-trust">Offers and Trust</a>.)<ul>
 <li>The offer becomes funded again when the creator obtains more XRP, or the reserve requirements decrease.</li>
+</ul>
+</li>
 <li>If the Expiration time included in the offer is before the close time of the most recently-closed ledger. (See <a href="#expiration">Expiration</a>.)</li>
 </ul>
 <p>An unfunded offer can stay on the ledger indefinitely, but it does not have any effect. The only ways an offer can be <em>permanently</em> removed from the ledger are:</p>
@@ -1096,8 +1153,14 @@
 <p>However, holding non-XRP balances still requires a trust line to the address issuing those balances. When an offer is taken, it automatically creates any necessary trust lines, setting their limits to 0. Because <a href="concept-reserves.html">trust lines increase the reserve an account must hold</a>, any offers that would require a new trust line also require the address to have enough XRP to meet the reserve for that trust line.</p>
 <p>A trust line indicates an issuer you trust enough to accept their issuances as payment, within limits. Offers are explicit instructions to acquire certain issuances, so they are allowed to go beyond those limits.</p>
 <h3 id="offer-preference">Offer Preference</h3>
-<p>Existing offers are grouped by "quality", which is measured as the ratio between <code>TakerGets</code> and <code>TakerPays</code>. Offers with a higher quality are taken preferentially. (That is, the person accepting the offer receives as much as possible for the amount of currency they pay out.) Offers with the same quality are taken on the basis of which offer was placed in the earliest ledger version.</p>
-<p>When offers of the same quality are placed in the same ledger version, the order in which they are taken is determined by the <a href="https://github.com/ripple/rippled/blob/f65cea66ef99b1de149c02c15f06de6c61abf360/src/ripple/app/misc/CanonicalTXSet.cpp" title="Source: Transaction ordering">canonical order</a> in which the transactions were <a href="https://github.com/ripple/rippled/blob/5425a90f160711e46b2c1f1c93d68e5941e4bfb6/src/ripple/app/consensus/LedgerConsensus.cpp#L1435-L1538" title="Source: Applying transactions">applied to the ledger</a>. This behavior is designed to be deterministic, efficient, and hard to game.</p>
+<p>Existing offers are grouped by exchange rate (sometimes called "offer quality"), which is measured as the ratio between <code>TakerGets</code> and <code>TakerPays</code>. Offers with a higher exchange rate are taken preferentially. (That is, the person accepting the offer receives as much as possible for the amount of currency they pay out.) Offers with the same exchange rate are taken on the basis of which offer was placed in the earliest ledger version.</p>
+<p>When offers of the same exchange rate are placed in the same ledger version, the order in which they are taken is determined by the <a href="https://github.com/ripple/rippled/blob/release/src/ripple/app/misc/CanonicalTXSet.cpp" title="Source: Transaction ordering">canonical order</a> in which the transactions were <a href="https://github.com/ripple/rippled/blob/5425a90f160711e46b2c1f1c93d68e5941e4bfb6/src/ripple/app/consensus/LedgerConsensus.cpp#L1435-L1538" title="Source: Applying transactions">applied to the ledger</a>. This behavior is designed to be deterministic, efficient, and hard to game.</p>
+<h4 id="ticksize">TickSize</h4>
+<p><em>Requires the <a href="concept-amendments.html#ticksize">TickSize amendment</a>.</em></p>
+<p>When an Offer is placed into an order book, its exchange rate is truncated based on the <code>TickSize</code> values set by the issuers of the currencies involved in the Offer. When a trader offers to exchange XRP and an issued currency, the <code>TickSize</code> from the issuer of the currency applies. When a trader offers to exchange two issued currencies, the offer uses the smaller <code>TickSize</code> value (that is, the one with fewer significant digits). If neither currency has a <code>TickSize</code> set, the default behavior applies.</p>
+<p>The <code>TickSize</code> value truncates the number of <em>significant digits</em> in the exchange rate of an offer when it gets placed in an order book. Issuers can set <code>TickSize</code> to an integer from <code>3</code> to <code>15</code> using an <a href="#accountset">AccountSet transaction</a>. The exchange rate is represented as a number of significant digits plus an exponent; the <code>TickSize</code> does not affect the exponent. This allows the Ripple Consensus Ledger to represent exchange rates between assets that vary greatly in value (for example, a hyperinflated currency compared to a rare commodity). The lower the <code>TickSize</code> an issuer sets, the larger the increment traders must offer to be considered a higher exchange rate than the existing Offers.</p>
+<p>The <code>TickSize</code> does not affect the portion of an Offer that can be executed immediately. (For that reason, OfferCreate transactions with <code>tfImmediateOrCancel</code> are unaffected by <code>TickSize</code> values.) If the Offer cannot be fully executed, the transaction processing engine calculates the exchange rate and truncates it based on <code>TickSize</code>. Then, the engine rounds the remaining amount of the Offer from the "less important" side to match the truncated exchange rate. For a default OfferCreate transaction (a "buy" Offer), the <code>TakerPays</code> amount (the amount being bought) gets rounded. If the <code>tfSell</code> flag is enabled (a "sell" Offer) the <code>TakerGets</code> amount (the amount being sold) gets rounded.</p>
+<p>When an issuer enables, disables, or changes the <code>TickSize</code>, Offers that were placed under the previous setting are unaffected.</p>
 <h3 id="expiration">Expiration</h3>
 <p>Since transactions can take time to propagate and confirm, the timestamp of a ledger is used to determine offer validity. An offer only expires when its Expiration time is before the most-recently validated ledger. In other words, an offer with an <code>Expiration</code> field is still considered "active" if its expiration time is later than the timestamp of the most-recently validated ledger, regardless of what your local clock says.</p>
 <p>You can determine the final disposition of an offer with an <code>Expiration</code> as soon as you see a fully-validated ledger with a close time equal to or greater than the expiration time.</p>
@@ -1145,21 +1208,27 @@
 </tr>
 </tbody>
 </table>
-<p>The following invalid flag combination prompts a temINVALID_FLAG error:</p>
+<p>The following invalid flag combination prompts a <code>temINVALID_FLAG</code> error:</p>
 <ul>
 <li>tfImmediateOrCancel and tfFillOrKill</li>
 </ul>
-<h2 id="offercancel">OfferCancel</h2>
-<p><a href="https://github.com/ripple/rippled/blob/master/src/ripple/app/tx/impl/CancelOffer.cpp" title="Source">[Source]<br/></a></p>
-<p>An OfferCancel transaction removes an Offer node from the Ripple Consensus Ledger.</p>
+<h2 id="payment">Payment</h2>
+<p><a href="https://github.com/ripple/rippled/blob/5425a90f160711e46b2c1f1c93d68e5941e4bfb6/src/ripple/app/transactors/Payment.cpp" title="Source">[Source]<br/></a></p>
+<p>A Payment transaction represents a transfer of value from one account to another. (Depending on the path taken, this can involve additional exchanges of value, which occur atomically.)</p>
+<p>Payments are also the only way to <a href="#creating-accounts">create accounts</a>.</p>
+<p>Example payment:</p>
 <pre><code>{
-    "TransactionType": "OfferCancel",
-    "Account": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
-    "Fee": "12",
-    "Flags": 0,
-    "LastLedgerSequence": 7108629,
-    "OfferSequence": 6,
-    "Sequence": 7
+  "TransactionType" : "Payment",
+  "Account" : "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+  "Destination" : "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+  "Amount" : {
+     "currency" : "USD",
+     "value" : "1",
+     "issuer" : "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn"
+  },
+  "Fee": "10",
+  "Flags": 2147483648,
+  "Sequence": 2,
 }
 </code></pre>
 <table>
@@ -1173,15 +1242,423 @@
 </thead>
 <tbody>
 <tr>
-<td align="left">OfferSequence</td>
+<td align="left">Amount</td>
+<td align="left"><a href="reference-rippled.html#specifying-currency-amounts">Currency Amount</a></td>
+<td align="left">Amount</td>
+<td align="left">The amount of currency to deliver. For non-XRP amounts, the nested field names MUST be lower-case. If the <a href="#payment-flags"><strong>tfPartialPayment</strong> flag</a> is set, deliver <em>up to</em> this amount instead.</td>
+</tr>
+<tr>
+<td align="left">Destination</td>
+<td align="left">String</td>
+<td align="left">Account</td>
+<td align="left">The unique address of the account receiving the payment.</td>
+</tr>
+<tr>
+<td align="left">DestinationTag</td>
 <td align="left">Unsigned Integer</td>
 <td align="left">UInt32</td>
-<td align="left">The sequence number of a previous OfferCreate transaction. If specified, cancel any offer node in the ledger that was created by that transaction. It is not considered an error if the offer specified does not exist.</td>
+<td align="left">(Optional) Arbitrary tag that identifies the reason for the payment to the destination, or a hosted recipient to pay.</td>
+</tr>
+<tr>
+<td align="left">InvoiceID</td>
+<td align="left">String</td>
+<td align="left">Hash256</td>
+<td align="left">(Optional) Arbitrary 256-bit hash representing a specific reason or identifier for this payment.</td>
+</tr>
+<tr>
+<td align="left">Paths</td>
+<td align="left">Array of path arrays</td>
+<td align="left">PathSet</td>
+<td align="left">(Optional, auto-fillable) Array of <a href="concept-paths.html">payment paths</a> to be used for this transaction. Must be omitted for XRP-to-XRP transactions.</td>
+</tr>
+<tr>
+<td align="left">SendMax</td>
+<td align="left"><a href="reference-rippled.html#specifying-currency-amounts">Currency Amount</a></td>
+<td align="left">Amount</td>
+<td align="left">(Optional) Highest amount of source currency this transaction is allowed to cost, including <a href="concept-transfer-fees.html">transfer fees</a>, exchange rates, and <a href="http://en.wikipedia.org/wiki/Slippage_%28finance%29">slippage</a>. Does not include the <a href="#transaction-cost">XRP destroyed as a cost for submitting the transaction</a>. For non-XRP amounts, the nested field names MUST be lower-case. Must be supplied for cross-currency/cross-issue payments. Must be omitted for XRP-to-XRP payments.</td>
+</tr>
+<tr>
+<td align="left">DeliverMin</td>
+<td align="left"><a href="reference-rippled.html#specifying-currency-amounts">Currency Amount</a></td>
+<td align="left">Amount</td>
+<td align="left">(Optional) Minimum amount of destination currency this transaction should deliver. Only valid if this is a <a href="#partial-payments">partial payment</a>. For non-XRP amounts, the nested field names are lower-case.</td>
 </tr>
 </tbody>
 </table>
-<p class="devportal-callout tip"><em>Tip:</em> To remove an old offer and replace it with a new one, you can use an <a href="#offercreate">OfferCreate</a> transaction with an <code>OfferSequence</code> parameter, instead of using OfferCancel and another OfferCreate.</p>
-<p>The OfferCancel method returns <a href="#transaction-results">tesSUCCESS</a> even if it did not find an offer with the matching sequence number.</p>
+<h3 id="special-issuer-values-for-sendmax-and-amount">Special issuer Values for SendMax and Amount</h3>
+<p>Most of the time, the <code>issuer</code> field of a non-XRP <a href="reference-rippled.html#specifying-currency-amounts">Currency Amount</a> indicates a financial institution's <a href="concept-issuing-and-operational-addresses.html">issuing address</a>. However, when describing payments, there are special rules for the <code>issuer</code> field in the <code>Amount</code> and <code>SendMax</code> fields of a payment.</p>
+<ul>
+<li>There is only ever one balance for the same currency between two addresses. This means that, sometimes, the <code>issuer</code> field of an amount actually refers to a counterparty that is redeeming issuances, instead of the address that created the issuances.</li>
+<li>When the <code>issuer</code> field of the destination <code>Amount</code> field matches the <code>Destination</code> address, it is treated as a special case meaning "any issuer that the destination accepts." This includes all addresses to which the destination has extended trust lines, as well as issuances created by the destination which are held on other trust lines.</li>
+<li>When the <code>issuer</code> field of the <code>SendMax</code> field matches the source account's address, it is treated as a special case meaning "any issuer that the source can use." This includes creating new issuances on trust lines that other accounts have extended to the source account, and sending issuances the source account holds from other issuers.</li>
+</ul>
+<h3 id="creating-accounts">Creating Accounts</h3>
+<p>The Payment transaction type is the only way to create new accounts in the Ripple Consensus Ledger. To do so, send an amount of XRP that is equal or greater than the <a href="concept-reserves.html">account reserve</a> to a mathematically-valid account address that does not exist yet. When the Payment is processed, a new <a href="reference-ledger-format.html#accountroot">AccountRoot node</a> is added to the ledger.</p>
+<p>If you send an insufficient amount of XRP, or any other currency, the Payment fails.</p>
+<h3 id="paths">Paths</h3>
+<p>If present, the <code>Paths</code> field must contain a <em>path set</em> - an array of path arrays. Each individual path represents one way value can flow from the sender to receiver through various intermediary accounts and order books. A single transaction can potentially use multiple paths, for example if the transaction exchanges currency using several different order books to achieve the best rate.</p>
+<p>You must omit the <code>Paths</code> field for direct payments, including:</p>
+<ul>
+<li>An XRP-to-XRP transfer.</li>
+<li>A direct transfer on a trust line that connects the sender and receiver.</li>
+</ul>
+<p>If the <code>Paths</code> field is provided, the server decides at transaction processing time which paths to use, from the provided set plus a <em>default path</em> (the most direct way possible to connect the specified accounts). This decision is deterministic and attempts to minimize costs, but it is not guaranteed to be perfect.</p>
+<p>The <code>Paths</code> field must not be an empty array, nor an array whose members are all empty arrays.</p>
+<p>For more information, see <a href="concept-paths.html">Paths</a>.</p>
+<h3 id="payment-flags">Payment Flags</h3>
+<p>Transactions of the Payment type support additional values in the <a href="#flags"><code>Flags</code> field</a>, as follows:</p>
+<table>
+<thead>
+<tr>
+<th align="left">Flag Name</th>
+<th align="left">Hex Value</th>
+<th align="left">Decimal Value</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">tfNoDirectRipple</td>
+<td align="left">0x00010000</td>
+<td align="left">65536</td>
+<td align="left">Do not use the default path; only use paths included in the <code>Paths</code> field. This is intended to force the transaction to take arbitrage opportunities. Most clients do not need this.</td>
+</tr>
+<tr>
+<td align="left">tfPartialPayment</td>
+<td align="left">0x00020000</td>
+<td align="left">131072</td>
+<td align="left">If the specified <code>Amount</code> cannot be sent without spending more than <code>SendMax</code>, reduce the received amount instead of failing outright. See <a href="#partial-payments">Partial Payments</a> for more details.</td>
+</tr>
+<tr>
+<td align="left">tfLimitQuality</td>
+<td align="left">0x00040000</td>
+<td align="left">262144</td>
+<td align="left">Only take paths where all the conversions have an input:output ratio that is equal or better than the ratio of <code>Amount</code>:<code>SendMax</code>. See <a href="#limit-quality">Limit Quality</a> for details.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="partial-payments">Partial Payments</h3>
+<p>A partial payment allows a payment to succeed by reducing the amount received, instead of increasing the <code>SendMax</code>. Partial payments are useful for <a href="tutorial-gateway-guide.html#bouncing-payments">returning payments</a> without incurring additional costs to oneself.</p>
+<p>By default, the <code>Amount</code> field of a Payment transaction specifies the amount of currency that is <em>received</em> by the account that is the destination of the payment. Any additional amount needed for fees or currency exchange is deducted from the sending account's balances, up to the <code>SendMax</code> amount. (If <code>SendMax</code> is not specified, that is equivalent to setting the <code>SendMax</code> to the <code>Amount</code> field.) If the amount needed to make the payment exceeds the <code>SendMax</code> parameter, or the full amount cannot be delivered for any other reason, the transaction fails.</p>
+<p>The <a href="#payment-flags"><em>tfPartialPayment</em> flag</a> allows you to make a "partial payment" instead. When this flag is enabled for a payment, it delivers as much as possible, up to the <code>Amount</code> value, without exceeding the <code>SendMax</code> value. Fees and currency exchange rates are calculated the same way, but the amount being sent automatically scales down until the total amount deducted from the sending account's balances is within <code>SendMax</code>. The transaction is considered successful as long as it delivers equal or more than the <code>DeliverMin</code> value; if DeliverMin is omitted, then any positive amount is considered a success. This means that partial payments can succeed at sending <em>some</em> of the intended value despite limitations including fees, lack of liquidity, insufficient space in the receiving account's trustlines, or other reasons.</p>
+<p>A partial payment cannot provide the XRP to fund an address; this case returns the error code <code>telNO_DST_PARTIAL</code>. Direct XRP-to-XRP payments also cannot be partial payments <code>temBAD_SEND_XRP_PARTIAL</code>.</p>
+<p>The amount of XRP used for the <a href="#transaction-cost">transaction cost</a> is always deducted from the sender’s account, regardless of the <em>tfPartialPayment</em> flag.</p>
+<h4 id="partial-payments-warning">Partial Payments Warning</h4>
+<p>When the <a href="#payment-flags"><em>tfPartialPayment</em> flag</a> is enabled, the <code>Amount</code> field <strong><em>is not guaranteed to be the amount received</em></strong>. The <a href="#delivered-amount"><code>delivered_amount</code></a> field of a payment's metadata indicates the amount of currency actually received by the destination account. When receiving a payment, use <code>delivered_amount</code> instead of the <code>Amount</code> field to determine how much your account received instead.</p>
+<h3 id="limit-quality">Limit Quality</h3>
+<p>Ripple defines the "quality" of a currency exchange as the ratio of the numeric amount in to the numeric amount out. For example, if you spend $2 USD to receive £1 GBP, then the "quality" of that exchange is <code>0.5</code>.</p>
+<p>The <a href="#payment-flags"><em>tfLimitQuality</em> flag</a> allows you to set a minimum quality of conversions that you are willing to take. This limit quality is defined as the destination <code>Amount</code> divided by the <code>SendMax</code> amount (the numeric amounts only, regardless of currency). When set, the payment processing engine avoids using any paths whose quality (conversion rate) is worse (numerically lower) than the limit quality.</p>
+<p>By itself, the tfLimitQuality flag reduces the number of situations in which a transaction can succeed. Specifically, it rejects payments where some part of the payment uses an unfavorable conversion, even if the overall average <em>average</em> quality of conversions in the payment is equal or better than the limit quality. If a payment is rejected in this way, the <a href="#transaction-results">transaction result</a> is <code>tecPATH_DRY</code>.</p>
+<p>Consider the following example. If I am trying to send you 100 Chinese Yuan (<code>Amount</code> = 100 CNY) for 20 United States dollars (<code>SendMax</code> = 20 USD) or less, then the limit quality is <code>5</code>. Imagine one trader is offering ¥95 for $15 (a ratio of about <code>6.3</code> CNY per USD), but the next best offer in the market is ¥5 for $2 (a ratio of <code>2.5</code> CNY per USD). If I were to take both offers to send you 100 CNY, then it would cost me 17 USD, for an average quality of about <code>5.9</code>.</p>
+<p>Without the tfLimitQuality flag set, this transaction would succeed, because the $17 it costs me is within my specified <code>SendMax</code>. However, with the tfLimitQuality flag enabled, the transaction would fail instead, because the path to take the second offer has a quality of <code>2.5</code>, which is worse than the limit quality of <code>5</code>.</p>
+<p>The tfLimitQuality flag is most useful when combined with <a href="#partial-payments">partial payments</a>. When both <em>tfPartialPayment</em> and <em>tfLimitQuality</em> are set on a transaction, then the transaction delivers as much of the destination <code>Amount</code> as it can, without using any conversions that are worse than the limit quality.</p>
+<p>In the above example with a ¥95/$15 offer and a ¥5/$2 offer, the situation is different if my transaction has both tfPartialPayment and tfLimitQuality enabled. If we keep my <code>SendMax</code> of 20 USD and a destination <code>Amount</code> of 100 CNY, then the limit quality is still <code>5</code>. However, because I am doing a partial payment, the transaction sends as much as it can instead of failing if the full destination amount cannot be sent. This means that my transaction consumes the ¥95/$15 offer, whose quality is about <code>6.3</code>, but it rejects the ¥5/$2 offer because that offer's quality of <code>2.5</code> is worse than the quality limit of <code>5</code>. In the end, my transaction only delivers ¥95 instead of the full ¥100, but it avoids wasting money on poor exchange rates.</p>
+<h2 id="paymentchannelclaim">PaymentChannelClaim</h2>
+<p><a href="https://github.com/ripple/rippled/blob/develop/src/ripple/app/tx/impl/PayChan.cpp" title="Source">[Source]<br/></a></p>
+<p><em>Requires the <a href="concept-amendments.html#paychan">PayChan Amendment</a>.</em></p>
+<p>Claim XRP from a payment channel, adjust the payment channel's expiration, or both. This transaction can be used differently depending on the transaction sender's role in the specified channel:</p>
+<p>The <strong>source address</strong> of a channel can:</p>
+<ul>
+<li>Send XRP from the channel to the destination with <em>or without</em> a signed Claim.</li>
+<li>Set the channel to expire as soon as the channel's <code>SettleDelay</code> has passed.</li>
+<li>Clear a pending <code>Expiration</code> time.</li>
+<li>Close a channel immediately, with or without processing a claim first. The source address cannot close the channel immediately if the channel has XRP remaining.</li>
+</ul>
+<p>The <strong>destination address</strong> of a channel can:</p>
+<ul>
+<li>Receive XRP from the channel using a signed Claim.</li>
+<li>Close the channel immediately after processing a Claim, refunding any unclaimed XRP to the channel's source.</li>
+</ul>
+<p><strong>Any address</strong> sending this transaction can:</p>
+<ul>
+<li>Cause a channel to be closed if its <code>Expiration</code> or <code>CancelAfter</code> time is older than the previous ledger's close time. Any validly-formed PaymentChannelClaim transaction has this effect regardless of the contents of the transaction.</li>
+</ul>
+<p>Example PaymentChannelClaim:</p>
+<pre><code class="json">{
+  "Channel": "C1AE6DDDEEC05CF2978C0BAD6FE302948E9533691DC749DCDD3B9E5992CA6198",
+  "Balance": "1000000",
+  "Amount": "1000000",
+  "Signature": "30440220718D264EF05CAED7C781FF6DE298DCAC68D002562C9BF3A07C1E721B420C0DAB02203A5A4779EF4D2CCC7BC3EF886676D803A9981B928D3B8ACA483B80ECA3CD7B9B",
+  "PublicKey": "32D2471DB72B27E3310F355BB33E339BF26F8392D5A93D3BC0FC3B566612DA0F0A"
+}
+</code></pre>
+<!-- -->
+<table>
+<thead>
+<tr>
+<th align="left">Field</th>
+<th align="left">JSON Type</th>
+<th align="left"><a href="https://github.com/ripple/rippled/blob/master/src/ripple/protocol/impl/SField.cpp">Internal Type</a></th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left"><code>Channel</code></td>
+<td align="left">String</td>
+<td align="left">Hash256</td>
+<td align="left">The unique ID of the channel, as a 64-character hexadecimal string.</td>
+</tr>
+<tr>
+<td align="left"><code>Balance</code></td>
+<td align="left">String</td>
+<td align="left">Amount</td>
+<td align="left"><em>(Optional)</em> Total amount of <a href="reference-rippled.html#specifying-currency-amounts">XRP, in drops</a>, delivered by this channel after processing this claim. Required to deliver XRP. Must be more than the total amount delivered by the channel so far, but not greater than the <code>Amount</code> of the signed claim. Must be provided except when closing the channel.</td>
+</tr>
+<tr>
+<td align="left"><code>Amount</code></td>
+<td align="left">String</td>
+<td align="left">Amount</td>
+<td align="left"><em>(Optional)</em> The amount of <a href="reference-rippled.html#specifying-currency-amounts">XRP, in drops</a>, authorized by the <code>Signature</code>. This must match the amount in the signed message. This is the cumulative amount of XRP that can be dispensed by the channel, including XRP previously redeemed.</td>
+</tr>
+<tr>
+<td align="left"><code>Signature</code></td>
+<td align="left">String</td>
+<td align="left">VariableLength</td>
+<td align="left"><em>(Optional)</em> The signature of this claim, as hexadecimal. The signed message contains the channel ID and the amount of the claim. Required unless the sender of the transaction is the source address of the channel.</td>
+</tr>
+<tr>
+<td align="left"><code>PublicKey</code></td>
+<td align="left">String</td>
+<td align="left">PubKey</td>
+<td align="left"><em>(Optional)</em> The public key used for the signature, as hexadecimal. This must match the <code>PublicKey</code> stored in the ledger for the channel. Required unless the sender of the transaction is the source address of the channel and the <code>Signature</code> field is omitted. (The transaction includes the PubKey so that <code>rippled</code> can check the validity of the signature before trying to apply the transaction to the ledger.)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="paymentchannelclaim-flags">PaymentChannelClaim Flags</h3>
+<p>Transactions of the PaymentChannelClaim type support additional values in the <a href="#flags"><code>Flags</code> field</a>, as follows:</p>
+<table>
+<thead>
+<tr>
+<th align="left">Flag Name</th>
+<th align="left">Hex Value</th>
+<th align="left">Decimal Value</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left"><code>tfRenew</code></td>
+<td align="left">0x00010000</td>
+<td align="left">65536</td>
+<td align="left">Clear the channel's <code>Expiration</code> time. (<code>Expiration</code> is different from the channel's immutable <code>CancelAfter</code> time.) Only the source address of the payment channel can use this flag.</td>
+</tr>
+<tr>
+<td align="left"><code>tfClose</code></td>
+<td align="left">0x00020000</td>
+<td align="left">131072</td>
+<td align="left">Request to close the channel. Only the channel source and destination addresses can use this flag. This flag closes the channel immediately if it has no more XRP allocated to it after processing the current claim, or if the destination address uses it. If the source address uses this flag when the channel still holds XRP, this schedules the channel to close after <code>SettleDelay</code> seconds have passed. (Specifically, this sets the <code>Expiration</code> of the channel to the close time of the previous ledger plus the channel's <code>SettleDelay</code> time, unless the channel already has an earlier <code>Expiration</code> time.) If the destination address uses this flag when the channel still holds XRP, any XRP that remains after processing the claim is returned to the source address.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="paymentchannelcreate">PaymentChannelCreate</h2>
+<p><a href="https://github.com/ripple/rippled/blob/develop/src/ripple/app/tx/impl/PayChan.cpp" title="Source">[Source]<br/></a></p>
+<p><em>Requires the <a href="concept-amendments.html#paychan">PayChan Amendment</a>.</em></p>
+<p>Create a unidirectional channel and fund it with XRP. The address sending this transaction becomes the "source address" of the payment channel.</p>
+<p>Example PaymentChannelCreate:</p>
+<pre><code class="json">{
+    "Account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+    "TransactionType": "PaymentChannelCreate",
+    "Amount": "10000",
+    "Destination": "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
+    "SettleDelay": 86400,
+    "PublicKey": "32D2471DB72B27E3310F355BB33E339BF26F8392D5A93D3BC0FC3B566612DA0F0A",
+    "CancelAfter": 533171558,
+    "DestinationTag": 23480,
+    "SourceTag": 11747
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th align="left">Field</th>
+<th align="left">JSON Type</th>
+<th align="left"><a href="https://github.com/ripple/rippled/blob/master/src/ripple/protocol/impl/SField.cpp">Internal Type</a></th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left"><code>Amount</code></td>
+<td align="left">String</td>
+<td align="left">Amount</td>
+<td align="left">Amount of <a href="reference-rippled.html#specifying-currency-amounts">XRP, in drops</a>, to deduct from the sender's balance and set aside in this channel. While the channel is open, the XRP can only go to the <code>Destination</code> address. When the channel closes, any unclaimed XRP is returned to the source address's balance.</td>
+</tr>
+<tr>
+<td align="left"><code>Destination</code></td>
+<td align="left">String</td>
+<td align="left">AccountID</td>
+<td align="left">Address to receive XRP claims against this channel. This is also known as the "destination address" for the channel.</td>
+</tr>
+<tr>
+<td align="left"><code>SettleDelay</code></td>
+<td align="left">Number</td>
+<td align="left">UInt32</td>
+<td align="left">Amount of time the source address must wait before closing the channel if it has unclaimed XRP.</td>
+</tr>
+<tr>
+<td align="left"><code>PublicKey</code></td>
+<td align="left">String</td>
+<td align="left">PubKey</td>
+<td align="left">The public key of the key pair the source will use to sign claims against this channel, in hexadecimal. This can be any secp256k1 or Ed25519 public key.</td>
+</tr>
+<tr>
+<td align="left"><code>CancelAfter</code></td>
+<td align="left">Number</td>
+<td align="left">UInt32</td>
+<td align="left">The time, in <a href="reference-rippled.html#specifying-time">seconds since the Ripple Epoch</a>, when this channel expires. Any transaction that would modify the channel after this time closes the channel without otherwise affecting it. This value is immutable; the channel can be closed earlier than this time but cannot remain open after this time.</td>
+</tr>
+<tr>
+<td align="left"><code>DestinationTag</code></td>
+<td align="left">Number</td>
+<td align="left">UInt32</td>
+<td align="left">(Optional) Arbitrary tag to further specify the destination for this payment channel, such as a hosted recipient at the destination address.</td>
+</tr>
+<tr>
+<td align="left"><code>SourceTag</code></td>
+<td align="left">Number</td>
+<td align="left">UInt32</td>
+<td align="left">(Optional) Arbitrary tag to further specify the source for this payment channel, such as a hosted sender at the source address.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="paymentchannelfund">PaymentChannelFund</h2>
+<p><a href="https://github.com/ripple/rippled/blob/develop/src/ripple/app/tx/impl/PayChan.cpp" title="Source">[Source]<br/></a></p>
+<p><em>Requires the <a href="concept-amendments.html#paychan">PayChan Amendment</a>.</em></p>
+<p>Add additional XRP to an open payment channel, update the expiration time of the channel, or both. Only the source address of the channel can use this transaction. (Transactions from other addresses fail with the error <code>tecNO_PERMISSION</code>.)</p>
+<p>Example PaymentChannelFund:</p>
+<pre><code class="json">{
+    "Account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+    "TransactionType": "PaymentChannelFund",
+    "Channel": "C1AE6DDDEEC05CF2978C0BAD6FE302948E9533691DC749DCDD3B9E5992CA6198",
+    "Amount": "200000",
+    "Expiration": 543171558
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th align="left">Field</th>
+<th align="left">JSON Type</th>
+<th align="left"><a href="https://github.com/ripple/rippled/blob/master/src/ripple/protocol/impl/SField.cpp">Internal Type</a></th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left"><code>Channel</code></td>
+<td align="left">String</td>
+<td align="left">Hash256</td>
+<td align="left">The unique ID of the channel to fund, as a 64-character hexadecimal string.</td>
+</tr>
+<tr>
+<td align="left"><code>Amount</code></td>
+<td align="left">String</td>
+<td align="left">Amount</td>
+<td align="left">Amount of <a href="reference-rippled.html#specifying-currency-amounts">XRP, in drops</a> to add to the channel. To set the expiration for a channel without adding more XRP, set this to <code>"0"</code>.</td>
+</tr>
+<tr>
+<td align="left"><code>Expiration</code></td>
+<td align="left">Number</td>
+<td align="left">UInt32</td>
+<td align="left"><em>(Optional)</em> New <code>Expiration</code> time to set for the channel, in seconds since the Ripple Epoch. This must be later than either the current time plus the <code>SettleDelay</code> of the channel, or the existing <code>Expiration</code> of the channel. After the <code>Expiration</code> time, any transaction that would access the channel closes the channel without taking its normal action. Any unspent XRP is returned to the source address when the channel closes. (<code>Expiration</code> is separate from the channel's immutable <code>CancelAfter</code> time.)</td>
+</tr>
+</tbody>
+</table>
+<!-- TODO: add a cross-reference in expiration row to the expiration explanation in ledger format page when both are merged -->
+<h2 id="setregularkey">SetRegularKey</h2>
+<p><a href="https://github.com/ripple/rippled/blob/4239880acb5e559446d2067f00dabb31cf102a23/src/ripple/app/transactors/SetRegularKey.cpp" title="Source">[Source]<br/></a></p>
+<p>A SetRegularKey transaction changes the regular key associated with an address.</p>
+<pre><code>{
+    "Flags": 0,
+    "TransactionType": "SetRegularKey",
+    "Account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+    "Fee": "12",
+    "RegularKey": "rAR8rR8sUkBoCZFawhkWzY4Y5YoyuznwD"
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th align="left">Field</th>
+<th align="left">JSON Type</th>
+<th align="left"><a href="https://github.com/ripple/rippled/blob/master/src/ripple/protocol/impl/SField.cpp">Internal Type</a></th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">RegularKey</td>
+<td align="left">String</td>
+<td align="left">AccountID</td>
+<td align="left">(Optional) A base-58-encoded <a href="reference-rippled.html#addresses">Ripple address</a> to use as the regular key. If omitted, removes the existing regular key.</td>
+</tr>
+</tbody>
+</table>
+<p>In addition to the master key, which is mathematically-related to an address, you can associate <strong>at most 1 additional key pair</strong> with an address using this type of transaction. The additional key pair is called a <em>regular key</em>. If your address has a regular key pair defined, you can use the secret key of the regular key pair to <a href="#authorizing-transactions">authorize transactions</a>.</p>
+<p>A regular key pair is generated in the same way as any other Ripple keys (for example, with <a href="reference-rippled.html#wallet-propose">wallet_propose</a>), but it can be changed. A master key pair is an intrinsic part of an address's identity (the address is derived from the master public key). You can <a href="#accountset-flags">disable</a> a master key but you cannot change it.</p>
+<p>You can protect your master secret by using a regular key instead of the master key to sign transactions whenever possible. If your regular key is compromised, but the master key is not, you can use a SetRegularKey transaction to regain control of your address. In some cases, you can even send a <a href="concept-transaction-cost.html#key-reset-transaction">key reset transaction</a> without paying the <a href="#transaction-cost">transaction cost</a>.</p>
+<p>For even greater security, you can use <a href="#multi-signing">multi-signing</a>, but multi-signing requires additional XRP for the <a href="concept-transaction-cost.html">transaction cost</a> and <a href="concept-reserves.html">reserve</a>.</p>
+<h2 id="signerlistset">SignerListSet</h2>
+<p><a href="https://github.com/ripple/rippled/blob/ef511282709a6a0721b504c6b7703f9de3eecf38/src/ripple/app/tx/impl/SetSignerList.cpp" title="Source">[Source]<br/></a></p>
+<p>The SignerListSet transaction creates, replaces, or removes a list of signers that can be used to <a href="#multi-signing">multi-sign</a> a transaction. This transaction type was introduced by the <a href="concept-amendments.html#multisign">MultiSign amendment</a>. <a href="https://github.com/ripple/rippled/releases/tag/0.31.0" title="New in: rippled 0.31.0"><img alt="New in: rippled 0.31.0" class="dactyl_badge" src="https://img.shields.io/badge/New%20in-rippled%200.31.0-blue.svg"/></a></p>
+<p>Example SignerListSet:</p>
+<pre><code>{
+    "Flags": 0,
+    "TransactionType": "SignerListSet",
+    "Account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+    "Fee": "10000",
+    "SignerQuorum": 3,
+    "SignerEntries": [
+        {
+            "SignerEntry": {
+                "Account": "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
+                "SignerWeight": 2
+            }
+        },
+        {
+            "SignerEntry": {
+                "Account": "rUpy3eEg8rqjqfUoLeBnZkscbKbFsKXC3v",
+                "SignerWeight": 1
+            }
+        },
+        {
+            "SignerEntry": {
+                "Account": "raKEEVSGnKSD9Zyvxu4z6Pqpm4ABH8FS6n",
+                "SignerWeight": 1
+            }
+        }
+    ]
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th align="left">Field</th>
+<th align="left">JSON Type</th>
+<th align="left"><a href="https://github.com/ripple/rippled/blob/master/src/ripple/protocol/impl/SField.cpp">Internal Type</a></th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">SignerQuorum</td>
+<td align="left">Number</td>
+<td align="left">UInt32</td>
+<td align="left">A target number for the signer weights. A multi-signature from this list is valid only if the sum weights of the signatures provided is greater than or equal to this value. To delete a SignerList, use the value <code>0</code>.</td>
+</tr>
+<tr>
+<td align="left">SignerEntries</td>
+<td align="left">Array</td>
+<td align="left">Array</td>
+<td align="left">(Omitted when deleting) Array of <a href="reference-ledger-format.html#signerentry-object">SignerEntry objects</a>, indicating the addresses and weights of signers in this list. A SignerList must have at least 1 member and no more than 8 members. No address may appear more than once in the list, nor may the <code>Account</code> submitting the transaction appear in the list.</td>
+</tr>
+</tbody>
+</table>
+<p>An account may not have more than one SignerList. A successful SignerListSet transaction replaces the existing SignerList, if one exists. To delete a SignerList, you must set <code>SignerQuorum</code> to <code>0</code> <em>and</em> omit the <code>SignerEntries</code> field. Otherwise, the transaction fails with the error <a href="#tem-codes">temMALFORMED</a>. A transaction to delete a SignerList is considered successful even if there was no SignerList to delete.</p>
+<p>You cannot create a SignerList such that the SignerQuorum could never be met. The SignerQuorum must be greater than 0 but less than or equal to the sum of the <code>SignerWeight</code> values in the list. Otherwise, the transaction fails with the error <a href="#tem-codes">temMALFORMED</a>.</p>
+<p>You can create, update, or remove a SignerList using the master key, regular key, or the current SignerList, if those methods of signing transactions are available.</p>
+<p>You cannot remove the last method of signing transactions from an account. If an account's master key is disabled (it has the <a href="reference-ledger-format.html#accountroot-flags"><code>lsfDisableMaster</code> flag</a> enabled) and the account does not have a <a href="#setregularkey">Regular Key</a> configured, then you cannot delete the SignerList from the account. Instead, the transaction fails with the error <a href="#tec-codes"><code>tecNO_ALTERNATIVE_KEY</code></a>.</p>
 <h2 id="trustset">TrustSet</h2>
 <p><a href="https://github.com/ripple/rippled/blob/master/src/ripple/app/tx/impl/SetTrust.cpp" title="Source">[Source]<br/></a></p>
 <p>Create or modify a trust line linking two accounts.</p>
@@ -1299,66 +1776,6 @@
 </tr>
 </tbody>
 </table>
-<h2 id="signerlistset">SignerListSet</h2>
-<p><a href="https://github.com/ripple/rippled/blob/ef511282709a6a0721b504c6b7703f9de3eecf38/src/ripple/app/tx/impl/SetSignerList.cpp" title="Source">[Source]<br/></a></p>
-<p>The SignerListSet transaction creates, replaces, or removes a list of signers that can be used to <a href="#multi-signing">multi-sign</a> a transaction. This transaction type was introduced by the <a href="concept-amendments.html#multisign">MultiSign amendment</a>. <a href="https://github.com/ripple/rippled/releases/tag/0.31.0" title="New in: rippled 0.31.0"><img alt="New in: rippled 0.31.0" class="dactyl_badge" src="https://img.shields.io/badge/New%20in-rippled%200.31.0-blue.svg"/></a></p>
-<p>Example SignerListSet:</p>
-<pre><code>{
-    "Flags": 0,
-    "TransactionType": "SignerListSet",
-    "Account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
-    "Fee": "10000",
-    "SignerQuorum": 3,
-    "SignerEntries": [
-        {
-            "SignerEntry": {
-                "Account": "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
-                "SignerWeight": 2
-            }
-        },
-        {
-            "SignerEntry": {
-                "Account": "rUpy3eEg8rqjqfUoLeBnZkscbKbFsKXC3v",
-                "SignerWeight": 1
-            }
-        },
-        {
-            "SignerEntry": {
-                "Account": "raKEEVSGnKSD9Zyvxu4z6Pqpm4ABH8FS6n",
-                "SignerWeight": 1
-            }
-        }
-    ]
-}
-</code></pre>
-<table>
-<thead>
-<tr>
-<th align="left">Field</th>
-<th align="left">JSON Type</th>
-<th align="left"><a href="https://github.com/ripple/rippled/blob/master/src/ripple/protocol/impl/SField.cpp">Internal Type</a></th>
-<th align="left">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td align="left">SignerQuorum</td>
-<td align="left">Number</td>
-<td align="left">UInt32</td>
-<td align="left">A target number for the signer weights. A multi-signature from this list is valid only if the sum weights of the signatures provided is greater than or equal to this value. To delete a SignerList, use the value <code>0</code>.</td>
-</tr>
-<tr>
-<td align="left">SignerEntries</td>
-<td align="left">Array</td>
-<td align="left">Array</td>
-<td align="left">(Omitted when deleting) Array of <a href="reference-ledger-format.html#signerentry-object">SignerEntry objects</a>, indicating the addresses and weights of signers in this list. A SignerList must have at least 1 member and no more than 8 members. No address may appear more than once in the list, nor may the <code>Account</code> submitting the transaction appear in the list.</td>
-</tr>
-</tbody>
-</table>
-<p>An account may not have more than one SignerList. A successful SignerListSet transaction replaces the existing SignerList, if one exists. To delete a SignerList, you must set <code>SignerQuorum</code> to <code>0</code> <em>and</em> omit the <code>SignerEntries</code> field. Otherwise, the transaction fails with the error <a href="#tem-codes">temMALFORMED</a>. A transaction to delete a SignerList is considered successful even if there was no SignerList to delete.</p>
-<p>You cannot create a SignerList such that the SignerQuorum could never be met. The SignerQuorum must be greater than 0 but less than or equal to the sum of the <code>SignerWeight</code> values in the list. Otherwise, the transaction fails with the error <a href="#tem-codes">temMALFORMED</a>.</p>
-<p>You can create, update, or remove a SignerList using the master key, regular key, or the current SignerList, if those methods of signing transactions are available.</p>
-<p>You cannot remove the last method of signing transactions from an account. If an account's master key is disabled (it has the <a href="reference-ledger-format.html#accountroot-flags"><code>lsfDisableMaster</code> flag</a> enabled) and the account does not have a <a href="#setregularkey">Regular Key</a> configured, then you cannot delete the SignerList from the account. Instead, the transaction fails with the error <a href="#tec-codes">tecNO_ALTERNATIVE_KEY</a>.</p>
 <h1 id="pseudo-transactions">Pseudo-Transactions</h1>
 <p>Pseudo-Transactions are never submitted by users, nor propagated through the network. Instead, a server may choose to inject them in a proposed ledger directly. If enough servers inject an equivalent pseudo-transaction for it to pass consensus, then it becomes included in the ledger, and appears in ledger data thereafter.</p>
 <p>Some of the fields that are mandatory for normal transactions do not make sense for pseudo-transactions. In those cases, the pseudo-transaction has the following default values:</p>
@@ -1389,6 +1806,60 @@
 <tr>
 <td align="left">Signature</td>
 <td align="left">""</td>
+</tr>
+</tbody>
+</table>
+<h2 id="enableamendment">EnableAmendment</h2>
+<p>Tracks the progress of the <a href="concept-amendments.html#amendment-process">amendment process</a> for changes in transaction processing. This can indicate that a proposed amendment gained or lost majority approval, or that an amendment has been enabled.</p>
+<p class="devportal-callout note"><strong>Note:</strong> You cannot send a pseudo-transaction, but you may find one when processing ledgers.</p>
+<table>
+<thead>
+<tr>
+<th align="left">Field</th>
+<th align="left">JSON Type</th>
+<th align="left"><a href="https://github.com/ripple/rippled/blob/master/src/ripple/protocol/impl/SField.cpp">Internal Type</a></th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">Amendment</td>
+<td align="left">String</td>
+<td align="left">Hash256</td>
+<td align="left">A unique identifier for the amendment. This is not intended to be a human-readable name. See <a href="concept-amendments.html">Amendments</a> for a list of known amendments.</td>
+</tr>
+<tr>
+<td align="left">LedgerSequence</td>
+<td align="left">Number</td>
+<td align="left">UInt32</td>
+<td align="left">The index of the ledger version where this amendment appears. This distinguishes the pseudo-transaction from other occurrences of the same change.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="enableamendment-flags">EnableAmendment Flags</h3>
+<p>The <code>Flags</code> value of the EnableAmendment pseudo-transaction indicates the status of the amendment at the time of the ledger including the pseudo-transaction.</p>
+<p>A <code>Flags</code> value of <code>0</code> (no flags) indicates that the amendment has been enabled, and applies to all ledgers afterward. Other <code>Flags</code> values are as follows:</p>
+<table>
+<thead>
+<tr>
+<th align="left">Flag Name</th>
+<th align="left">Hex Value</th>
+<th align="left">Decimal Value</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">tfGotMajority</td>
+<td align="left">0x00010000</td>
+<td align="left">65536</td>
+<td align="left">Support for this amendment increased to at least 80% of trusted validators starting with this ledger version.</td>
+</tr>
+<tr>
+<td align="left">tfLostMajority</td>
+<td align="left">0x00020000</td>
+<td align="left">131072</td>
+<td align="left">Support for this amendment decreased to less than 80% of trusted validators starting with this ledger version.</td>
 </tr>
 </tbody>
 </table>
@@ -1452,60 +1923,6 @@
 </tr>
 </tbody>
 </table>
-<h2 id="enableamendment">EnableAmendment</h2>
-<p>Tracks the progress of the <a href="concept-amendments.html#amendment-process">amendment process</a> for changes in transaction processing. This can indicate that a proposed amendment gained or lost majority approval, or that an amendment has been enabled.</p>
-<p class="devportal-callout note"><strong>Note:</strong> You cannot send a pseudo-transaction, but you may find one when processing ledgers.</p>
-<table>
-<thead>
-<tr>
-<th align="left">Field</th>
-<th align="left">JSON Type</th>
-<th align="left"><a href="https://github.com/ripple/rippled/blob/master/src/ripple/protocol/impl/SField.cpp">Internal Type</a></th>
-<th align="left">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td align="left">Amendment</td>
-<td align="left">String</td>
-<td align="left">Hash256</td>
-<td align="left">A unique identifier for the amendment. This is not intended to be a human-readable name. See <a href="concept-amendments.html">Amendments</a> for a list of known amendments.</td>
-</tr>
-<tr>
-<td align="left">LedgerSequence</td>
-<td align="left">Number</td>
-<td align="left">UInt32</td>
-<td align="left">The index of the ledger version where this amendment appears. This distinguishes the pseudo-transaction from other occurrences of the same change.</td>
-</tr>
-</tbody>
-</table>
-<h3 id="enableamendment-flags">EnableAmendment Flags</h3>
-<p>The <code>Flags</code> value of the EnableAmendment pseudo-transaction indicates the status of the amendment at the time of the ledger including the pseudo-transaction.</p>
-<p>A <code>Flags</code> value of <code>0</code> (no flags) indicates that the amendment has been enabled, and applies to all ledgers afterward. Other <code>Flags</code> values are as follows:</p>
-<table>
-<thead>
-<tr>
-<th align="left">Flag Name</th>
-<th align="left">Hex Value</th>
-<th align="left">Decimal Value</th>
-<th align="left">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td align="left">tfGotMajority</td>
-<td align="left">0x00010000</td>
-<td align="left">65536</td>
-<td align="left">Support for this amendment increased to at least 80% of trusted validators starting with this ledger version.</td>
-</tr>
-<tr>
-<td align="left">tfLostMajority</td>
-<td align="left">0x00020000</td>
-<td align="left">131072</td>
-<td align="left">Support for this amendment decreased to less than 80% of trusted validators starting with this ledger version.</td>
-</tr>
-</tbody>
-</table>
 <h1 id="transaction-results">Transaction Results</h1>
 <h2 id="immediate-response">Immediate Response</h2>
 <p>The response from the <a href="reference-rippled.html#submit"><code>submit</code> command</a> contains a provisional result from the <code>rippled</code> server indicating what happened during local processing of the transaction.</p>
@@ -1520,17 +1937,17 @@
 </thead>
 <tbody>
 <tr>
-<td align="left">engine_result</td>
+<td align="left"><code>engine_result</code></td>
 <td align="left">String</td>
 <td align="left">A code that categorizes the result, such as <code>tecPATH_DRY</code></td>
 </tr>
 <tr>
-<td align="left">engine_result_code</td>
+<td align="left"><code>engine_result_code</code></td>
 <td align="left">Signed Integer</td>
 <td align="left">A number that corresponds to the <code>engine_result</code>, although exact values are subject to change.</td>
 </tr>
 <tr>
-<td align="left">engine_result_message</td>
+<td align="left"><code>engine_result_message</code></td>
 <td align="left">String</td>
 <td align="left">A human-readable message explaining what happened. This message is intended for developers to diagnose problems, and is subject to change without notice.</td>
 </tr>
@@ -1719,35 +2136,35 @@
 </thead>
 <tbody>
 <tr>
-<td align="left">telBAD_DOMAIN</td>
+<td align="left"><code>telBAD_DOMAIN</code></td>
 <td align="left">The transaction specified a domain value (for example, the <code>Domain</code> field of an <a href="#accountset">AccountSet transaction</a>) that cannot be used, probably because it is too long to store in the ledger.</td>
 </tr>
 <tr>
-<td align="left">telBAD_PATH_COUNT</td>
+<td align="left"><code>telBAD_PATH_COUNT</code></td>
 <td align="left">The transaction contains too many paths for the local server to process.</td>
 </tr>
 <tr>
-<td align="left">telBAD_PUBLIC_KEY</td>
+<td align="left"><code>telBAD_PUBLIC_KEY</code></td>
 <td align="left">The transaction specified a public key value (for example, as the <code>MessageKey</code> field of an <a href="#accountset">AccountSet transaction</a>) that cannot be used, probably because it is too long.</td>
 </tr>
 <tr>
-<td align="left">telCAN_NOT_QUEUE</td>
+<td align="left"><code>telCAN_NOT_QUEUE</code></td>
 <td align="left">The transaction did not meet the <a href="concept-transaction-cost.html">open ledger cost</a>, but this server did not queue this transaction because it did not meet the <a href="concept-transaction-cost.html#queuing-restrictions">queuing restrictions</a>. You can try again later or sign and submit a replacement transaction with a higher transaction cost in the <code>Fee</code> field.</td>
 </tr>
 <tr>
-<td align="left">telFAILED_PROCESSING</td>
+<td align="left"><code>telFAILED_PROCESSING</code></td>
 <td align="left">An unspecified error occurred when processing the transaction.</td>
 </tr>
 <tr>
-<td align="left">telINSUF_FEE_P</td>
+<td align="left"><code>telINSUF_FEE_P</code></td>
 <td align="left">The <code>Fee</code> from the transaction is not high enough to meet the server's current <a href="concept-transaction-cost.html">transaction cost</a> requirement, which is derived from its load level.</td>
 </tr>
 <tr>
-<td align="left">telLOCAL_ERROR</td>
+<td align="left"><code>telLOCAL_ERROR</code></td>
 <td align="left">Unspecified local error.</td>
 </tr>
 <tr>
-<td align="left">telNO_DST_PARTIAL</td>
+<td align="left"><code>telNO_DST</code>_<code>PARTIAL</code></td>
 <td align="left">The transaction is an XRP payment that would fund a new account, but the <a href="#partial-payments">tfPartialPayment flag</a> was enabled. This is disallowed.</td>
 </tr>
 </tbody>
@@ -1763,135 +2180,135 @@
 </thead>
 <tbody>
 <tr>
-<td align="left">temBAD_AMOUNT</td>
+<td align="left"><code>temBAD_AMOUNT</code></td>
 <td align="left">An amount specified by the transaction (for example the destination <code>Amount</code> or <code>SendMax</code> values of a <a href="#payment">Payment</a>) was invalid, possibly because it was a negative number.</td>
 </tr>
 <tr>
-<td align="left">temBAD_AUTH_MASTER</td>
+<td align="left"><code>temBAD_AUTH_MASTER</code></td>
 <td align="left">The key used to sign this transaction does not match the master key for the account sending it, and the account does not have a <a href="#setregularkey">Regular Key</a> set.</td>
 </tr>
 <tr>
-<td align="left">temBAD_CURRENCY</td>
+<td align="left"><code>temBAD_CURRENCY</code></td>
 <td align="left">The transaction improperly specified a currency field. See <a href="reference-rippled.html#specifying-currency-amounts">Specifying Currency Amounts</a> for the correct format.</td>
 </tr>
 <tr>
-<td align="left">temBAD_EXPIRATION</td>
-<td align="left">The transaction improperly specified an expiration value, for example as part of an <a href="#offercreate">OfferCreate transaction</a>.</td>
+<td align="left"><code>temBAD_EXPIRATION</code></td>
+<td align="left">The transaction improperly specified an expiration value, for example as part of an <a href="#offercreate">OfferCreate transaction</a>. Alternatively, the transaction did not specify a required expiration value, for example as part of an <a href="#escrowcreate">EscrowCreate transaction</a>.</td>
 </tr>
 <tr>
-<td align="left">temBAD_FEE</td>
+<td align="left"><code>temBAD_FEE</code></td>
 <td align="left">The transaction improperly specified its <code>Fee</code> value, for example by listing a non-XRP currency or some negative amount of XRP.</td>
 </tr>
 <tr>
-<td align="left">temBAD_ISSUER</td>
+<td align="left"><code>temBAD_ISSUER</code></td>
 <td align="left">The transaction improperly specified the <code>issuer</code> field of some currency included in the request.</td>
 </tr>
 <tr>
-<td align="left">temBAD_LIMIT</td>
-<td align="left">The <a href="#trustset">TrustSet</a> transaction improperly specified the <code>LimitAmount</code> value of a trustline.</td>
+<td align="left"><code>temBAD_LIMIT</code></td>
+<td align="left">The <a href="#trustset">TrustSet transaction</a> improperly specified the <code>LimitAmount</code> value of a trustline.</td>
 </tr>
 <tr>
-<td align="left">temBAD_OFFER</td>
-<td align="left">The <a href="#offercreate">OfferCreate</a> transaction specifies an invalid offer, such as offering to trade XRP for itself, or offering a negative amount.</td>
+<td align="left"><code>temBAD_OFFER</code></td>
+<td align="left">The <a href="#offercreate">OfferCreate transaction</a> specifies an invalid offer, such as offering to trade XRP for itself, or offering a negative amount.</td>
 </tr>
 <tr>
-<td align="left">temBAD_PATH</td>
+<td align="left"><code>temBAD_PATH</code></td>
 <td align="left">The <a href="#payment">Payment</a> transaction specifies one or more <a href="#paths">Paths</a> improperly, for example including an issuer for XRP, or specifying an account differently.</td>
 </tr>
 <tr>
-<td align="left">temBAD_PATH_LOOP</td>
+<td align="left"><code>temBAD_PATH_LOOP</code></td>
 <td align="left">One of the <a href="#paths">Paths</a> in the <a href="#payment">Payment</a> transaction was flagged as a loop, so it cannot be processed in a bounded amount of time.</td>
 </tr>
 <tr>
-<td align="left">temBAD_SEND_XRP_LIMIT</td>
+<td align="left"><code>temBAD_SEND_XRP_LIMIT</code></td>
 <td align="left">The <a href="#payment">Payment</a> transaction used the <a href="#limit-quality">tfLimitQuality</a> flag in a direct XRP-to-XRP payment, even though XRP-to-XRP payments do not involve any conversions.</td>
 </tr>
 <tr>
-<td align="left">temBAD_SEND_XRP_MAX</td>
+<td align="left"><code>temBAD_SEND_XRP_MAX</code></td>
 <td align="left">The <a href="#payment">Payment</a> transaction included a <code>SendMax</code> field in a direct XRP-to-XRP payment, even though sending XRP should never require SendMax. (XRP is only valid in SendMax if the destination <code>Amount</code> is not XRP.)</td>
 </tr>
 <tr>
-<td align="left">temBAD_SEND_XRP_NO_DIRECT</td>
+<td align="left"><code>temBAD_SEND_XRP_NO_DIRECT</code></td>
 <td align="left">The <a href="#payment">Payment</a> transaction used the <a href="#payment-flags">tfNoDirectRipple</a> flag for a direct XRP-to-XRP payment, even though XRP-to-XRP payments are always direct.</td>
 </tr>
 <tr>
-<td align="left">temBAD_SEND_XRP_PARTIAL</td>
+<td align="left"><code>temBAD_SEND_XRP_PARTIAL</code></td>
 <td align="left">The <a href="#payment">Payment</a> transaction used the <a href="#partial-payments">tfPartialPayment</a> flag for a direct XRP-to-XRP payment, even though XRP-to-XRP payments should always deliver the full amount.</td>
 </tr>
 <tr>
-<td align="left">temBAD_SEND_XRP_PATHS</td>
+<td align="left"><code>temBAD_SEND_XRP_PATHS</code></td>
 <td align="left">The <a href="#payment">Payment</a> transaction included <code>Paths</code> while sending XRP, even though XRP-to-XRP payments should always be direct.</td>
 </tr>
 <tr>
-<td align="left">temBAD_SEQUENCE</td>
+<td align="left"><code>temBAD_SEQUENCE</code></td>
 <td align="left">The transaction is references a sequence number that is higher than its own <code>Sequence</code> number, for example trying to cancel an offer that would have to be placed after the transaction that cancels it.</td>
 </tr>
 <tr>
-<td align="left">temBAD_SIGNATURE</td>
+<td align="left"><code>temBAD_SIGNATURE</code></td>
 <td align="left">The signature to authorize this transaction is either missing, or formed in a way that is not a properly-formed signature. (See <a href="#tec-codes">tecNO_PERMISSION</a> for the case where the signature is properly formed, but not authorized for this account.)</td>
 </tr>
 <tr>
-<td align="left">temBAD_SRC_ACCOUNT</td>
+<td align="left"><code>temBAD_SRC_ACCOUNT</code></td>
 <td align="left">The <code>Account</code> on whose behalf this transaction is being sent (the "source account") is not a properly-formed Ripple account.</td>
 </tr>
 <tr>
-<td align="left">temBAD_TRANSFER_RATE</td>
+<td align="left"><code>temBAD_TRANSFER_RATE</code></td>
 <td align="left">The <a href="#transferrate"><code>TransferRate</code> field of an AccountSet transaction</a> is not properly formatted.</td>
 </tr>
 <tr>
-<td align="left">temDST_IS_SRC</td>
-<td align="left">The <a href="#trustset">TrustSet</a> transaction improperly specified the destination of the trust line (the <code>issuer</code> field of <code>LimitAmount</code>) as the <code>Account</code> sending the transaction. You cannot extend a trust line to yourself. (In the future, this code could also apply to other cases where the destination of a transaction is not allowed to be the account sending it.)</td>
+<td align="left"><code>temDST_IS_SRC</code></td>
+<td align="left">The <a href="#trustset">TrustSet transaction</a> improperly specified the destination of the trust line (the <code>issuer</code> field of <code>LimitAmount</code>) as the <code>Account</code> sending the transaction. You cannot extend a trust line to yourself. (In the future, this code could also apply to other cases where the destination of a transaction is not allowed to be the account sending it.)</td>
 </tr>
 <tr>
-<td align="left">temDST_NEEDED</td>
+<td align="left"><code>temDST_NEEDED</code></td>
 <td align="left">The transaction improperly omitted a destination. This could be the <code>Destination</code> field of a <a href="#payment">Payment</a> transaction, or the <code>issuer</code> sub-field of the <code>LimitAmount</code> field fo a <code>TrustSet</code> transaction.</td>
 </tr>
 <tr>
-<td align="left">temINVALID</td>
+<td align="left"><code>temINVALID</code></td>
 <td align="left">The transaction is otherwise invalid. For example, the transaction ID may not be the right format, the signature may not be formed properly, or something else went wrong in understanding the transaction.</td>
 </tr>
 <tr>
-<td align="left">temINVALID_FLAG</td>
+<td align="left"><code>temINVALID_FLAG</code></td>
 <td align="left">The transaction includes a <a href="#flags">Flag</a> that does not exist, or includes a contradictory combination of flags.</td>
 </tr>
 <tr>
-<td align="left">temMALFORMED</td>
+<td align="left"><code>temMALFORMED</code></td>
 <td align="left">Unspecified problem with the format of the transaction.</td>
 </tr>
 <tr>
-<td align="left">temREDUNDANT</td>
+<td align="left"><code>temREDUNDANT</code></td>
 <td align="left">The transaction would do nothing; for example, it is sending a payment directly to the sending account, or creating an offer to buy and sell the same currency from the same issuer.</td>
 </tr>
 <tr>
-<td align="left">temREDUNDANT_SEND_MAX</td>
+<td align="left"><code>temREDUNDANT_SEND_MAX</code></td>
 <td align="left"><a href="https://github.com/ripple/rippled/releases/tag/0.28.0" title="Removed in: rippled 0.28.0"><img alt="Removed in: rippled 0.28.0" class="dactyl_badge" src="https://img.shields.io/badge/Removed%20in-rippled%200.28.0-red.svg"/></a></td>
 </tr>
 <tr>
-<td align="left">temRIPPLE_EMPTY</td>
+<td align="left"><code>temRIPPLE_EMPTY</code></td>
 <td align="left">The <a href="#payment">Payment</a> transaction includes an empty <code>Paths</code> field, but paths are necessary to complete this payment.</td>
 </tr>
 <tr>
-<td align="left">temBAD_WEIGHT</td>
-<td align="left">The <a href="#signerlistset">SignerListSet</a> transaction includes a <code>SignerWeight</code> that is invalid, for example a zero or negative value.</td>
+<td align="left"><code>temBAD_WEIGHT</code></td>
+<td align="left">The <a href="#signerlistset">SignerListSet transaction</a> includes a <code>SignerWeight</code> that is invalid, for example a zero or negative value.</td>
 </tr>
 <tr>
-<td align="left">temBAD_SIGNER</td>
-<td align="left">The <a href="#signerlistset">SignerListSet</a> transaction includes a signer who is invalid. For example, there may be duplicate entries, or the owner of the SignerList may also be a member.</td>
+<td align="left"><code>temBAD_SIGNER</code></td>
+<td align="left">The <a href="#signerlistset">SignerListSet transaction</a> includes a signer who is invalid. For example, there may be duplicate entries, or the owner of the SignerList may also be a member.</td>
 </tr>
 <tr>
-<td align="left">temBAD_QUORUM</td>
-<td align="left">The <a href="#signerlistset">SignerListSet</a> transaction has an invalid <code>SignerQuorum</code> value. Either the value is not greater than zero, or it is more than the sum of all signers in the list.</td>
+<td align="left"><code>temBAD_QUORUM</code></td>
+<td align="left">The <a href="#signerlistset">SignerListSet transaction</a> has an invalid <code>SignerQuorum</code> value. Either the value is not greater than zero, or it is more than the sum of all signers in the list.</td>
 </tr>
 <tr>
-<td align="left">temUNCERTAIN</td>
+<td align="left"><code>temUNCERTAIN</code></td>
 <td align="left">Used internally only. This code should never be returned.</td>
 </tr>
 <tr>
-<td align="left">temUNKNOWN</td>
+<td align="left"><code>temUNKNOWN</code></td>
 <td align="left">Used internally only. This code should never be returned.</td>
 </tr>
 <tr>
-<td align="left">temDISABLED</td>
+<td align="left"><code>temDISABLED</code></td>
 <td align="left">The transaction requires logic that is disabled. Typically this means you are trying to use an <a href="concept-amendments.html">amendment</a> that is not enabled for the current ledger.</td>
 </tr>
 </tbody>
@@ -1907,71 +2324,71 @@
 </thead>
 <tbody>
 <tr>
-<td align="left">tefALREADY</td>
+<td align="left"><code>tefALREADY</code></td>
 <td align="left">The same exact transaction has already been applied.</td>
 </tr>
 <tr>
-<td align="left">tefBAD_ADD_AUTH</td>
+<td align="left"><code>tefBAD_ADD_AUTH</code></td>
 <td align="left"><strong>DEPRECATED.</strong></td>
 </tr>
 <tr>
-<td align="left">tefBAD_AUTH</td>
+<td align="left"><code>tefBAD_AUTH</code></td>
 <td align="left">The key used to sign this account is not authorized to modify this account. (It could be authorized if the account had the same key set as the <a href="#setregularkey">Regular Key</a>.)</td>
 </tr>
 <tr>
-<td align="left">tefBAD_AUTH_MASTER</td>
+<td align="left"><code>tefBAD_AUTH_MASTER</code></td>
 <td align="left">The single signature provided to authorize this transaction does not match the master key, but no regular key is associated with this address.</td>
 </tr>
 <tr>
-<td align="left">tefBAD_LEDGER</td>
+<td align="left"><code>tefBAD_LEDGER</code></td>
 <td align="left">While processing the transaction, the ledger was discovered in an unexpected state. If you can reproduce this error, please <a href="https://github.com/ripple/rippled/issues">report an issue</a> to get it fixed.</td>
 </tr>
 <tr>
-<td align="left">tefBAD_QUORUM</td>
+<td align="left"><code>tefBAD_QUORUM</code></td>
 <td align="left">The transaction was <a href="#multi-signing">multi-signed</a>, but the total weights of all included signatures did not meet the quorum.</td>
 </tr>
 <tr>
-<td align="left">tefBAD_SIGNATURE</td>
+<td align="left"><code>tefBAD_SIGNATURE</code></td>
 <td align="left">The transaction was <a href="#multi-signing">multi-signed</a>, but contained a signature for an address not part of a SignerList associated with the sending account.</td>
 </tr>
 <tr>
-<td align="left">tefCREATED</td>
+<td align="left"><code>tefCREATED</code></td>
 <td align="left"><strong>DEPRECATED.</strong></td>
 </tr>
 <tr>
-<td align="left">tefEXCEPTION</td>
+<td align="left"><code>tefEXCEPTION</code></td>
 <td align="left">While processing the transaction, the server entered an unexpected state. This may be caused by unexpected inputs, for example if the binary data for the transaction is grossly malformed. If you can reproduce this error, please <a href="https://github.com/ripple/rippled/issues">report an issue</a> to get it fixed.</td>
 </tr>
 <tr>
-<td align="left">tefFAILURE</td>
+<td align="left"><code>tefFAILURE</code></td>
 <td align="left">Unspecified failure in applying the transaction.</td>
 </tr>
 <tr>
-<td align="left">tefINTERNAL</td>
+<td align="left"><code>tefINTERNAL</code></td>
 <td align="left">When trying to apply the transaction, the server entered an unexpected state. If you can reproduce this error, please <a href="https://github.com/ripple/rippled/issues">report an issue</a> to get it fixed.</td>
 </tr>
 <tr>
-<td align="left">tefMASTER_DISABLED</td>
+<td align="left"><code>tefMASTER_DISABLED</code></td>
 <td align="left">The transaction was signed with the account's master key, but the account has the <code>lsfDisableMaster</code> field set.</td>
 </tr>
 <tr>
-<td align="left">tefMAX_LEDGER</td>
+<td align="left"><code>tefMAX_LEDGER</code></td>
 <td align="left">The transaction included a <a href="#lastledgersequence"><code>LastLedgerSequence</code></a> parameter, but the current ledger's sequence number is already higher than the specified value.</td>
 </tr>
 <tr>
-<td align="left">tefNO_AUTH_REQUIRED</td>
-<td align="left">The <a href="#trustset">TrustSet</a> transaction tried to mark a trustline as authorized, but the <code>lsfRequireAuth</code> flag is not enabled for the corresponding account, so authorization is not necessary.</td>
+<td align="left"><code>tefNO_AUTH_REQUIRED</code></td>
+<td align="left">The <a href="#trustset">TrustSet transaction</a> tried to mark a trustline as authorized, but the <code>lsfRequireAuth</code> flag is not enabled for the corresponding account, so authorization is not necessary.</td>
 </tr>
 <tr>
-<td align="left">tefNOT_MULTI_SIGNING</td>
+<td align="left"><code>tefNOT_MULTI_SIGNING</code></td>
 <td align="left">The transaction was <a href="#multi-signing">multi-signed</a>, but the sending account has no SignerList defined.</td>
 </tr>
 <tr>
-<td align="left">tefPAST_SEQ</td>
+<td align="left"><code>tefPAST_SEQ</code></td>
 <td align="left">The sequence number of the transaction is lower than the current sequence number of the account sending the transaction.</td>
 </tr>
 <tr>
-<td align="left">tefWRONG_PRIOR</td>
+<td align="left"><code>tefWRONG_PRIOR</code></td>
 <td align="left">The transaction contained an <code>AccountTxnID</code> field (or the deprecated <code>PreviousTxnID</code> field), but the transaction specified there does not match the account's previous transaction.</td>
 </tr>
 </tbody>
@@ -1987,47 +2404,47 @@
 </thead>
 <tbody>
 <tr>
-<td align="left">terFUNDS_SPENT</td>
+<td align="left"><code>terFUNDS_SPENT</code></td>
 <td align="left"><strong>DEPRECATED.</strong></td>
 </tr>
 <tr>
-<td align="left">terINSUF_FEE_B</td>
+<td align="left"><code>terINSUF_FEE_B</code></td>
 <td align="left">The account sending the transaction does not have enough XRP to pay the <code>Fee</code> specified in the transaction.</td>
 </tr>
 <tr>
-<td align="left">terLAST</td>
+<td align="left"><code>terLAST</code></td>
 <td align="left">Used internally only. This code should never be returned.</td>
 </tr>
 <tr>
-<td align="left">terNO_ACCOUNT</td>
+<td align="left"><code>terNO_ACCOUNT</code></td>
 <td align="left">The address sending the transaction is not funded in the ledger (yet).</td>
 </tr>
 <tr>
-<td align="left">terNO_AUTH</td>
+<td align="left"><code>terNO_AUTH</code></td>
 <td align="left">The transaction would involve adding currency issued by an account with <code>lsfRequireAuth</code> enabled to a trust line that is not authorized. For example, you placed an offer to buy a currency you aren't authorized to hold.</td>
 </tr>
 <tr>
-<td align="left">terNO_LINE</td>
+<td align="left"><code>terNO_LINE</code></td>
 <td align="left">Used internally only. This code should never be returned.</td>
 </tr>
 <tr>
-<td align="left">terNO_RIPPLE</td>
+<td align="left"><code>terNO_RIPPLE</code></td>
 <td align="left">Used internally only. This code should never be returned.</td>
 </tr>
 <tr>
-<td align="left">terOWNERS</td>
+<td align="left"><code>terOWNERS</code></td>
 <td align="left">The transaction requires that account sending it has a nonzero "owners count", so the transaction cannot succeed. For example, an account cannot enable the <a href="#accountset-flags"><code>lsfRequireAuth</code></a> flag if it has any trust lines or available offers.</td>
 </tr>
 <tr>
-<td align="left">terPRE_SEQ</td>
+<td align="left"><code>terPRE_SEQ</code></td>
 <td align="left">The <code>Sequence</code> number of the current transaction is higher than the current sequence number of the account sending the transaction.</td>
 </tr>
 <tr>
-<td align="left">terRETRY</td>
+<td align="left"><code>terRETRY</code></td>
 <td align="left">Unspecified retriable error.</td>
 </tr>
 <tr>
-<td align="left">terQUEUED</td>
+<td align="left"><code>terQUEUED</code></td>
 <td align="left">The transaction met the load-scaled <a href="concept-transaction-cost.html">transaction cost</a> but did not meet the open ledger requirement, so the transaction has been queued for a future ledger.</td>
 </tr>
 </tbody>
@@ -2043,7 +2460,7 @@
 </thead>
 <tbody>
 <tr>
-<td align="left">tesSUCCESS</td>
+<td align="left"><code>tesSUCCESS</code></td>
 <td align="left">The transaction was applied and forwarded to other servers. If this appears in a validated ledger, then the transaction's success is final.</td>
 </tr>
 </tbody>
@@ -2060,152 +2477,152 @@
 </thead>
 <tbody>
 <tr>
-<td align="left">tecCLAIM</td>
+<td align="left"><code>tecCLAIM</code></td>
 <td align="left">100</td>
 <td align="left">Unspecified failure, with transaction cost destroyed.</td>
 </tr>
 <tr>
-<td align="left">tecDIR_FULL</td>
+<td align="left"><code>tecDIR_FULL</code></td>
 <td align="left">121</td>
 <td align="left">The address sending the transaction cannot own any more objects in the ledger.</td>
 </tr>
 <tr>
-<td align="left">tecDST_TAG_NEEDED</td>
+<td align="left"><code>tecDST_TAG_NEEDED</code></td>
 <td align="left">143</td>
 <td align="left">The <a href="#payment">Payment</a> transaction omitted a destination tag, but the destination account has the <code>lsfRequireDestTag</code> flag enabled. <a href="https://github.com/ripple/rippled/releases/tag/0.28.0" title="New in: rippled 0.28.0"><img alt="New in: rippled 0.28.0" class="dactyl_badge" src="https://img.shields.io/badge/New%20in-rippled%200.28.0-blue.svg"/></a></td>
 </tr>
 <tr>
-<td align="left">tecFAILED_PROCESSING</td>
+<td align="left"><code>tecFAILED_PROCESSING</code></td>
 <td align="left">105</td>
 <td align="left">An unspecified error occurred when processing the transaction.</td>
 </tr>
 <tr>
-<td align="left">tecFROZEN</td>
+<td align="left"><code>tecFROZEN</code></td>
 <td align="left">137</td>
 <td align="left">The <a href="#offercreate">OfferCreate transaction</a> failed because one or both of the assets involved are subject to a <a href="concept-freeze.html">global freeze</a>.</td>
 </tr>
 <tr>
-<td align="left">tecINSUF_RESERVE_LINE</td>
+<td align="left"><code>tecINSUF_RESERVE_LINE</code></td>
 <td align="left">122</td>
-<td align="left">The transaction failed because the sending account does not have enough XRP to create a new trust line. (See: <a href="concept-reserves.html">Reserves</a>) This error occurs when the counterparty already has a trust line in a non-default state to the sending account for the same currency. (See tecNO_LINE_INSUF_RESERVE for the other case.)</td>
+<td align="left">The transaction failed because the sending account does not have enough XRP to create a new trust line. (See: <a href="concept-reserves.html">Reserves</a>) This error occurs when the counterparty already has a trust line in a non-default state to the sending account for the same currency. (See <code>tecNO_LINE_INSUF_RESERVE</code> for the other case.)</td>
 </tr>
 <tr>
-<td align="left">tecINSUF_RESERVE_OFFER</td>
+<td align="left"><code>tecINSUF_RESERVE_OFFER</code></td>
 <td align="left">123</td>
 <td align="left">The transaction failed because the sending account does not have enough XRP to create a new Offer. (See: <a href="concept-reserves.html">Reserves</a>)</td>
 </tr>
 <tr>
-<td align="left">tecINSUFFICIENT_RESERVE</td>
+<td align="left"><code>tecINSUFFICIENT_RESERVE</code></td>
 <td align="left">141</td>
 <td align="left">The <a href="#signerlistset">SignerListSet</a> or other transaction would increase the <a href="concept-reserves.html">reserve requirement</a> higher than the sending account's balance. See <a href="reference-ledger-format.html#signerlists-and-reserves">SignerLists and Reserves</a> for more information.</td>
 </tr>
 <tr>
-<td align="left">tecINTERNAL</td>
+<td align="left"><code>tecINTERNAL</code></td>
 <td align="left">144</td>
 <td align="left">Unspecified internal error, with transaction cost applied. This error code should not normally be returned.</td>
 </tr>
 <tr>
-<td align="left">tecNEED_MASTER_KEY</td>
+<td align="left"><code>tecNEED_MASTER_KEY</code></td>
 <td align="left">142</td>
 <td align="left">This transaction tried to cause changes that require the master key, such as <a href="#accountset-flags">disabling the master key or giving up the ability to freeze balances</a>. <a href="https://github.com/ripple/rippled/releases/tag/0.28.0" title="New in: rippled 0.28.0"><img alt="New in: rippled 0.28.0" class="dactyl_badge" src="https://img.shields.io/badge/New%20in-rippled%200.28.0-blue.svg"/></a></td>
 </tr>
 <tr>
-<td align="left">tecNO_ALTERNATIVE_KEY</td>
+<td align="left"><code>tecNO_ALTERNATIVE_KEY</code></td>
 <td align="left">130</td>
 <td align="left">The transaction tried to remove the only available method of <a href="#authorizing-transactions">authorizing transactions</a>. This could be a <a href="#setregularkey">SetRegularKey transaction</a> to remove the regular key, a <a href="#signerlistset">SignerListSet transaction</a> to delete a SignerList, or an <a href="#accountset">AccountSet transaction</a> to disable the master key. (Prior to <code>rippled</code> 0.30.0, this was called <code>tecMASTER_DISABLED</code>.)</td>
 </tr>
 <tr>
-<td align="left">tecNO_AUTH</td>
+<td align="left"><code>tecNO_AUTH</code></td>
 <td align="left">134</td>
-<td align="left">The transaction failed because it needs to add a balance on a trust line to an account with the <code>lsfRequireAuth</code> flag enabled, and that trust line has not been authorized. If the trust line does not exist at all, tecNO_LINE occurs instead.</td>
+<td align="left">The transaction failed because it needs to add a balance on a trust line to an account with the <code>lsfRequireAuth</code> flag enabled, and that trust line has not been authorized. If the trust line does not exist at all, <code>tecNO_LINE</code> occurs instead.</td>
 </tr>
 <tr>
-<td align="left">tecNO_DST</td>
+<td align="left"><code>tecNO_DST</code></td>
 <td align="left">124</td>
 <td align="left">The account on the receiving end of the transaction does not exist. This includes Payment and TrustSet transaction types. (It could be created if it received enough XRP.)</td>
 </tr>
 <tr>
-<td align="left">tecNO_DST_INSUF_XRP</td>
+<td align="left"><code>tecNO_DST_INSUF_XRP</code></td>
 <td align="left">125</td>
 <td align="left">The account on the receiving end of the transaction does not exist, and the transaction is not sending enough XRP to create it.</td>
 </tr>
 <tr>
-<td align="left">tecNO_ENTRY</td>
+<td align="left"><code>tecNO_ENTRY</code></td>
 <td align="left">140</td>
 <td align="left">Reserved for future use.</td>
 </tr>
 <tr>
-<td align="left">tecNO_ISSUER</td>
+<td align="left"><code>tecNO_ISSUER</code></td>
 <td align="left">133</td>
 <td align="left">The account specified in the <code>issuer</code> field of a currency amount does not exist.</td>
 </tr>
 <tr>
-<td align="left">tecNO_LINE</td>
+<td align="left"><code>tecNO_LINE</code></td>
 <td align="left">135</td>
 <td align="left">The <code>TakerPays</code> field of the <a href="#offercreate">OfferCreate transaction</a> specifies an asset whose issuer has <code>lsfRequireAuth</code> enabled, and the account making the offer does not have a trust line for that asset. (Normally, making an offer implicitly creates a trust line if necessary, but in this case it does not bother because you cannot hold the asset without authorization.) If the trust line exists, but is not authorized, <code>tecNO_AUTH</code> occurs instead.</td>
 </tr>
 <tr>
-<td align="left">tecNO_LINE_INSUF_RESERVE</td>
+<td align="left"><code>tecNO_LINE_INSUF_RESERVE</code></td>
 <td align="left">126</td>
-<td align="left">The transaction failed because the sending account does not have enough XRP to create a new trust line. (See: <a href="concept-reserves.html">Reserves</a>) This error occurs when the counterparty does not have a trust line to this account for the same currency. (See tecINSUF_RESERVE_LINE for the other case.)</td>
+<td align="left">The transaction failed because the sending account does not have enough XRP to create a new trust line. (See: <a href="concept-reserves.html">Reserves</a>) This error occurs when the counterparty does not have a trust line to this account for the same currency. (See <code>tecINSUF_RESERVE_LINE</code> for the other case.)</td>
 </tr>
 <tr>
-<td align="left">tecNO_LINE_REDUNDANT</td>
+<td align="left"><code>tecNO_LINE_REDUNDANT</code></td>
 <td align="left">127</td>
 <td align="left">The transaction failed because it tried to set a trust line to its default state, but the trust line did not exist.</td>
 </tr>
 <tr>
-<td align="left">tecNO_PERMISSION</td>
+<td align="left"><code>tecNO_PERMISSION</code></td>
 <td align="left">139</td>
-<td align="left">Reserved for future use.</td>
+<td align="left">The sender does not have permission to perform this operation. For example, the <a href="#escrowfinish">EscrowFinish transaction</a> tried to release a held payment before its <code>FinishAfter</code> time, or someone tried to use <a href="#paymentchannelfund">PaymentChannelFund</a> on a channel the sender does not own.</td>
 </tr>
 <tr>
-<td align="left">tecNO_REGULAR_KEY</td>
+<td align="left"><code>tecNO_REGULAR_KEY</code></td>
 <td align="left">131</td>
 <td align="left">The <a href="#accountset">AccountSet transaction</a> tried to disable the master key, but the account does not have another way to <a href="#authorizing-transactions">authorize transactions</a>. If <a href="#multi-signing">multi-signing</a> is enabled, this code is deprecated and <code>tecNO_ALTERNATIVE_KEY</code> is used instead.</td>
 </tr>
 <tr>
-<td align="left">tecNO_TARGET</td>
+<td align="left"><code>tecNO_TARGET</code></td>
 <td align="left">138</td>
-<td align="left">Reserved for future use.</td>
+<td align="left">The destination account does not exist, or it does exist but has <code>asfDisallowXRP</code> set so it cannot be the destination of this <a href="#paymentchannelcreate">PaymentChannelCreate</a> or <a href="#escrowcreate">EscrowCreate</a> transaction.</td>
 </tr>
 <tr>
-<td align="left">tecOVERSIZE</td>
+<td align="left"><code>tecOVERSIZE</code></td>
 <td align="left">145</td>
 <td align="left">This transaction could not be processed, because the server created an excessively large amount of metadata when it tried to apply the transaction. <a href="https://github.com/ripple/rippled/releases/tag/0.29.0-hf1" title="New in: rippled 0.29.0-hf1"><img alt="New in: rippled 0.29.0-hf1" class="dactyl_badge" src="https://img.shields.io/badge/New%20in-rippled%200.29.0--hf1-blue.svg"/></a></td>
 </tr>
 <tr>
-<td align="left">tecOWNERS</td>
+<td align="left"><code>tecOWNERS</code></td>
 <td align="left">132</td>
 <td align="left">The transaction requires that account sending it has a nonzero "owners count", so the transaction cannot succeed. For example, an account cannot enable the <a href="#accountset-flags"><code>lsfRequireAuth</code></a> flag if it has any trust lines or available offers.</td>
 </tr>
 <tr>
-<td align="left">tecPATH_DRY</td>
+<td align="left"><code>tecPATH_DRY</code></td>
 <td align="left">128</td>
 <td align="left">The transaction failed because the provided paths did not have enough liquidity to send anything at all. This could mean that the source and destination accounts are not linked by trust lines.</td>
 </tr>
 <tr>
-<td align="left">tecPATH_PARTIAL</td>
+<td align="left"><code>tecPATH_PARTIAL</code></td>
 <td align="left">101</td>
 <td align="left">The transaction failed because the provided paths did not have enough liquidity to send the full amount.</td>
 </tr>
 <tr>
-<td align="left">tecUNFUNDED</td>
+<td align="left"><code>tecUNFUNDED</code></td>
 <td align="left">129</td>
-<td align="left"><strong>DEPRECATED.</strong> Replaced by tecUNFUNDED_OFFER and tecUNFUNDED_PAYMENT.</td>
+<td align="left">The transaction failed because the account does not hold enough XRP to satisfy the additional reserve necessary to execute this transaction. (See: <a href="concept-reserves.html">Reserves</a>)</td>
 </tr>
 <tr>
-<td align="left">tecUNFUNDED_ADD</td>
+<td align="left"><code>tecUNFUNDED_ADD</code></td>
 <td align="left">102</td>
 <td align="left"><strong>DEPRECATED.</strong></td>
 </tr>
 <tr>
-<td align="left">tecUNFUNDED_PAYMENT</td>
+<td align="left"><code>tecUNFUNDED_PAYMENT</code></td>
 <td align="left">104</td>
 <td align="left">The transaction failed because the sending account is trying to send more XRP than it holds, not counting the reserve. (See: <a href="concept-reserves.html">Reserves</a>)</td>
 </tr>
 <tr>
-<td align="left">tecUNFUNDED_OFFER</td>
+<td align="left"><code>tecUNFUNDED_OFFER</code></td>
 <td align="left">103</td>
 <td align="left">The <a href="#offercreate">OfferCreate transaction</a> failed because the account creating the offer does not have any of the <code>TakerGets</code> currency.</td>
 </tr>
